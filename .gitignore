@@ -1,0 +1,44 @@
+# Xcode
+Index/*
+build/*
+DerivedData/*
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+!default.xcworkspace
+xcuserdata
+xcuserdata/
+*.moved-aside
+*.xcuserstate
+
+
+# Logs and databases #
+######################
+*.log
+*.sql
+#*.sqlite
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.lock
+.swp
+*~
+
+#CocoaPods
+Pods
+!Podfile
+actionscript/hfile/*
+Podfile.lock
+
