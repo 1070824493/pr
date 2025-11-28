@@ -15,6 +15,8 @@ struct PhotosRefresherApp: App {
     @Environment(\.scenePhase) var scenePhase
     @StateObject private var uiState = UIState.shared
     
+    @StateObject var subscribeVM = SubscriptionViewModel(paySource: .appStorePay, onDismiss: nil)
+    
     var body: some Scene {
         WindowGroup {
             AppView()
@@ -64,24 +66,11 @@ struct PhotosRefresherApp: App {
                     let resp: CommonResponse<ProductInfoDTO> = try await NetworkManager.shared.request(
                         url: ApiConstants.photosrefresher_product_getProductInfo,
                         method: .get,
-                        parameters: ["iapId": productId]
+                        parameters: params
                     )
                     let product = SubscriptionPackage(skuId: Int(resp.data.skuId), priceSale: 0, priceFirst: 0, price: 0, duration: 0, recommendSku: false, beOffered: 0, freeDays: 0)
-                    let flowResult = await PurchaseCoordinator.shared.purchase(
-                        product: product,
-                        paySource: .appStorePay
-                    )
-                     await MainActor.run {
-                         switch flowResult {
-                             case .alreadyInProgress:
-                                 Toast.show(message: "Purchase already in progress", duration: 3)
-                             case .cancelled, .failed:
-                                 Toast.show(message: "Payment failed", duration: 3)
-                             case .success(let isVip, _, _):
-                                 Toast.show(message: isVip ? "Transaction successful"
-                                                           : "Payment successful. Benefits will arrive soon", duration: 3)
-                             }
-                     }
+                    await subscribeVM.purchase(package: product)
+                     
                 } catch {
                     await MainActor.run { Toast.show(message: "Payment failed", duration: 3) }
                 }

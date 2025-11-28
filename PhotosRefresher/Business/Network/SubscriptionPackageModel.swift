@@ -70,6 +70,13 @@ struct SubscriptionPackage: Decodable, Identifiable, DefaultInitializable, Equat
 // 一些便捷属性（可选）
 extension SubscriptionPackage {
     var priceSaleReal: Double  { Double(priceSale)  / 100.0 }
+    var priceFirstShow: Double {
+        if isFirstOffer {
+            return priceFirstReal
+        }else{
+            return priceReal
+        }
+    }
     var priceFirstReal: Double { Double(priceFirst) / 100.0 }
     var priceReal: Double      { Double(price)      / 100.0 }
 
@@ -78,4 +85,13 @@ extension SubscriptionPackage {
     }
     var isFreeTrial: Bool { freeDays > 0 }
     var isFirstOffer: Bool { beOffered == 0 }
+    
+    var expireComponents: DateComponents {
+        var components = DateComponents(day: 7)
+        if duration == 30 {
+            components = DateComponents(month: 1)
+        }
+        if duration == 365 { components = DateComponents(year: 1) }
+        return components
+    }
 }

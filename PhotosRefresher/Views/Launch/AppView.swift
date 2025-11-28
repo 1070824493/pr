@@ -30,7 +30,7 @@ struct AppView: View {
                 case .guide:
                     guideView
                 case .subscription:
-                    SubscriptionContainerView(paySource: viewModel.isFirstOpen ? .coldOpen : .guided) {isSuc in
+                    SubscriptionEntryView(paySource: viewModel.isFirstOpen ? .coldOpen : .guided) {isSuc in
                         viewModel.launchState = .main
                     }
                 case .main:

@@ -11,6 +11,7 @@ enum ThemeButtonType {
     case normal
     case delete
     case guide
+    case subscribe
     
     var bgColor: Color {
         switch self {
@@ -20,6 +21,8 @@ enum ThemeButtonType {
             Color.hexColor(0xFF5329)
         case .guide:
             Color.hexColor(0x141414)
+        case .subscribe:
+            Color.hexColor(0x186F6F)
         }
     }
 }

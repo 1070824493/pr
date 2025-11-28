@@ -26,6 +26,17 @@ public extension Date {
         (selfCmps.day == nowComps.day)
     }
     
+    /// 获取当前时间某个日期之后的时间字符串
+    /// - Parameter components: eg, 7天之后: DateComponents(day: 7)
+    static func getDateStringAfter(components: DateComponents) -> String {
+        
+        let date = Calendar.current.date(byAdding: components, to: Date())
+        
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM dd, YYYY"
+        return formatter.string(from: date ?? Date())
+    }
+    
     //MARK: - 获取当前时间
     static func getCurrentTime(timeFormat: TimeFormat) -> String {
         let formatter = DateFormatter()

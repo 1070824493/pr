@@ -161,8 +161,8 @@ class AppViewModel: ObservableObject {
     }
     
     private func requestProducts() async {
-        let _ = await ProductManager.shared.refreshPackageList(SubscribeHomeSendModel(source: PaySource.guided.rawValue, scene: PayScene.normal.rawValue))
-//        let _ = await ProductManager.shared.refreshPackageList(SubscribeHomeSendModel(source: PaySource.guiding.rawValue, scene: PayScene.single.rawValue))
+        let _ = await ProductManager.shared.refreshPackageList(SubscribeListRequestModel(source: PaySource.guided.rawValue, scene: PayScene.normal.rawValue))
+
     }
     
 }

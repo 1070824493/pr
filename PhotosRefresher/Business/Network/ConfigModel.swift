@@ -19,7 +19,4 @@ struct AppConfig: CodableWithDefault, Equatable {
     let auditSwitch: Bool
     let paywall: Int
     
-    var paywallVariant: PaywallVariant {
-        PaywallVariant.from(paywall)
-    }
 }

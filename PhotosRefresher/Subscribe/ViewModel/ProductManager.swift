@@ -4,8 +4,6 @@
 //
 //
 
-
-
 struct ScenePackageCache: Equatable {
     var isAudit: Bool
     var packageList: [SubscriptionPackage]
@@ -17,9 +15,9 @@ struct ScenePackageCache: Equatable {
 final class ProductManager: ObservableObject {
     static let shared = ProductManager()
     private init() {}
-
+    
     @Published private var cache: [String: ScenePackageCache] = [:]
-
+    
     func packageList(for scene: PayScene = .normal) -> [SubscriptionPackage] {
         cache["\(scene.rawValue)"]?.packageList ?? []
     }
@@ -36,21 +34,20 @@ final class ProductManager: ObservableObject {
         cache["\(scene.rawValue)"]?.retainTime ?? 0
     }
     
-    @discardableResult// 允许调用方忽略返回值
-    func refreshPackageList(_ sendModel: SubscribeHomeSendModel) async -> [SubscriptionPackage] {
-        let start = Date.currentTimestamp()
-
+    @discardableResult
+    func refreshPackageList(_ sendModel: SubscribeListRequestModel) async -> [SubscriptionPackage] {
+        
         let resp: CommonResponse<SubscriptionPackageResponse>? =
-            try? await NetworkManager.shared.request(
-                url: ApiConstants.photosrefresher_subscribe_home,
-                method: .get,
-                parameters: sendModel
-            )
-
+        try? await NetworkManager.shared.request(
+            url: ApiConstants.photosrefresher_subscribe_home,
+            method: .get,
+            parameters: sendModel
+        )
+        
         guard let resp, resp.succeed() else {
             return packageList(for: PayScene(rawValue: sendModel.scene) ?? .normal)
         }
-
+        
         let d = resp.data
         let payload = ScenePackageCache(
             isAudit: d.isAudit,
@@ -59,15 +56,11 @@ final class ProductManager: ObservableObject {
             closeDelay: d.closeDelay ?? 0,
             retainTime: d.retainTime ?? 0
         )
-
+        
         await MainActor.run {
             cache["\(sendModel.scene)"] = payload
         }
-
-//        StatisticsManager.log(
-//            name: "PACKAGE_LIST_COST",
-//            params: ["cost": Date.currentTimestamp() - start]
-//        )
+        
         return packageList(for: PayScene(rawValue: sendModel.scene) ?? .normal)
     }
 }

@@ -36,7 +36,7 @@ extension View {
             case .systemShare(let images, let files):
                 ShareImageActivityView(images: images, files: files, completion: nil)
             case .subscription(let paySource, let onDimiss):
-                SubscriptionContainerView(
+                SubscriptionEntryView(
                     paySource: paySource,
                     onDismiss: onDimiss
                 ).environmentObject(UIState.shared)
