@@ -15,7 +15,7 @@ struct PRDiskSpace: Sendable {
     var used: Int64 { total - available } // 已用 = 总 - 可用
 }
 
-func retrieveDiskSpaceInfo() -> PRDiskSpace? {
+func assessStorageMetrics() -> PRDiskSpace? {
     let root = URL(fileURLWithPath: "/")
     do {
         let keys: Set<URLResourceKey> = [

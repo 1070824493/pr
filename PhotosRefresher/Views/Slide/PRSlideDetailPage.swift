@@ -196,7 +196,7 @@ struct PRSlideDetailPage: View {
     private func loadAssets(for cat: PRPhotoCategory) {
         let ids = mapFor(cat).assetIDs
         let unviewed = PRSlideCacheManager.shared.unviewedFirst(limit: 15, category: cat, sourceIDs: ids)
-        assets = retrievePHAssets(by: unviewed)
+        assets = fetchAssetEntities(by: unviewed)
         index = 0
     }
     
@@ -270,7 +270,7 @@ struct PRSlideDetailPage: View {
     
     private func openTrashReview() {
         let m = TrashReviewViewModel(assets: sessionTrash, onConfirm: { selected in
-            PRAssetsHelper.shared.removeAssetsWithVipCheck(
+            PRAssetsHelper.shared.purgeResourcesWithPrivilegeVerification(
                 selected,
                 assetIDs: selected.map { $0.localIdentifier },
                 uiState: uiState,
@@ -304,7 +304,7 @@ struct PRSlideDetailPage: View {
         PRSlideCacheManager.shared.markViewed(category: category, ids: assets.map({$0.localIdentifier}))
         //再重新获取
         let nextIDs = PRSlideCacheManager.shared.unviewedFirst(limit: limit, category: category, sourceIDs: sourceIDs)
-        self.assets = retrievePHAssets(by: nextIDs)
+        self.assets = fetchAssetEntities(by: nextIDs)
         NotificationCenter.default.post(name: .slideSessionDidAdvance, object: nil, userInfo: ["category": category.rawValue, "nextIDs": nextIDs])
         index = 0
         uiState.modalDestination = nil
@@ -474,7 +474,7 @@ struct ZoomInteractiveCard: View {
                 }
             
             ZStack(alignment: .top) {
-                provider.createThumbnailView(for: asset, targetSize: size)
+                provider.constructVisualElement(for: asset, targetSize: size)
                     .frame(width: size.width, height: size.height)
                     .cornerRadius(24)
                     .offset(x: 0,

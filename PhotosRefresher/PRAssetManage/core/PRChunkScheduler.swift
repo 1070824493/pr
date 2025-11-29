@@ -53,7 +53,7 @@ actor PRChunkScheduler {
 
         for a in assets {
             dateMap[a.localIdentifier] = Int64((a.creationDate ?? .distantPast).timeIntervalSince1970)
-            sizeMap[a.localIdentifier] = calculateAssetSizeBytes(a)
+            sizeMap[a.localIdentifier] = computeResourceVolume(a)
         }
 
         var entries = [PRPhotoAssetModel](); entries.reserveCapacity(ids.count)

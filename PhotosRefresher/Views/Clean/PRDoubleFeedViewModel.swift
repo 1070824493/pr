@@ -35,7 +35,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
         modelIndex = Dictionary(uniqueKeysWithValues: map.assets.map { ($0.photoIdentifier, $0) })
 
         // 2) 根据 id 列表解析 PHAsset（仅用于显示）
-        let newAssets = retrievePHAssets(by: map.assetIDs)
+        let newAssets = fetchAssetEntities(by: map.assetIDs)
 
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
@@ -111,7 +111,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
         let selectedCount = Int64(idsToDelete.count)
         let selectedSize  = selectedBytes
 
-        PRAssetsHelper.shared.removeAssetsWithVipCheck(
+        PRAssetsHelper.shared.purgeResourcesWithPrivilegeVerification(
             assetsToDelete,
             assetIDs: Array(idsToDelete),                     // 新签名：传入 id 兜底
             uiState: uiState ?? PRUIState.shared,

@@ -210,7 +210,7 @@ struct PRDuplicatePage: View {
                     let delIDs = selectedIDs
                     let selectedSize = selectedBytes
 
-                    PRAssetsHelper.shared.removeAssetsWithVipCheck(
+                    PRAssetsHelper.shared.purgeResourcesWithPrivilegeVerification(
                         [],                               // 传空 assets，内部用 id 解析
                         assetIDs: Array(delIDs),          // ✅ 传入待删 ID
                         uiState: uiState,
@@ -384,11 +384,11 @@ private struct HCell: View {
 
     var body: some View {
         // 运行期解析 PHAsset（内部有 NSCache；无则显示占位）
-        let asset = PRPhotoMapManager.shared.fetchOrResolvePHAsset(for: model.photoIdentifier)
+        let asset = PRPhotoMapManager.shared.resolveAssetEntity(for: model.photoIdentifier)
 
         ZStack(alignment: .bottomTrailing) {
             if let a = asset {
-                thumbProvider.createThumbnailView(
+                thumbProvider.constructVisualElement(
                     for: a,
                     targetSize: CGSize(width: 140.fit, height: 140.fit),
                     preferFastFirst: true

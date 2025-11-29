@@ -35,7 +35,7 @@ final class PRCategoryHomeViewModel: ObservableObject {
         self.manager = manager
         bind()
         Task.detached(priority: .utility) { [weak self] in
-            let d = retrieveDiskSpaceInfo()
+            let d = assessStorageMetrics()
             await MainActor.run { self?.disk = d }
         }
     }
@@ -63,7 +63,7 @@ final class PRCategoryHomeViewModel: ObservableObject {
                     let assets = cell.repID.compactMap { id in
                         if let cached = self.assetCache[id] {
                             return cached
-                        } else if let newA = self.manager.fetchOrResolvePHAsset(for: id) {
+                        } else if let newA = self.manager.resolveAssetEntity(for: id) {
                             self.assetCache[id] = newA
                             return newA
                         }
@@ -91,6 +91,6 @@ final class PRCategoryHomeViewModel: ObservableObject {
     }
 
     func ensureStartedIfAllowed() {
-        manager.reloadAllAssetsAndRestartPipeline()
+        manager.refreshAssetRepositoryAndInitiateSequence()
     }
 }

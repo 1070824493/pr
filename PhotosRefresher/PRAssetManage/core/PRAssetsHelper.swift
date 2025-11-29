@@ -33,7 +33,7 @@ enum PRGroupMerge {
 /// 计算资源字节大小（聚合多个资源项）
 /// - 参数: `PHAsset`
 /// - 返回: 字节数（`Int64`）
-func calculateAssetSizeBytes(_ asset: PHAsset) -> Int64 {
+func computeResourceVolume(_ asset: PHAsset) -> Int64 {
 
     let resources = PHAssetResource.assetResources(for: asset)
         var sum: Int64 = 0
@@ -55,13 +55,13 @@ extension PHFetchResult where ObjectType == PHAsset {
 }
 
 /// 通过 `localIdentifier` 获取单个 `PHAsset`
-func retrievePHAsset(by identifier: String) -> PHAsset? {
-    let assets = retrievePHAssets(by: [identifier])
+func fetchAssetEntity(by identifier: String) -> PHAsset? {
+    let assets = fetchAssetEntities(by: [identifier])
     return assets.first
 }
 
 /// 通过一组 `localIdentifier` 获取 `PHAsset` 列表（自动过滤空串与去重）
-func retrievePHAssets(by identifiers: [String]) -> [PHAsset] {
+func fetchAssetEntities(by identifiers: [String]) -> [PHAsset] {
     guard !identifiers.isEmpty else {
         print("❌ Identifiers array is empty")
         return []
@@ -89,7 +89,7 @@ func retrievePHAssets(by identifiers: [String]) -> [PHAsset] {
 extension PRAssetsHelper {
 
     /// 删除资产（需要 VIP 权限），支持传入现有 `PHAsset` 或 `localIdentifier` 数组
-    public func removeAssetsWithVipCheck(
+    public func purgeResourcesWithPrivilegeVerification(
         _ assets: [PHAsset],
         assetIDs: [String]? = nil,
         uiState: PRUIState,
@@ -99,7 +99,7 @@ extension PRAssetsHelper {
     ) {
         let finalAssets: [PHAsset] = {
             if !assets.isEmpty { return assets }
-            if let ids = assetIDs, !ids.isEmpty { return retrievePHAssets(by: ids) }
+            if let ids = assetIDs, !ids.isEmpty { return fetchAssetEntities(by: ids) }
             return []
         }()
 
@@ -117,7 +117,7 @@ extension PRAssetsHelper {
                     onDismiss: { isSuccess in
                         uiState.fullScreenCoverDestination = nil
                         if isSuccess {
-                            self.performAssetDeletion(finalAssets, from: from, completion: completion)
+                            self.executeResourcePurge(finalAssets, from: from, completion: completion)
                         } else {
                             completion(.failure(PRAssetsExecError.requestCancelled))
                         }
@@ -125,7 +125,7 @@ extension PRAssetsHelper {
                 )
             }
         } else {
-            performAssetDeletion(finalAssets, from: from, completion: completion)
+            executeResourcePurge(finalAssets, from: from, completion: completion)
         }
     }
 }
@@ -136,7 +136,7 @@ class PRAssetsHelper {
     public static let shared = PRAssetsHelper()
     
     /// 加载高清缩略图（允许 iCloud 下载，屏蔽降质结果）
-    func fetchHighQualityThumbnail(
+    func acquireHighFidelityImage(
         for asset: PHAsset,
         targetSize: CGSize = CGSize(width: 200, height: 200),
         deliveryMode: PHImageRequestOptionsDeliveryMode = .opportunistic
@@ -174,7 +174,7 @@ class PRAssetsHelper {
     }
     
     /// 加载快速缩略图（不走网络，首帧快）
-    func fetchFastThumbnail(
+    func acquireRapidImage(
         for asset: PHAsset,
         targetSize: CGSize = CGSize(width: 200, height: 200)
     ) async throws -> UIImage {
@@ -206,7 +206,7 @@ class PRAssetsHelper {
     }
     
     /// 并发加载缩略图（自动聚合结果）
-    func fetchMultipleThumbnails(
+    func acquireCompositeImages(
         for assets: [PHAsset],
         targetSize: CGSize = CGSize(width: 200, height: 200),
         useFaseter: Bool = false,
@@ -218,9 +218,9 @@ class PRAssetsHelper {
                 group.addTask {
                     var image: UIImage
                     if faster {
-                        image = try await self.fetchFastThumbnail(for: asset, targetSize: targetSize)
+                        image = try await self.acquireRapidImage(for: asset, targetSize: targetSize)
                     } else {
-                        image = try await self.fetchHighQualityThumbnail(for: asset, targetSize: targetSize)
+                        image = try await self.acquireHighFidelityImage(for: asset, targetSize: targetSize)
                     }
                     return (asset.localIdentifier, image)
                 }
@@ -235,7 +235,7 @@ class PRAssetsHelper {
     }
     
     /// 限并发批量加载缩略图（分块）
-    func fetchThumbnailsWithLimit(
+    func acquireImagesConstrained(
         for assets: [PHAsset],
         targetSize: CGSize = CGSize(width: 200, height: 200),
         maxConcurrentTasks: Int = 4,
@@ -250,9 +250,9 @@ class PRAssetsHelper {
                     group.addTask {
                         var image: UIImage
                         if faster {
-                            image = try await self.fetchFastThumbnail(for: asset, targetSize: targetSize)
+                            image = try await self.acquireRapidImage(for: asset, targetSize: targetSize)
                         } else {
-                            image = try await self.fetchHighQualityThumbnail(for: asset, targetSize: targetSize)
+                            image = try await self.acquireHighFidelityImage(for: asset, targetSize: targetSize)
                         }
                         return (asset.localIdentifier, image)
                     }
@@ -268,7 +268,7 @@ class PRAssetsHelper {
     }
     
     /// 执行删除（已授权）
-    private func performAssetDeletion(_ assets: [PHAsset], from: String, completion: @escaping (Result<Void, Error>) -> Void) {
+    private func executeResourcePurge(_ assets: [PHAsset], from: String, completion: @escaping (Result<Void, Error>) -> Void) {
         
         guard !assets.isEmpty else {
             completion(.success(()))
@@ -325,16 +325,16 @@ final class PRPHashCache {
         cache.countLimit = 20_000        // 按库规模调整
         cache.totalCostLimit = 0          // 不按 cost 驱逐就保持 0
     }
-    @inline(__always) func retrieveHash(_ id: String) -> UInt64? {
+    @inline(__always) func accessFingerprint(_ id: String) -> UInt64? {
         cache.object(forKey: id as NSString)?.uint64Value
     }
-    @inline(__always) func storeHash(_ id: String, value: UInt64) {
+    @inline(__always) func depositFingerprint(_ id: String, value: UInt64) {
         cache.setObject(NSNumber(value: value), forKey: id as NSString)
     }
 }
 
 // MARK: - 这里主要给各个鉴别模块用
-func generateThumbnail(for asset: PHAsset,
+func produceVisualRepresentation(for asset: PHAsset,
                        manager: PHImageManager = PHImageManager.default(),
                        options: PHImageRequestOptions,
                        target: CGSize,
@@ -350,7 +350,7 @@ func generateThumbnail(for asset: PHAsset,
     }
     return out
 }
-func extractVideoKeyframe(for asset: PHAsset, target: CGSize) -> UIImage? {
+func deriveVideoFrame(for asset: PHAsset, target: CGSize) -> UIImage? {
     let sema = DispatchSemaphore(value: 0)
     var avAsset: AVAsset?
     let vOpts = PHVideoRequestOptions()
@@ -375,7 +375,7 @@ func extractVideoKeyframe(for asset: PHAsset, target: CGSize) -> UIImage? {
 }
 
 // MARK: - Hashes & Sizes
-func generateImageHashes(
+func synthesizeVisualFingerprints(
     assets: [PHAsset],
     target: CGSize,                         // 建议 64×64
     options: PHImageRequestOptions          // 建议 isSynchronous = true / fastFormat / fast
@@ -396,7 +396,7 @@ func generateImageHashes(
             whOut[id] = (a.pixelWidth, a.pixelHeight)
             
             // 1) 命中缓存：直接得 pHash，且通常无需解码图像
-            if let cached = PRPHashCache.shared.retrieveHash(id) {
+            if let cached = PRPHashCache.shared.accessFingerprint(id) {
                 pOut[id] = cached
                 // 仍可能需要 dHash；下面按需要再取图
             }
@@ -405,20 +405,20 @@ func generateImageHashes(
             // 2) 只有在确实需要 pHash 或 dHash 时才解码图像/取关键帧
             if pOut[id] == nil || dOut[id] == nil {
                 if a.mediaType == .video {
-                    img = safelyExtractVideoKeyframe(for: a, target: target)
+                    img = securelyDeriveVideoFrame(for: a, target: target)
                 } else {
-                    img = generateThumbnail(for: a, manager: mgr, options: options, target: target)
+                    img = produceVisualRepresentation(for: a, manager: mgr, options: options, target: target)
                 }
             }
             
             // 3) 计算 pHash
-            if pOut[id] == nil, let ui = img, let ph = calculatePHash64(from: ui) {
+            if pOut[id] == nil, let ui = img, let ph = computePerceptualHash(from: ui) {
                 pOut[id] = ph
-                PRPHashCache.shared.storeHash(id, value: ph)   // 写缓存（线程安全）
+                PRPHashCache.shared.depositFingerprint(id, value: ph)   // 写缓存（线程安全）
             }
             
             // 4) 计算 dHash（只在拿到图像时才算）
-            if dOut[id] == nil, let ui = img, let dh = calculateDHash64(from: ui) {
+            if dOut[id] == nil, let ui = img, let dh = computeDifferenceHash(from: ui) {
                 dOut[id] = dh
             }
             // img 出作用域后由 autoreleasepool 回收
@@ -429,14 +429,14 @@ func generateImageHashes(
 
 // MARK: - 视频关键帧取图（加一层 autoreleasepool 更稳）
 @inline(__always)
-private func safelyExtractVideoKeyframe(for asset: PHAsset, target: CGSize) -> UIImage? {
+private func securelyDeriveVideoFrame(for asset: PHAsset, target: CGSize) -> UIImage? {
     return autoreleasepool(invoking: { () -> UIImage? in
-        extractVideoKeyframe(for: asset, target: target)
+        deriveVideoFrame(for: asset, target: target)
     })
 }
 
 
-func calculateDHash64(from image: UIImage) -> UInt64? {
+func computeDifferenceHash(from image: UIImage) -> UInt64? {
     guard let cg = image.cgImage else { return nil }
     let W = 9, H = 8
     let grayCS = CGColorSpaceCreateDeviceGray()
@@ -459,7 +459,7 @@ func calculateDHash64(from image: UIImage) -> UInt64? {
     return hash
 }
 
-func calculatePHash64(from image: UIImage) -> UInt64? {
+func computePerceptualHash(from image: UIImage) -> UInt64? {
     // 仅缓存 DCT 实例（线程安全且不捕获外部变量）
     struct DCTPool {
         static let side = 32

@@ -35,7 +35,7 @@ private struct PRExploreCellView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             thumbProvider
-                .createThumbnailView(for: asset, targetSize: size, preferFastFirst: true)
+                .constructVisualElement(for: asset, targetSize: size, preferFastFirst: true)
                 .frame(width: size.width, height: size.height)
                 .clipped()
                 .cornerRadius(12)
@@ -194,7 +194,7 @@ struct PRDoubleFeedPage: View {
                                     let scale = UIScreen.main.scale
                                     let px = CGSize(width: min(cellW * scale, 256 * scale),
                                                     height: min(cellH * scale, 256 * scale))
-                                    thumbProvider.startPreheatingAssets(assets: next, pixelSize: px)
+                                    thumbProvider.initiateResourceWarming(assets: next, pixelSize: px)
                                 }
                             }
                         }

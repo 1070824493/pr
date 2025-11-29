@@ -18,11 +18,11 @@ enum PRSimilarAnalyzer {
     private static let segW = 8
     private static let maxBucket = 120
 
-    static func findSimilarAssetGroups(in assets: [PHAsset]) async -> [[String]] {
+    static func locateAnalogousAssetClusters(in assets: [PHAsset]) async -> [[String]] {
         guard !assets.isEmpty else { return [] }
         let opts = PHImageRequestOptions(); opts.isSynchronous = true; opts.deliveryMode = .fastFormat; opts.resizeMode = .fast; opts.isNetworkAccessAllowed = true
         let targetSize = CGSize(width: 64, height: 64)
-        let (sigP, sigD, dims) = generateImageHashes(assets: assets, target: targetSize, options: opts)
+        let (sigP, sigD, dims) = synthesizeVisualFingerprints(assets: assets, target: targetSize, options: opts)
 
         let ids = assets.map(\.localIdentifier)
         var buckets: [UInt64: [String]] = [:]

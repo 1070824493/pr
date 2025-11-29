@@ -20,7 +20,7 @@ enum PRBlurryAnalyzer {
         var targetSize: CGSize = .init(width: 256, height: 256)
     }
 
-    static func detectBlurryAssetIdentifiers(in assets: [PHAsset], params: Params = .init()) async -> [String] {
+    static func scanForLowResolutionEntities(in assets: [PHAsset], params: Params = .init()) async -> [String] {
         var ids: [String] = []
         ids.reserveCapacity(assets.count / 4)
         let manager = PHImageManager.default()
@@ -36,7 +36,7 @@ enum PRBlurryAnalyzer {
     }
 
     private static func checkIfAssetIsBlurry(_ asset: PHAsset, manager: PHImageManager, options: PHImageRequestOptions, target: CGSize, base: Double, flatThr: Double) -> Bool {
-        guard let cg = generateThumbnail(for: asset, manager: manager, options: options, target: target)?.cgImage else { return false }
+        guard let cg = produceVisualRepresentation(for: asset, manager: manager, options: options, target: target)?.cgImage else { return false }
         if calculateLumaVariance(cg) < flatThr { return false }
         let lv = calculateLightweightEdgeVariance(cg)
         let thr = computeAdaptiveBlurThreshold(cg, base: base)

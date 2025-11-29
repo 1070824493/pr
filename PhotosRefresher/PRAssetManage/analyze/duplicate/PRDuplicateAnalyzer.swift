@@ -17,7 +17,7 @@ enum PRDuplicateAnalyzer {
     private static let maxBucket = 120
     private static let aspectTol: CGFloat = 0.15
 
-    static func identifyDuplicateGroups(in assets: [PHAsset]) async -> [[String]] {
+    static func isolateRedundantClusters(in assets: [PHAsset]) async -> [[String]] {
         struct FP: Hashable { let w: Int32; let h: Int32; let ts: Int32 }
         var fpBuckets: [FP: [String]] = [:]
         fpBuckets.reserveCapacity(assets.count / 2)
@@ -52,9 +52,9 @@ enum PRDuplicateAnalyzer {
             for id in ids {
                 autoreleasepool {
                     guard let a = PHAsset.fetchAssets(withLocalIdentifiers: [id], options: nil).toArray().first,
-                          let ui = generateThumbnail(for: a, manager: manager, options: opts, target: target) else { return }
-                    if let ph = calculatePHash64(from: ui) { pMap[id] = ph }
-                    if let dh = calculateDHash64(from: ui) { dMap[id] = dh }
+                          let ui = produceVisualRepresentation(for: a, manager: manager, options: opts, target: target) else { return }
+                    if let ph = computePerceptualHash(from: ui) { pMap[id] = ph }
+                    if let dh = computeDifferenceHash(from: ui) { dMap[id] = dh }
                     if dMap[id] == nil { dMap[id] = pMap[id] }
                 }
             }

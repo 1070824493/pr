@@ -42,7 +42,7 @@ public struct PRDeleteFinishPage: View {
     public var closeImage: Image = .init("icon_white_back")
 
     mutating func checkPRDiskSpace() {
-        let disk = retrieveDiskSpaceInfo()
+        let disk = assessStorageMetrics()
         totalGB = disk?.total ?? 0
         usedGB = disk?.used ?? 0
         clutterGB = PRPhotoMapManager.shared.totalSize

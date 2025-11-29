@@ -286,7 +286,7 @@ struct PRCategoryPageCard: View {
             ZStack(alignment: .bottomLeading) {
                 Group {
                     if let a = asset {
-                        thumbProvider.createThumbnailView(for: a, targetSize: CGSize(width: cardW, height: cardH), preferFastFirst: true)
+                        thumbProvider.constructVisualElement(for: a, targetSize: CGSize(width: cardW, height: cardH), preferFastFirst: true)
                             .frame(width: cardW, height: cardH)
                             .clipped()
                     } else {

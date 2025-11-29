@@ -15,7 +15,7 @@ import CoreImage
 /// - 策略: 先 160px 粗检 (VNDetectTextRectangles) 命中后再 512px 精检 (VNRecognizeText)
 /// - 输出: 含文字的图片 `localIdentifier` 列表
 enum PRTextAnalyzer {
-    static func scanForTextContainingAssets(in assets: [PHAsset]) async -> [String] {
+    static func detectGlyphBearingEntities(in assets: [PHAsset]) async -> [String] {
         var hits: [String] = []
         hits.reserveCapacity(assets.count / 4)
 
@@ -25,9 +25,9 @@ enum PRTextAnalyzer {
 
         for a in assets where a.mediaType == .image {
             autoreleasepool {
-                guard let low = generateThumbnail(for: a, manager: manager, options: optLow, target: .init(width: 160, height: 160))?.cgImage else { return }
+                guard let low = produceVisualRepresentation(for: a, manager: manager, options: optLow, target: .init(width: 160, height: 160))?.cgImage else { return }
                 if !performCoarseTextDetection(low) { return }
-                guard let hi = generateThumbnail(for: a, manager: manager, options: optHi, target: .init(width: 512, height: 512))?.cgImage else { return }
+                guard let hi = produceVisualRepresentation(for: a, manager: manager, options: optHi, target: .init(width: 512, height: 512))?.cgImage else { return }
                 if performFineTextRecognition(hi) { hits.append(a.localIdentifier) }
             }
         }

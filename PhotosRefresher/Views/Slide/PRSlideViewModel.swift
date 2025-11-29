@@ -46,7 +46,7 @@ class PRSlideViewModel: ObservableObject {
                    cat == self.currentCategory,
                    let nextIDs = note.userInfo?["nextIDs"] as? [String] {
                     let first5IDs = Array(nextIDs.prefix(5))
-                    let first5 = retrievePHAssets(by: first5IDs)
+                    let first5 = fetchAssetEntities(by: first5IDs)
                     self.previewFive = first5
                 }
             }
@@ -76,7 +76,7 @@ class PRSlideViewModel: ObservableObject {
         }
         
         let first5IDs = cache.unviewedFirst(limit: 5, category: currentCategory, sourceIDs: ids)
-        let first5 = retrievePHAssets(by: first5IDs)
+        let first5 = fetchAssetEntities(by: first5IDs)
         previewFive = first5
     }
 
