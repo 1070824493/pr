@@ -27,7 +27,7 @@ class PRAppInfo: PRDynamicCommonParamsProvider {
 
     public static let vc = 100
     
-    public static var envName = "ez2"
+    public static var envName = ""
     
     public static let scheme = "PR://"
     
