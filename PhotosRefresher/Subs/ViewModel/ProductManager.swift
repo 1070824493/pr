@@ -37,8 +37,8 @@ final class ProductManager: ObservableObject {
     @discardableResult
     func refreshPackageList(_ sendModel: SubscribeListRequestModel) async -> [SubscriptionPackageModel] {
         
-        let resp: CommonResponse<SubscribeResponseModel>? =
-        try? await NetworkManager.shared.request(
+        let resp: PRCommonResponse<SubscribeResponseModel>? =
+        try? await PRRequestHandlerManager.shared.PRrequest(
             url: ApiConstants.photosrefresher_subscribe_home,
             method: .get,
             parameters: sendModel

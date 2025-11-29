@@ -4,7 +4,7 @@
 
 //
 
-public enum Env2: Identifiable, Equatable {
+public enum Environment2: Identifiable, Equatable {
  
     case online
     case tips
@@ -27,11 +27,11 @@ public enum Env2: Identifiable, Equatable {
     
 }
 
-public class EnvManager {
+public class PREnvironmentManager {
     
-    public static let shared = EnvManager()
+    public static let shared = PREnvironmentManager()
     
-    public var currentEnv: Env2 = .online
+    public var currentEnv: Environment2 = .online
     
     public let SHIP_PLACE_HOLDER = "&placeholder&"
     
@@ -50,9 +50,9 @@ public class EnvManager {
         if useEnvName.isEmpty {
             useEnvName = inEnvName
         }
-        if useEnvName == "" || useEnvName == Env2.online.id {
+        if useEnvName == "" || useEnvName == Environment2.online.id {
             self.currentEnv = .online
-        } else if useEnvName == Env2.tips.id {
+        } else if useEnvName == Environment2.tips.id {
             self.currentEnv = .tips
         } else {
             self.currentEnv = .ship(name: useEnvName)
@@ -61,7 +61,7 @@ public class EnvManager {
         self.domainConfigs = domainConfigs
     }
     
-    public func updateEnv(env: Env2) {
+    public func updateEnv(env: Environment2) {
         switch env {
         case .online, .tips:
             self.cacheEnvName = env.id
@@ -70,7 +70,7 @@ public class EnvManager {
         }
     }
     
-    public func createFullRequestUrl(_ url: String) -> String {
+    public func PRCreateFullRequestUrl(_ url: String) -> String {
         if url.starts(with: "http") {
             return url
         }

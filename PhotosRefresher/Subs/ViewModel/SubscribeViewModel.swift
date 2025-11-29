@@ -126,7 +126,7 @@ extension SubscribeViewModel {
 
         let traceId = "\(CommonAICuid.sharedInstance().getDeviceADID())_\(Date.currentTimestamp())"
 
-        let result = await PurchaseManager.shared.purchaseSubscription(
+        let result = await PROrderManager.shared.PRpaySubscription(
             skuId: pkg.skuId,
             paySource: paySource.rawValue,
             traceId: traceId
@@ -179,7 +179,7 @@ extension SubscribeViewModel {
 extension SubscribeViewModel {
     func restore() {
         Task {
-            let succeed = await PurchaseManager.shared.restore()
+            let succeed = await PROrderManager.shared.restore()
             await MainActor.run {
                 Toast.show(message: succeed ? "Restore successful" : "Restore failed")
             }

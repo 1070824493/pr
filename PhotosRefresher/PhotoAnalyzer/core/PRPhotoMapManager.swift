@@ -34,7 +34,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
     @Published public private(set) var largeVideosMap = PhotoAssetsMap(.largevideo)
     @Published public private(set) var similarVideosMap = PhotoAssetsMap(.similarvideo) // 预留
     
-    @Published public private(set) var dashboard: DashboardSnapshot?
+    @Published public private(set) var dashboard: PRDashboardSnapshot?
 
     // 删除广播（外部写入触发即时扣减）
     @Published public var lastDeleteAssets: [PHAsset] = [] {
@@ -51,10 +51,10 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
 
     // MARK: - 依赖/内部状态
     private var fetchAll: PHFetchResult<PHAsset>?
-    private let files: CacheFiles
+    private let files: PRCacheFiles
     private let scheduler: PRChunkScheduler
     private let assetCache = NSCache<NSString, PHAsset>()
-    private var progress: ProgressSnapshot?
+    private var progress: PRProgressSnapshot?
     private let largeVideoThreshold: Int64 = 100 * 1024 * 1024
 
     // MARK: - Init
@@ -62,7 +62,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         let dir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
             .appendingPathComponent("ck_photo_v3")
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        self.files = CacheFiles(dir: dir)
+        self.files = PRCacheFiles(dir: dir)
         self.scheduler = PRChunkScheduler(chunkSize: 500, files: files)
         super.init()
     }
@@ -125,31 +125,31 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         return []
     }
 
-    @MainActor private func buildDashboard() -> DashboardSnapshot {
-        let cells: [DashboardCell] = [
-            DashboardCell(category: .screenshot,   bytes: screenshotPhotosMap.totalBytes,   repID: repIdFor(screenshotPhotosMap), count: screenshotPhotosMap.assets.count),
-            DashboardCell(category: .livePhoto,    bytes: livePhotosMap.totalBytes,         repID: repIdFor(livePhotosMap), count: livePhotosMap.assets.count),
-            DashboardCell(category: .selfiephoto,  bytes: selfiePhotosMap.totalBytes,       repID: repIdFor(selfiePhotosMap), count: selfiePhotosMap.assets.count),
-            DashboardCell(category: .backphoto,    bytes: backPhotosMap.totalBytes,         repID: repIdFor(backPhotosMap), count: backPhotosMap.assets.count),
-            DashboardCell(category: .allvideo,     bytes: allVideosMap.totalBytes,          repID: repIdFor(allVideosMap), count: allVideosMap.assets.count),
-            DashboardCell(category: .largevideo,   bytes: largeVideosMap.totalBytes,        repID: repIdFor(largeVideosMap), count: largeVideosMap.assets.count),
-            DashboardCell(category: .blurryphoto,  bytes: blurryPhotosMap.totalBytes,       repID: repIdFor(blurryPhotosMap), count: blurryPhotosMap.assets.count),
-            DashboardCell(category: .textphoto,    bytes: textPhotosMap.totalBytes,         repID: repIdFor(textPhotosMap), count: textPhotosMap.assets.count),
-            DashboardCell(category: .similarphoto, bytes: similarPhotosMap.totalBytes,      repID: repIdFor(similarPhotosMap), count: similarPhotosMap.assets.count),
-            DashboardCell(category: .duplicatephoto, bytes: duplicatePhotosMap.totalBytes,  repID: repIdFor(duplicatePhotosMap), count: duplicatePhotosMap.assets.count)
+    @MainActor private func buildDashboard() -> PRDashboardSnapshot {
+        let cells: [PRDashboardCell] = [
+            PRDashboardCell(category: .screenshot,   bytes: screenshotPhotosMap.totalBytes,   repID: repIdFor(screenshotPhotosMap), count: screenshotPhotosMap.assets.count),
+            PRDashboardCell(category: .livePhoto,    bytes: livePhotosMap.totalBytes,         repID: repIdFor(livePhotosMap), count: livePhotosMap.assets.count),
+            PRDashboardCell(category: .selfiephoto,  bytes: selfiePhotosMap.totalBytes,       repID: repIdFor(selfiePhotosMap), count: selfiePhotosMap.assets.count),
+            PRDashboardCell(category: .backphoto,    bytes: backPhotosMap.totalBytes,         repID: repIdFor(backPhotosMap), count: backPhotosMap.assets.count),
+            PRDashboardCell(category: .allvideo,     bytes: allVideosMap.totalBytes,          repID: repIdFor(allVideosMap), count: allVideosMap.assets.count),
+            PRDashboardCell(category: .largevideo,   bytes: largeVideosMap.totalBytes,        repID: repIdFor(largeVideosMap), count: largeVideosMap.assets.count),
+            PRDashboardCell(category: .blurryphoto,  bytes: blurryPhotosMap.totalBytes,       repID: repIdFor(blurryPhotosMap), count: blurryPhotosMap.assets.count),
+            PRDashboardCell(category: .textphoto,    bytes: textPhotosMap.totalBytes,         repID: repIdFor(textPhotosMap), count: textPhotosMap.assets.count),
+            PRDashboardCell(category: .similarphoto, bytes: similarPhotosMap.totalBytes,      repID: repIdFor(similarPhotosMap), count: similarPhotosMap.assets.count),
+            PRDashboardCell(category: .duplicatephoto, bytes: duplicatePhotosMap.totalBytes,  repID: repIdFor(duplicatePhotosMap), count: duplicatePhotosMap.assets.count)
         ]
-        return DashboardSnapshot(cells: cells, totalSize: totalSize, updatedAt: Date())
+        return PRDashboardSnapshot(cells: cells, totalSize: totalSize, updatedAt: Date())
     }
 
-    @MainActor private func saveDashboard(_ snap: DashboardSnapshot) {
+    @MainActor private func saveDashboard(_ snap: PRDashboardSnapshot) {
         if let data = try? JSONEncoder().encode(snap) {
             try? data.write(to: files.dashboard, options: .atomic)
         }
     }
 
-    @MainActor private func loadDashboardIfAny() -> DashboardSnapshot? {
+    @MainActor private func loadDashboardIfAny() -> PRDashboardSnapshot? {
         if let data = try? Data(contentsOf: files.dashboard),
-           let d = try? JSONDecoder().decode(DashboardSnapshot.self, from: data) {
+           let d = try? JSONDecoder().decode(PRDashboardSnapshot.self, from: data) {
             return d
         }
         return nil
@@ -173,7 +173,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         }
 
         if let data = try? Data(contentsOf: files.maps),
-           let maps = try? JSONDecoder().decode(MapsSnapshot.self, from: data),
+           let maps = try? JSONDecoder().decode(PRMapsSnapshot.self, from: data),
            maps.bytesSchemaVersion == kBytesSchemaVersion {
             await MainActor.run {
                 screenshotPhotosMap.assets = maps.screenshot
@@ -209,7 +209,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         }
 
         if let d = try? Data(contentsOf: files.progress),
-           let p = try? JSONDecoder().decode(ProgressSnapshot.self, from: d),
+           let p = try? JSONDecoder().decode(PRProgressSnapshot.self, from: d),
            p.bytesSchemaVersion == kBytesSchemaVersion {
             self.progress = p
         } else {
@@ -607,7 +607,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
     // MARK: - 持久化
     @MainActor
     private func saveMapsAndProgress(forceAll: Bool = false) {
-        let snap = MapsSnapshot(
+        let snap = PRMapsSnapshot(
             screenshot: screenshotPhotosMap.assets,
             screenshotBytes: screenshotPhotosMap.totalBytes,
             live: livePhotosMap.assets,
@@ -651,9 +651,9 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         }
     }
 
-    private func ensureProgress() -> ProgressSnapshot {
+    private func ensureProgress() -> PRProgressSnapshot {
         if let p = progress { return p }
-        let p = ProgressSnapshot(
+        let p = PRProgressSnapshot(
             snapshotHash: "hash-\(UUID().uuidString)",
             lastA: -1,
             lastSimilar: -1,

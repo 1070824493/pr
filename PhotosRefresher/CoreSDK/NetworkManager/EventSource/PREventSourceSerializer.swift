@@ -8,7 +8,7 @@
 import Foundation
 import Alamofire
 
-public class EventSourceSerializer: DataStreamSerializer {
+public class PREventSourceSerializer: DataStreamSerializer {
     
     public static let doubleNewlineDelimiter = "\n\n".data(using: .utf8)!
     
@@ -20,9 +20,9 @@ public class EventSourceSerializer: DataStreamSerializer {
         self.delimiter = delimiter
     }
     
-    public func serialize(_ data: Data) throws -> [EventSourceMessage] {
+    public func serialize(_ data: Data) throws -> [PREventSourceMessage] {
         buffer.append(data)
-        return extractMessagesFromBuffer().compactMap(EventSourceMessage.init(parsing:))
+        return extractMessagesFromBuffer().compactMap(PREventSourceMessage.init(parsing:))
     }
 
     private func extractMessagesFromBuffer() -> [String] {

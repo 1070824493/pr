@@ -2,7 +2,7 @@
 //  TraceSubscribeOrderModel.swift
 //
 
-public struct TraceSubscribeOrderModel: Encodable {
+public struct PRQuerySubscriptionOrderModel: Encodable {
     let traceId: String
     let status: Int
     let failReason: String

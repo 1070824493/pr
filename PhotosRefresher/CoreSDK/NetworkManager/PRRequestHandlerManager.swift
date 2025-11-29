@@ -9,7 +9,7 @@ public typealias RetryDelayPolicy = (_ attempt: Int) -> TimeInterval
 
 public enum RetryPolicyFactory {
     /// 指数退避 + full jitter
-    public static func exponentialFullJitter(
+    public static func PRExponentialFullJitter(
         initialDelay: TimeInterval = 1.0,
         maxDelay: TimeInterval = 30.0,
         backoffFactor: Double = 2.0
@@ -22,7 +22,7 @@ public enum RetryPolicyFactory {
     }
     
     /// 指数退避（无 jitter）
-    public static func exponential(
+    public static func PRExponential(
         initialDelay: TimeInterval = 1.0,
         maxDelay: TimeInterval = 30.0,
         backoffFactor: Double = 2.0
@@ -40,35 +40,35 @@ public enum RetryPolicyFactory {
 }
 
 
-public struct BusinessEmptyParameter: CodableWithDefault {
-    public static var defaultValue: BusinessEmptyParameter {
-        return BusinessEmptyParameter()
+public struct PRBusinessEmptyParameter: CodableWithDefault {
+    public static var defaultValue: PRBusinessEmptyParameter {
+        return PRBusinessEmptyParameter()
     }
 }
 
-public struct BusinessEmptyResponse: CodableWithDefault {
-    public static var defaultValue: BusinessEmptyResponse {
-        return BusinessEmptyResponse()
+public struct PRBusinessEmptyResponse: CodableWithDefault {
+    public static var defaultValue: PRBusinessEmptyResponse {
+        return PRBusinessEmptyResponse()
     }
 }
 
-public protocol DynamicCommonParamsProvider {
+public protocol PRDynamicCommonParamsProvider {
     static func getDynamicCommonParams() -> [String: Any]
 }
 
-public class NetworkManager {
+public class PRRequestHandlerManager {
     
-    public static let shared = NetworkManager()
+    public static let shared = PRRequestHandlerManager()
     
     public let session: Session
-    public let commonParameterInterceptor: CommonParameterInterceptor
+    public let commonParameterInterceptor: PRCommonParameterInterceptor
     
     private init() {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 60
         configuration.timeoutIntervalForResource = 360
         
-        self.commonParameterInterceptor = CommonParameterInterceptor()
+        self.commonParameterInterceptor = PRCommonParameterInterceptor()
         self.session = Session(configuration: configuration, interceptor: commonParameterInterceptor)
     }
     
@@ -80,11 +80,11 @@ public class NetworkManager {
         commonParameterInterceptor.addCommonCookies(cookies)
     }
     
-    public func registerDynamicCommonParamsProvider(provider: DynamicCommonParamsProvider.Type) {
+    public func registerDynamicCommonParamsProvider(provider: PRDynamicCommonParamsProvider.Type) {
         commonParameterInterceptor.registerDynamicCommonParamsProvider(provider: provider)
     }
     
-    public func request<Input: Encodable>(
+    public func PRrequest<Input: Encodable>(
         url: String,
         method: HTTPMethod,
         parameters: Input? = nil,
@@ -92,24 +92,24 @@ public class NetworkManager {
         timeout: TimeInterval = 60,
         parameterEncoding: ParameterEncoding = URLEncoding.default,
         maxRetryCount: Int = 0,
-        retryPolicy: RetryDelayPolicy = RetryPolicyFactory.exponentialFullJitter()
+        retryPolicy: RetryDelayPolicy = RetryPolicyFactory.PRExponentialFullJitter()
     ) async throws {
-        let _: CommonResponse<BusinessEmptyResponse> = try await request(url: url, method: method, parameters: parameters, headers: headers, timeout: timeout, parameterEncoding: parameterEncoding, maxRetryCount: maxRetryCount, retryPolicy: retryPolicy)
+        let _: PRCommonResponse<PRBusinessEmptyResponse> = try await PRrequest(url: url, method: method, parameters: parameters, headers: headers, timeout: timeout, parameterEncoding: parameterEncoding, maxRetryCount: maxRetryCount, retryPolicy: retryPolicy)
     }
     
-    public func request<OutputData: DecodableWithDefault>(
+    public func PRrequest<OutputData: DecodableWithDefault>(
         url: String,
         method: HTTPMethod,
         headers: HTTPHeaders? = nil,
         timeout: TimeInterval = 60,
         parameterEncoding: ParameterEncoding = URLEncoding.default,
         maxRetryCount: Int = 0,
-        retryPolicy: RetryDelayPolicy = RetryPolicyFactory.exponentialFullJitter()
-    ) async throws -> CommonResponse<OutputData> {
-        return try await request(url: url, method: method, parameters: BusinessEmptyParameter(), headers: headers, timeout: timeout, parameterEncoding: parameterEncoding, maxRetryCount: maxRetryCount, retryPolicy: retryPolicy)
+        retryPolicy: RetryDelayPolicy = RetryPolicyFactory.PRExponentialFullJitter()
+    ) async throws -> PRCommonResponse<OutputData> {
+        return try await PRrequest(url: url, method: method, parameters: PRBusinessEmptyParameter(), headers: headers, timeout: timeout, parameterEncoding: parameterEncoding, maxRetryCount: maxRetryCount, retryPolicy: retryPolicy)
     }
     
-    public func request<Input: Encodable, OutputData: DecodableWithDefault>(
+    public func PRrequest<Input: Encodable, OutputData: DecodableWithDefault>(
         url: String,
         method: HTTPMethod,
         parameters: Input? = nil,
@@ -117,14 +117,14 @@ public class NetworkManager {
         timeout: TimeInterval = 60,
         parameterEncoding: ParameterEncoding = URLEncoding.default,
         maxRetryCount: Int = 0,
-        retryPolicy: RetryDelayPolicy = RetryPolicyFactory.exponentialFullJitter()
-    ) async throws -> CommonResponse<OutputData> {
+        retryPolicy: RetryDelayPolicy = RetryPolicyFactory.PRExponentialFullJitter()
+    ) async throws -> PRCommonResponse<OutputData> {
         var attempt = 0
         var lastError: Error?
 
         while attempt <= maxRetryCount {
             do {
-                let requestUrl = EnvManager.shared.createFullRequestUrl(url)
+                let requestUrl = PREnvironmentManager.shared.PRCreateFullRequestUrl(url)
                 var urlRequest = try URLRequest(url: requestUrl, method: method, headers: headers)
                 urlRequest.timeoutInterval = timeout
 
@@ -141,7 +141,7 @@ public class NetworkManager {
 
                 let response = await session
                     .request(urlRequest)
-                    .serializingDecodable(CommonResponse<OutputData>.self)
+                    .serializingDecodable(PRCommonResponse<OutputData>.self)
                     .response
 
                 if let httpResponse = response.response {
@@ -177,15 +177,15 @@ public class NetworkManager {
     }
 
     
-    public func get<Input: Encodable, OutputData: DecodableWithDefault>(
+    public func PRget<Input: Encodable, OutputData: DecodableWithDefault>(
         url: String,
         parameters: Input? = nil,
         headers: HTTPHeaders? = nil,
         timeout: TimeInterval = 60,
         maxRetryCount: Int = 0,
-        retryPolicy: RetryDelayPolicy = RetryPolicyFactory.exponentialFullJitter()
-    ) async throws -> CommonResponse<OutputData> {
-        return try await request(
+        retryPolicy: RetryDelayPolicy = RetryPolicyFactory.PRExponentialFullJitter()
+    ) async throws -> PRCommonResponse<OutputData> {
+        return try await PRrequest(
             url: url,
             method: .get,
             parameters: parameters,
@@ -197,16 +197,16 @@ public class NetworkManager {
         )
     }
     
-    public func post<Input: Encodable, OutputData: DecodableWithDefault>(
+    public func PRpost<Input: Encodable, OutputData: DecodableWithDefault>(
         url: String,
         parameters: Input,
         headers: HTTPHeaders? = nil,
         timeout: TimeInterval = 60,
         parameterEncoding: ParameterEncoding = URLEncoding.default,
         maxRetryCount: Int = 0,
-        retryPolicy: RetryDelayPolicy = RetryPolicyFactory.exponentialFullJitter()
-    ) async throws -> CommonResponse<OutputData> {
-        return try await request(
+        retryPolicy: RetryDelayPolicy = RetryPolicyFactory.PRExponentialFullJitter()
+    ) async throws -> PRCommonResponse<OutputData> {
+        return try await PRrequest(
             url: url,
             method: .post,
             parameters: parameters,
@@ -218,7 +218,7 @@ public class NetworkManager {
         )
     }
     
-    public func requestAny(
+    public func PRrequestAny(
         url: String,
         method: HTTPMethod,
         parameters: [String: Any]? = nil,
@@ -226,14 +226,14 @@ public class NetworkManager {
         timeout: TimeInterval = 60,
         parameterEncoding: ParameterEncoding = URLEncoding.default,
         maxRetryCount: Int = 3,
-        retryPolicy: RetryDelayPolicy = RetryPolicyFactory.exponentialFullJitter()
+        retryPolicy: RetryDelayPolicy = RetryPolicyFactory.PRExponentialFullJitter()
     ) async throws -> [String: Any] {
         var attempt = 0
         var lastError: Error?
 
         while attempt <= maxRetryCount {
             do {
-                let requestUrl = EnvManager.shared.createFullRequestUrl(url)
+                let requestUrl = PREnvironmentManager.shared.PRCreateFullRequestUrl(url)
                 var urlRequest = try URLRequest(url: requestUrl, method: method, headers: headers)
                 urlRequest.timeoutInterval = timeout
 

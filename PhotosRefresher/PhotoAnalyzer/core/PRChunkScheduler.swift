@@ -13,11 +13,11 @@ import Photos
 /// - 并发: `actor` 保证内部状态串行化
 actor PRChunkScheduler {
     let chunkSize: Int
-    private let files: CacheFiles
+    private let files: PRCacheFiles
     private var allIds: [String] = []
     private(set) var snapshotHash: String = ""
 
-    init(chunkSize: Int, files: CacheFiles) {
+    init(chunkSize: Int, files: PRCacheFiles) {
         self.chunkSize = chunkSize
         self.files = files
     }
@@ -32,12 +32,12 @@ actor PRChunkScheduler {
         return (allIds.count + chunkSize - 1) / chunkSize
     }
 
-    func materializeChunk(index: Int) -> ChunkSnapshot? {
+    func materializeChunk(index: Int) -> PRChunkSnapshot? {
         guard index >= 0, index < chunkCount() else { return nil }
         let u = files.chunk(index)
 
         if let data = try? Data(contentsOf: u),
-           let s = try? JSONDecoder().decode(ChunkSnapshot.self, from: data) {
+           let s = try? JSONDecoder().decode(PRChunkSnapshot.self, from: data) {
             return s
         }
 
@@ -61,7 +61,7 @@ actor PRChunkScheduler {
             entries.append(.init(id: id, bytes: sizeMap[id] ?? 0, date: dateMap[id] ?? 0))
         }
 
-        let snap = ChunkSnapshot(index: index, entries: entries)
+        let snap = PRChunkSnapshot(index: index, entries: entries)
         if let data = try? JSONEncoder().encode(snap) { try? data.write(to: u, options: .atomic) }
         return snap
     }

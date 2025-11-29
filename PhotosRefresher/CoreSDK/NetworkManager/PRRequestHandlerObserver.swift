@@ -7,9 +7,9 @@
 import CoreTelephony
 import Alamofire
 
-open class NetworkObserver: ObservableObject {
+open class PRRequestHandlerObserver: ObservableObject {
     
-    public static let shared = NetworkObserver()
+    public static let shared = PRRequestHandlerObserver()
     
     private init() {}
 

@@ -6,13 +6,13 @@ import StoreKit
 
 
 
-public enum PurchaseType {
+public enum PRSubscriptionType {
     case subscription
     case consumables
 }
 
-public struct BusinessPurchaseError: Error {
-    public let code: BusinessPurchaseError.ErrorCode
+public struct PRSubscriptionError: Error {
+    public let code: PRSubscriptionError.ErrorCode
     public let underlyingError: Error?
     
     public enum ErrorCode: Int {
@@ -64,19 +64,19 @@ public struct BusinessPurchaseError: Error {
     
 }
 
-public enum PurchaseResult {
+public enum PaymentResult {
     case success(Transaction)
-    case failure(BusinessPurchaseError)
+    case failure(PRSubscriptionError)
 }
 
-public class PurchaseManager {
-    public static let shared = PurchaseManager()
+public class PROrderManager {
+    public static let shared = PROrderManager()
     
-    private let payHelper = PayHelper.shared
+    private let payHelper = PRSubscriptionHelper.shared
     private var initialized = false
     private var isPurchasing = false
-    private let transactionManager = TransactionManager()
-    private var transactionCallback: ((PurchaseResult) -> Void)?
+    private let transactionManager = PRPaymentProcessManager()
+    private var transactionCallback: ((PaymentResult) -> Void)?
     
     private var createSubscriptionOrderApi: String = ""     // 订阅下单
     private var createConsumablesOrderApi: String = ""      // 单包下单
@@ -107,60 +107,60 @@ public class PurchaseManager {
     }
     
     // 注册全局回调
-    public func registerCallback(_ callback: @escaping (PurchaseResult) -> Void) {
+    public func registerCallback(_ callback: @escaping (PaymentResult) -> Void) {
         transactionCallback = callback
     }
     
-    public func purchaseConsumables(
+    public func PRpayConsumables(
         skuId: Int,
         paySource: Int,
         traceId: String,
         extParams: [String: Any]? = nil,
         onBeforePurchase: ((Product) -> Void)? = nil
-    ) async -> PurchaseResult {
-        let result = await purchaseSubscriptionInternal(purchaseType: .consumables, skuId: skuId, paySource: paySource, traceId: traceId, ignorePurchased: true, extParams: extParams, onBeforePurchase: onBeforePurchase)
-        tracePurchaseResult(traceId: traceId, result: result)
+    ) async -> PaymentResult {
+        let result = await PRpaySubscriptionInternal(purchaseType: .consumables, skuId: skuId, paySource: paySource, traceId: traceId, ignorePurchased: true, extParams: extParams, onBeforePurchase: onBeforePurchase)
+        PRTracePayResult(traceId: traceId, result: result)
         return result
     }
     
-    public func purchaseSubscription(
+    public func PRpaySubscription(
         skuId: Int,
         paySource: Int,
         traceId: String,
         ignorePurchased: Bool = false,
         extParams: [String: Any]? = nil,
         onBeforePurchase: ((Product) -> Void)? = nil
-    ) async -> PurchaseResult {
-        let result = await purchaseSubscriptionInternal(purchaseType: .subscription, skuId: skuId, paySource: paySource, traceId: traceId, ignorePurchased: ignorePurchased, extParams: extParams, onBeforePurchase: onBeforePurchase)
-        tracePurchaseResult(traceId: traceId, result: result)
+    ) async -> PaymentResult {
+        let result = await PRpaySubscriptionInternal(purchaseType: .subscription, skuId: skuId, paySource: paySource, traceId: traceId, ignorePurchased: ignorePurchased, extParams: extParams, onBeforePurchase: onBeforePurchase)
+        PRTracePayResult(traceId: traceId, result: result)
         return result
     }
     
-    private func purchaseSubscriptionInternal(
-        purchaseType: PurchaseType,
+    private func PRpaySubscriptionInternal(
+        purchaseType: PRSubscriptionType,
         skuId: Int,
         paySource: Int,
         traceId: String,
         ignorePurchased: Bool = false,
         extParams: [String: Any]? = nil,
         onBeforePurchase: ((Product) -> Void)? = nil
-    ) async -> PurchaseResult {
+    ) async -> PaymentResult {
         guard initialized else {
-            return .failure(BusinessPurchaseError(code: .notInit, underlyingError: nil))
+            return .failure(PRSubscriptionError(code: .notInit, underlyingError: nil))
         }
         
         guard !isPurchasing else {
-            return .failure(BusinessPurchaseError(code: .alreadyInProgress, underlyingError: nil))
+            return .failure(PRSubscriptionError(code: .alreadyInProgress, underlyingError: nil))
         }
         
         guard payHelper.canMakePayments() else {
-            return .failure(BusinessPurchaseError(code: .cannotMakePayments, underlyingError: nil))
+            return .failure(PRSubscriptionError(code: .cannotMakePayments, underlyingError: nil))
         }
         
         if !ignorePurchased {
             let isPurchased = await transactionManager.isPurchased()
             guard !isPurchased else {
-                return .failure(BusinessPurchaseError(code: .isPurchased, underlyingError: nil))
+                return .failure(PRSubscriptionError(code: .isPurchased, underlyingError: nil))
             }
         }
         
@@ -168,10 +168,10 @@ public class PurchaseManager {
         defer { isPurchasing = false }
         
         do {
-            let orderResponse = try await fetchOrderId(purchaseType: purchaseType, skuId: skuId, paySource: paySource, traceId: traceId, extParams: extParams)
+            let orderResponse = try await PRFetchOrderId(purchaseType: purchaseType, skuId: skuId, paySource: paySource, traceId: traceId, extParams: extParams)
             let orderId = orderResponse.appAccountToken
             let productId = orderResponse.productId
-            let purchaseResult = try await payHelper.purchaseProduct(with: productId, appAccountToken: UUID(uuidString: orderId)!) { product in
+            let purchaseResult = try await payHelper.PRTransactionProduct(with: productId, appAccountToken: UUID(uuidString: orderId)!) { product in
                 let currencyCode = product.priceFormatStyle.currencyCode
                 
                 var logInfo = [String: Any]()
@@ -192,31 +192,31 @@ public class PurchaseManager {
                 switch verificationResult {
                 case .verified(let transaction):
                     let jwsRepresentation = verificationResult.jwsRepresentation
-                    return await handleSuccessfulPayment(transaction: transaction, jwsRepresentation: jwsRepresentation, orderId: orderId, traceId: traceId)
+                    return await PRHandleSuccessfulPayment(transaction: transaction, jwsRepresentation: jwsRepresentation, orderId: orderId, traceId: traceId)
                 case .unverified(_, let error):
-                    return .failure(BusinessPurchaseError(code: .transactionNotVerified, underlyingError: error))
+                    return .failure(PRSubscriptionError(code: .transactionNotVerified, underlyingError: error))
                 }
             case .userCancelled:
-                return .failure(BusinessPurchaseError(code: .userCancelled, underlyingError: nil))
+                return .failure(PRSubscriptionError(code: .userCancelled, underlyingError: nil))
             case .pending:
-                return .failure(BusinessPurchaseError(code: .purchasePending, underlyingError: nil))
+                return .failure(PRSubscriptionError(code: .purchasePending, underlyingError: nil))
             @unknown default:
-                return .failure(BusinessPurchaseError(code: .unknown, underlyingError: nil))
+                return .failure(PRSubscriptionError(code: .unknown, underlyingError: nil))
             }
         } catch {
-            if error is BusinessPurchaseError {
-                return .failure(error as! BusinessPurchaseError)
+            if error is PRSubscriptionError {
+                return .failure(error as! PRSubscriptionError)
             } else if error is Product.PurchaseError {
-                return .failure(BusinessPurchaseError(code: .purchaseFailed, underlyingError: error))
+                return .failure(PRSubscriptionError(code: .purchaseFailed, underlyingError: error))
             } else if error is StoreKitError {
-                return .failure(BusinessPurchaseError(code: .purchaseFailed, underlyingError: error))
+                return .failure(PRSubscriptionError(code: .purchaseFailed, underlyingError: error))
             } else {
-                return .failure(BusinessPurchaseError(code: .unknown, underlyingError: error))
+                return .failure(PRSubscriptionError(code: .unknown, underlyingError: error))
             }
         }
     }
     
-    private func fetchOrderId(purchaseType: PurchaseType, skuId: Int, paySource: Int, traceId: String, extParams: [String: Any]? = nil) async throws -> CreateSubscribeOrderResponse {
+    private func PRFetchOrderId(purchaseType: PRSubscriptionType, skuId: Int, paySource: Int, traceId: String, extParams: [String: Any]? = nil) async throws -> PRSubmitSubscriptionOrderResponse {
         let inCreateOrderApi: String
         let payChannel: Int
         switch purchaseType {
@@ -229,33 +229,33 @@ public class PurchaseManager {
         }
         var inExtParams = "{}"
         if let extParams = extParams {
-            inExtParams = convertToJson(extParams)
+            inExtParams = PRConvertToJson(extParams)
         }
-        let parameters = CreateSubscribeOrderRequest(
+        let parameters = PRSubmitSubscriptionOrderRequest(
             skuId: skuId, payChannel: payChannel, paySource: paySource, traceId: traceId, ext: inExtParams
         )
         do {
-            let response: CommonResponse<CreateSubscribeOrderResponse> = try await NetworkManager.shared.request(url: inCreateOrderApi, method: .post, parameters: parameters)
+            let response: PRCommonResponse<PRSubmitSubscriptionOrderResponse> = try await PRRequestHandlerManager.shared.PRrequest(url: inCreateOrderApi, method: .post, parameters: parameters)
             if response.errNo != 0 {
                 let error = NSError(domain: "PurchaseManager", code: response.errNo, userInfo: [NSLocalizedDescriptionKey: response.errMsg])
-                throw BusinessPurchaseError(code: .createOrderFailed, underlyingError: error)
+                throw PRSubscriptionError(code: .createOrderFailed, underlyingError: error)
             }
             
             return response.data
         } catch {
-            throw BusinessPurchaseError(code: .createOrderFailed, underlyingError: error)
+            throw PRSubscriptionError(code: .createOrderFailed, underlyingError: error)
         }
     }
     
-    private func handleSuccessfulPayment(transaction: Transaction, jwsRepresentation: String, orderId: String, traceId: String) async -> PurchaseResult {
+    private func PRHandleSuccessfulPayment(transaction: Transaction, jwsRepresentation: String, orderId: String, traceId: String) async -> PaymentResult {
         let transactionId = String(transaction.id)
-        let isProcessed = await transactionManager.isTransactionProcessed(transactionId)
-        let isBeingProcessed = await transactionManager.isTransactionBeingProcessed(transactionId)
+        let isProcessed = await transactionManager.isPaymentProcessed(transactionId)
+        let isBeingProcessed = await transactionManager.isPaymentBeingProcessed(transactionId)
         if isProcessed || isBeingProcessed {
-            return .failure(BusinessPurchaseError(code: .transactionAlreadyProcessed, underlyingError: nil))
+            return .failure(PRSubscriptionError(code: .transactionAlreadyProcessed, underlyingError: nil))
         }
         
-        await transactionManager.recordTransactionAsProcessing(transactionId)
+        await transactionManager.recordPaymentAsProcessing(transactionId)
         
         var underlyingError: Error? = nil
         var reportSucceed = false
@@ -264,15 +264,15 @@ public class PurchaseManager {
         var retryCount = 0
         while retryCount <= maxRetries {
             do {
-                reportSucceed = try await sendOrderToServer(transaction: transaction, jwsRepresentation: jwsRepresentation, orderId: orderId, traceId: traceId)
+                reportSucceed = try await PRSendOrderToServer(transaction: transaction, jwsRepresentation: jwsRepresentation, orderId: orderId, traceId: traceId)
             } catch {
                 underlyingError = error
             }
             
             if reportSucceed {
                 await transaction.finish()
-                await transactionManager.recordTransactionAsProcessed(transactionId)
-                await transactionManager.removeTransactionFromProcessing(transactionId)
+                await transactionManager.recordPaymentAsProcessed(transactionId)
+                await transactionManager.removePaymentFromProcessing(transactionId)
                 return .success(transaction)
             } else {
                 retryCount += 1
@@ -282,15 +282,15 @@ public class PurchaseManager {
             }
         }
         
-        await transactionManager.removeTransactionFromProcessing(transactionId)
+        await transactionManager.removePaymentFromProcessing(transactionId)
         Task {
-            await startScheduledRetry(transaction: transaction, jwsRepresentation: jwsRepresentation, orderId: orderId, traceId: traceId)
+            await PRStartScheduledRetry(transaction: transaction, jwsRepresentation: jwsRepresentation, orderId: orderId, traceId: traceId)
         }
-        return .failure(BusinessPurchaseError(code: .reportOrderFailed, underlyingError: underlyingError))
+        return .failure(PRSubscriptionError(code: .reportOrderFailed, underlyingError: underlyingError))
     }
     
-    private func sendOrderToServer(transaction: Transaction, jwsRepresentation: String, orderId: String, traceId: String) async throws -> Bool {
-        let parameters = ReportSubscribeOrderRequest(
+    private func PRSendOrderToServer(transaction: Transaction, jwsRepresentation: String, orderId: String, traceId: String) async throws -> Bool {
+        let parameters = PRNotifySubscriptionOrderRequest(
             receipt: "",
             payload: jwsRepresentation,
             transId: String(transaction.id),
@@ -299,7 +299,7 @@ public class PurchaseManager {
             originalTransId: String(transaction.originalID),
             ext: "{}"
         )
-        let response: CommonResponse<ReportSubscribeOrderResponse> = try await NetworkManager.shared.request(url: reportOrderApi, method: .post, parameters: parameters)
+        let response: PRCommonResponse<PRNotifySubscriptionOrderResponse> = try await PRRequestHandlerManager.shared.PRrequest(url: reportOrderApi, method: .post, parameters: parameters)
         if response.errNo != 0 {
             let error = NSError(domain: "PurchaseManager", code: response.errNo, userInfo: [NSLocalizedDescriptionKey: "errNo=\(response.errNo)&errMsg=\(response.errMsg)"])
             throw error
@@ -314,7 +314,7 @@ public class PurchaseManager {
         return true
     }
     
-    private func startScheduledRetry(transaction: Transaction, jwsRepresentation: String, orderId: String, traceId: String) async {
+    private func PRStartScheduledRetry(transaction: Transaction, jwsRepresentation: String, orderId: String, traceId: String) async {
         var underlyingError: Error? = nil
         var reportSucceed = false
         
@@ -326,15 +326,15 @@ public class PurchaseManager {
             try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
             
             do {
-                reportSucceed = try await sendOrderToServer(transaction: transaction, jwsRepresentation: jwsRepresentation, orderId: orderId, traceId: traceId)
+                reportSucceed = try await PRSendOrderToServer(transaction: transaction, jwsRepresentation: jwsRepresentation, orderId: orderId, traceId: traceId)
             } catch {
                 underlyingError = error
             }
             
             if reportSucceed {
                 await transaction.finish()
-                await self.transactionManager.recordTransactionAsProcessed(transactionId)
-                await self.transactionManager.removeTransactionFromProcessing(transactionId)
+                await self.transactionManager.recordPaymentAsProcessed(transactionId)
+                await self.transactionManager.removePaymentFromProcessing(transactionId)
                 self.transactionCallback?(.success(transaction))
                 return
             }
@@ -342,18 +342,18 @@ public class PurchaseManager {
         }
         
         // 处理在最大重试次数后仍未成功的场景，可以选择执行一些报警或其他业务逻辑
-        self.transactionCallback?(.failure(BusinessPurchaseError(code: .reportOrderFailedAfterRetry, underlyingError: underlyingError)))
+        self.transactionCallback?(.failure(PRSubscriptionError(code: .reportOrderFailedAfterRetry, underlyingError: underlyingError)))
     }
     
     // 监听交易状态更新
-    public func listenForTransactionUpdates() {
+    public func PRListenForTransactionUpdates() {
         Task.detached {
             for await update in Transaction.updates {
                 switch update {
                 case .verified(let transaction):
                     let transactionId = String(transaction.id)
-                    let isProcessed = await self.transactionManager.isTransactionProcessed(transactionId)
-                    let isBeingProcessed = await self.transactionManager.isTransactionBeingProcessed(transactionId)
+                    let isProcessed = await self.transactionManager.isPaymentProcessed(transactionId)
+                    let isBeingProcessed = await self.transactionManager.isPaymentBeingProcessed(transactionId)
                     if isProcessed || isBeingProcessed {
                         continue
                     }
@@ -361,10 +361,10 @@ public class PurchaseManager {
                     let orderId = transaction.appAccountToken?.uuidString ?? ""
                     let jwsRepresentation = update.jwsRepresentation
                     let traceId = "\(CommonAICuid.sharedInstance().getDeviceADID())_\(Date.currentTimestamp())"
-                    let result = await self.handleSuccessfulPayment(transaction: transaction, jwsRepresentation: jwsRepresentation, orderId: orderId, traceId: traceId)
+                    let result = await self.PRHandleSuccessfulPayment(transaction: transaction, jwsRepresentation: jwsRepresentation, orderId: orderId, traceId: traceId)
                     self.transactionCallback?(result)
                 case .unverified(_, let verificationError):
-                    self.transactionCallback?(.failure(BusinessPurchaseError(code: .transactionNotVerified, underlyingError: verificationError)))
+                    self.transactionCallback?(.failure(PRSubscriptionError(code: .transactionNotVerified, underlyingError: verificationError)))
                 }
             }
         }
@@ -372,7 +372,7 @@ public class PurchaseManager {
     
     // 监听商店推广购买
     @available(iOS 16.4, *)
-    public func listenForPurchaseIntent(_ callback: @escaping (PurchaseIntent) -> Void) {
+    public func PRListenForPurchaseIntent(_ callback: @escaping (PurchaseIntent) -> Void) {
         Task.detached {
             for await purchaseIntent in PurchaseIntent.intents {
                 callback(purchaseIntent)
@@ -382,13 +382,13 @@ public class PurchaseManager {
     
     public func restore() async -> Bool {
         var succeed = false
-        await payHelper.syncPurchases()
-        let unfinishedTransactionList = await payHelper.queryUnfinishedTransaction()
+        await payHelper.PRSyncTransaction()
+        let unfinishedTransactionList = await payHelper.PRQueryUnfinishedTransaction()
         for item in unfinishedTransactionList {
             let (transaction, jwsRepresentation) = item
             let orderId = transaction.appAccountToken?.uuidString ?? ""
             let traceId = "\(CommonAICuid.sharedInstance().getDeviceADID())_\(Date.currentTimestamp())"
-            let result = await self.handleSuccessfulPayment(transaction: transaction, jwsRepresentation: jwsRepresentation, orderId: orderId, traceId: traceId)
+            let result = await self.PRHandleSuccessfulPayment(transaction: transaction, jwsRepresentation: jwsRepresentation, orderId: orderId, traceId: traceId)
             switch result {
             case .success(_):
                 succeed = true
@@ -399,7 +399,7 @@ public class PurchaseManager {
         return succeed
     }
     
-    private func tracePurchaseResult(traceId: String, result: PurchaseResult) {
+    private func PRTracePayResult(traceId: String, result: PaymentResult) {
         Task {
             var status = 0
             var failReason = ""
@@ -411,14 +411,14 @@ public class PurchaseManager {
                 status = 2
                 failReason = "code=\(error.errorCode)#msg=\(error.errorMsg)"
             }
-            let traceSubscribeOrderModel = TraceSubscribeOrderModel(
+            let traceSubscribeOrderModel = PRQuerySubscriptionOrderModel(
                 traceId: traceId, status: status, failReason: failReason
             )
-            try? await NetworkManager.shared.request(url: traceOrderApi, method: .post, parameters: traceSubscribeOrderModel)
+            try? await PRRequestHandlerManager.shared.PRrequest(url: traceOrderApi, method: .post, parameters: traceSubscribeOrderModel)
         }
     }
     
-    private func convertToJson(_ object: Any, opts: JSONSerialization.WritingOptions = []) -> String {
+    private func PRConvertToJson(_ object: Any, opts: JSONSerialization.WritingOptions = []) -> String {
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: object, options: opts)
             if let jsonString = String(data: jsonData, encoding: .utf8) {

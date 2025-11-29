@@ -10,7 +10,7 @@ import Alamofire
 
 extension Session {
     
-    public func eventSourceRequest<Input: Encodable>(
+    public func PREventSourceRequest<Input: Encodable>(
         _ convertible: URLConvertible,
         method: HTTPMethod = .get,
         parameters: Input? = nil,
@@ -33,9 +33,9 @@ extension Session {
 
 extension DataStreamRequest {
     
-    public struct EventSource {
+    public struct PREventSource {
         
-        public let event: EventSourceEvent
+        public let event: PREventSourceEvent
         
         public let token: CancellationToken
 
@@ -45,23 +45,23 @@ extension DataStreamRequest {
         
     }
     
-    public enum EventSourceEvent {
+    public enum PREventSourceEvent {
         
-        case message(EventSourceMessage)
+        case message(PREventSourceMessage)
         
         case complete(Completion)
         
     }
 
-    @discardableResult public func responseEventSource(using serializer: EventSourceSerializer = EventSourceSerializer(), on queue: DispatchQueue = .main, handler: @escaping (EventSource) -> Void) -> DataStreamRequest {
+    @discardableResult public func responseEventSource(using serializer: PREventSourceSerializer = PREventSourceSerializer(), on queue: DispatchQueue = .main, handler: @escaping (PREventSource) -> Void) -> DataStreamRequest {
         return responseStream(using: serializer, on: queue) { stream in
             switch stream.event {
             case .stream(let result):
                 for message in try result.get() {
-                    handler(EventSource(event: .message(message), token: stream.token))
+                    handler(PREventSource(event: .message(message), token: stream.token))
                 }
             case .complete(let completion):
-                handler(EventSource(event: .complete(completion), token: stream.token))
+                handler(PREventSource(event: .complete(completion), token: stream.token))
             }
         }
     }
@@ -70,9 +70,9 @@ extension DataStreamRequest {
 
 extension DataStreamRequest {
     
-    public struct DecodableEventSource<T: Decodable> {
+    public struct PRDecodableEventSource<T: Decodable> {
         
-        public let event: DecodableEventSourceEvent<T>
+        public let event: PRDecodableEventSourceEvent<T>
         
         public let token: CancellationToken
 
@@ -82,23 +82,23 @@ extension DataStreamRequest {
         
     }
     
-    public enum DecodableEventSourceEvent<T: Decodable> {
+    public enum PRDecodableEventSourceEvent<T: Decodable> {
         
-        case message(DecodableEventSourceMessage<T>)
+        case message(PRDecodableEventSourceMessage<T>)
         
         case complete(Completion)
         
     }
 
-    @discardableResult public func responseDecodableEventSource<T: Decodable>(using serializer: DecodableEventSourceSerializer<T> = DecodableEventSourceSerializer(), on queue: DispatchQueue = .main, handler: @escaping (DecodableEventSource<T>) -> Void) -> DataStreamRequest {
+    @discardableResult public func responseDecodableEventSource<T: Decodable>(using serializer: PRDecodableEventSourceSerializer<T> = PRDecodableEventSourceSerializer(), on queue: DispatchQueue = .main, handler: @escaping (PRDecodableEventSource<T>) -> Void) -> DataStreamRequest {
         return responseStream(using: serializer, on: queue) { stream in
             switch stream.event {
             case .stream(let result):
                 for message in try result.get() {
-                    handler(DecodableEventSource(event: .message(message), token: stream.token))
+                    handler(PRDecodableEventSource(event: .message(message), token: stream.token))
                 }
             case .complete(let completion):
-                handler(DecodableEventSource(event: .complete(completion), token: stream.token))
+                handler(PRDecodableEventSource(event: .complete(completion), token: stream.token))
             }
         }
     }

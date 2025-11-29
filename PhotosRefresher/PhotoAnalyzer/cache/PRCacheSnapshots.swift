@@ -10,7 +10,7 @@ import Foundation
 let kBytesSchemaVersion: Int = 1
 let kPersistEveryN: Int = 3
 
-public struct DashboardCell: Codable {
+public struct PRDashboardCell: Codable {
     public var category: PhotoCategory
     public var bytes: Int64
     public var repID: [String]
@@ -24,28 +24,28 @@ public struct DashboardCell: Codable {
     }
 }
 
-public struct DashboardSnapshot: Codable {
-    public var cells: [DashboardCell]
+public struct PRDashboardSnapshot: Codable {
+    public var cells: [PRDashboardCell]
     public var totalSize: Int64
     public var updatedAt: Date
 
-    public init(cells: [DashboardCell], totalSize: Int64, updatedAt: Date) {
+    public init(cells: [PRDashboardCell], totalSize: Int64, updatedAt: Date) {
         self.cells = cells
         self.totalSize = totalSize
         self.updatedAt = updatedAt
     }
 }
 
-extension CacheFiles {
+extension PRCacheFiles {
     var dashboard: URL { dir.appendingPathComponent("dashboard.json") }
 }
 
-struct ChunkSnapshot: Codable {
+struct PRChunkSnapshot: Codable {
     let index: Int
     let entries: [PhotoAssetModel]
 }
 
-struct ProgressSnapshot: Codable {
+struct PRProgressSnapshot: Codable {
     var snapshotHash: String
     var lastA: Int
     var lastSimilar: Int
@@ -57,7 +57,7 @@ struct ProgressSnapshot: Codable {
     var updatedAt: Date
 }
 
-struct MapsSnapshot: Codable {
+struct PRMapsSnapshot: Codable {
     var screenshot: [PhotoAssetModel]; var screenshotBytes: Int64
     var live: [PhotoAssetModel];       var liveBytes: Int64
     var allvideo: [PhotoAssetModel];   var allvideoBytes: Int64
@@ -77,7 +77,7 @@ struct MapsSnapshot: Codable {
     var updatedAt: Date
 }
 
-struct CacheFiles {
+struct PRCacheFiles {
     let dir: URL
     var progress: URL { dir.appendingPathComponent("progress.json") }
     var maps: URL { dir.appendingPathComponent("maps.json") }

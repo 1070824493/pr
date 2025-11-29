@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct DecodableEventSourceMessage<T: Decodable> {
+public struct PRDecodableEventSourceMessage<T: Decodable> {
     
     public var event: String?
     public var id: String?

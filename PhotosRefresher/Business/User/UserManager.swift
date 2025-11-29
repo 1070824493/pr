@@ -49,7 +49,7 @@ class UserManager: ObservableObject {
     
     func refreshUserInfo() async -> Bool {
         do {
-            let res: CommonResponse<UserData> = try await NetworkManager.shared.request(url: ApiConstants.photosrefresher_user_info, method: .get)
+            let res: PRCommonResponse<UserData> = try await PRRequestHandlerManager.shared.PRrequest(url: ApiConstants.photosrefresher_user_info, method: .get)
             if !res.succeed() {
                 return false
             }

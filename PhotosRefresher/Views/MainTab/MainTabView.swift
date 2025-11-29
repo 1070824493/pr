@@ -10,7 +10,7 @@ import SwiftUIIntrospect
 
 struct MainTabView: View {
     @EnvironmentObject private var uiState: UIState
-    @EnvironmentObject private var networkObserver: NetworkObserver
+    @EnvironmentObject private var networkObserver: PRRequestHandlerObserver
     @EnvironmentObject private var appUserDefaults: AppUserPreferences
 
     var showSubscriptionView: Bool = true

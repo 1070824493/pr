@@ -13,71 +13,71 @@ public enum TransferState<T> {
     case failed(Error)           // 传输失败，包含错误信息
 }
 
-public extension NetworkManager {
+public extension PRRequestHandlerManager {
     
     // 上传单个文件（带表单参数）
-    func uploadFile<Output: Decodable>(
+    func PRUploadFile<Output: Decodable>(
         to url: String,
         file: (url: URL, parameterName: String),
         parameters: [String: Any]? = nil,
         headers: HTTPHeaders? = nil,
         responseType: Output.Type
-    ) -> AsyncStream<TransferState<CommonResponse<Output>>> {
-        return upload(multipartFormDataBlock: { multipartFormData in
+    ) -> AsyncStream<TransferState<PRCommonResponse<Output>>> {
+        return PRUpload(multipartFormDataBlock: { multipartFormData in
             multipartFormData.append(file.url, withName: file.parameterName)
         }, to: url, parameters: parameters, headers: headers, responseType: responseType)
     }
     
-    func uploadFile<Output: Decodable>(
+    func PRUploadFile<Output: Decodable>(
         to url: String,
         file: (data: Data, parameterName: String, fileName: String, mimeType: String?),
         parameters: [String: Any]? = nil,
         headers: HTTPHeaders? = nil,
         responseType: Output.Type
-    ) -> AsyncStream<TransferState<CommonResponse<Output>>> {
-        return upload(multipartFormDataBlock: { multipartFormData in
+    ) -> AsyncStream<TransferState<PRCommonResponse<Output>>> {
+        return PRUpload(multipartFormDataBlock: { multipartFormData in
             multipartFormData.append(file.data, withName: file.parameterName, fileName: file.fileName, mimeType: file.mimeType)
         }, to: url, parameters: parameters, headers: headers, responseType: responseType)
     }
     
     // 上传多个文件（带表单参数）
-    func uploadMultiFiles<Output: Decodable>(
+    func PRUploadMultiFiles<Output: Decodable>(
         to url: String,
         files: [(url: URL, parameterName: String)],
         parameters: [String: Any]? = nil,
         headers: HTTPHeaders? = nil,
         responseType: Output.Type
-    ) -> AsyncStream<TransferState<CommonResponse<Output>>> {
-        return upload(multipartFormDataBlock: { multipartFormData in
+    ) -> AsyncStream<TransferState<PRCommonResponse<Output>>> {
+        return PRUpload(multipartFormDataBlock: { multipartFormData in
             for file in files {
                 multipartFormData.append(file.url, withName: file.parameterName)
             }
         }, to: url, parameters: parameters, headers: headers, responseType: responseType)
     }
     
-    func uploadMultiFiles<Output: Decodable>(
+    func PRUploadMultiFiles<Output: Decodable>(
         to url: String,
         files: [(data: Data, parameterName: String, fileName: String, mimeType: String?)],
         parameters: [String: Any]? = nil,
         headers: HTTPHeaders? = nil,
         responseType: Output.Type
-    ) -> AsyncStream<TransferState<CommonResponse<Output>>> {
-        return upload(multipartFormDataBlock: { multipartFormData in
+    ) -> AsyncStream<TransferState<PRCommonResponse<Output>>> {
+        return PRUpload(multipartFormDataBlock: { multipartFormData in
             for file in files {
                 multipartFormData.append(file.data, withName: file.parameterName, fileName: file.fileName, mimeType: file.mimeType)
             }
         }, to: url, parameters: parameters, headers: headers, responseType: responseType)
     }
     
-    private func upload<Output: Decodable>(
+    private func PRUpload<Output: Decodable>(
         multipartFormDataBlock: @escaping (MultipartFormData) -> Void,
         to url: String,
         parameters: [String: Any]? = nil,
         headers: HTTPHeaders? = nil,
         responseType: Output.Type
-    ) -> AsyncStream<TransferState<CommonResponse<Output>>> {
+    ) -> AsyncStream<TransferState<PRCommonResponse<Output>>> {
         return AsyncStream { continuation in
-            let requestUrl = EnvManager.shared.createFullRequestUrl(url)
+            let requestUrl = PREnvironmentManager.shared.PRCreateFullRequestUrl(url)
             let uploadRequest = session.upload(multipartFormData: { multipartFormData in
                 multipartFormDataBlock(multipartFormData)
                 
@@ -94,8 +94,8 @@ public extension NetworkManager {
                 }
                 
                 addParameters["_t_"] = String(Int(Date().timeIntervalSince1970))
-                let randomKey = NetworkSignUtils.getRandomKey()
-                let sign = NetworkSignUtils.signVerify(signParam: addParameters, randomKey: randomKey)
+                let randomKey = PRRequestHandlerSignUtils.getRandomKey()
+                let sign = PRRequestHandlerSignUtils.signVerify(signParam: addParameters, randomKey: randomKey)
                 addParameters["sign"] = sign
                 
                 for (key, value) in addParameters {
@@ -109,7 +109,7 @@ public extension NetworkManager {
                 continuation.yield(.inProgress(progress.fractionCompleted))
             }
             
-            uploadRequest.responseDecodable(of: CommonResponse<Output>.self) { (response: DataResponse<CommonResponse<Output>, AFError>) in
+            uploadRequest.responseDecodable(of: PRCommonResponse<Output>.self) { (response: DataResponse<PRCommonResponse<Output>, AFError>) in
                 switch response.result {
                 case .success(let model):
                     continuation.yield(.completed(model))
@@ -122,7 +122,7 @@ public extension NetworkManager {
     }
     
     // 下载文件到本地
-    func downloadFile(
+    func PRDownloadFile(
         from url: String,
         to destinationURL: URL? = nil,
         headers: HTTPHeaders? = nil,
@@ -185,7 +185,7 @@ public extension NetworkManager {
     }
     
     // 下载文件数据（不存本地）
-    func downloadData(
+    func PRDownloadData(
         from url: String,
         headers: HTTPHeaders? = nil,
         timeout: TimeInterval = 60,

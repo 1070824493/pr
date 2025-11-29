@@ -19,9 +19,9 @@ public struct SSEEvent {
     let data: String
 }
 
-public extension NetworkManager {
+public extension PRRequestHandlerManager {
     
-    func makeStream<Input: Encodable>(
+    func PRMakeStream<Input: Encodable>(
         from url: String,
         method: HTTPMethod = .post,
         parameters: Input,
@@ -59,17 +59,17 @@ public extension NetworkManager {
         }
     }
     
-    func makeEventSourceStream<Input: Encodable>(
+    func PRMakeEventSourceStream<Input: Encodable>(
         from url: String,
         method: HTTPMethod = .post,
         parameters: Input,
         headers: HTTPHeaders? = nil,
         timeout: TimeInterval = 120,
         lastEventID: String? = nil
-    ) -> AsyncStream<StreamEvent<EventSourceMessage>> {
+    ) -> AsyncStream<StreamEvent<PREventSourceMessage>> {
         AsyncStream { continuation in
-            let requestUrl = EnvManager.shared.createFullRequestUrl(url)
-            session.eventSourceRequest(requestUrl, method: method, parameters: parameters, headers: headers, timeout: timeout, lastEventID: lastEventID).responseEventSource { eventSource in
+            let requestUrl = PREnvironmentManager.shared.PRCreateFullRequestUrl(url)
+            session.PREventSourceRequest(requestUrl, method: method, parameters: parameters, headers: headers, timeout: timeout, lastEventID: lastEventID).responseEventSource { eventSource in
                 switch eventSource.event {
                 case .message(let message):
                     print("Event source received message:", message)

@@ -6,15 +6,15 @@
 
 import StoreKit
 
-class PayHelper {
+class PRSubscriptionHelper {
     
-    static let shared = PayHelper()
+    static let shared = PRSubscriptionHelper()
     
     private var productCache: [String: Product] = [:]
     
     private init() {}
     
-    func fetchProduct(with productID: String) async throws -> Product? {
+    func PRFetchProduct(with productID: String) async throws -> Product? {
         if let cachedProduct = productCache[productID] {
             return cachedProduct
         }
@@ -27,12 +27,12 @@ class PayHelper {
         return nil
     }
     
-    func purchaseProduct(
+    func PRTransactionProduct(
         with productID: String,
         appAccountToken: UUID,
         onBeforePurchase: ((Product) -> Void)? = nil
     ) async throws -> Product.PurchaseResult {
-        guard let product = try await fetchProduct(with: productID) else {
+        guard let product = try await PRFetchProduct(with: productID) else {
             throw NSError(domain: "PayManager", code: -2000, userInfo: [NSLocalizedDescriptionKey: "Product not found"])
         }
         
@@ -47,7 +47,7 @@ class PayHelper {
         return purchaseResult
     }
     
-    func syncPurchases() async {
+    func PRSyncTransaction() async {
         do {
             try await AppStore.sync()
         } catch {
@@ -55,7 +55,7 @@ class PayHelper {
         }
     }
     
-    func queryUnfinishedTransaction() async -> [(transaction: Transaction, jwsRepresentation: String)] {
+    func PRQueryUnfinishedTransaction() async -> [(transaction: Transaction, jwsRepresentation: String)] {
         var list = [(transaction: Transaction, jwsRepresentation: String)]()
         do {
             for await result in Transaction.unfinished {
@@ -76,7 +76,7 @@ class PayHelper {
     
 }
 
-public struct PurchaseIntentCallback {
+public struct PRTransactionIntentCallback {
     private var storage: Any?
     
     @available(iOS 16.4, *)

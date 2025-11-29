@@ -2,28 +2,28 @@
 //  TransactionManager.swift
 //
 
-actor TransactionManager {
+actor PRPaymentProcessManager {
     
     private var processedTransactions = Set<String>()
     private var processingTransactions = Set<String>()
     
-    func isTransactionProcessed(_ transactionId: String) -> Bool {
+    func isPaymentProcessed(_ transactionId: String) -> Bool {
         return processedTransactions.contains(transactionId)
     }
     
-    func recordTransactionAsProcessed(_ transactionId: String) {
+    func recordPaymentAsProcessed(_ transactionId: String) {
         processedTransactions.insert(transactionId)
     }
     
-    func isTransactionBeingProcessed(_ transactionId: String) -> Bool {
+    func isPaymentBeingProcessed(_ transactionId: String) -> Bool {
         return processingTransactions.contains(transactionId)
     }
     
-    func recordTransactionAsProcessing(_ transactionId: String) {
+    func recordPaymentAsProcessing(_ transactionId: String) {
         processingTransactions.insert(transactionId)
     }
     
-    func removeTransactionFromProcessing(_ transactionId: String) {
+    func removePaymentFromProcessing(_ transactionId: String) {
         processingTransactions.remove(transactionId)
     }
     

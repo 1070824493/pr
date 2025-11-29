@@ -12,7 +12,7 @@ public protocol DefaultInitializable {
 public typealias DecodableWithDefault = Decodable & DefaultInitializable
 public typealias CodableWithDefault = Codable & DefaultInitializable
 
-public struct CommonResponse<T: DecodableWithDefault>: Decodable {
+public struct PRCommonResponse<T: DecodableWithDefault>: Decodable {
     public let errNo: Int
     public let errMsg: String
     public let data: T

@@ -7,11 +7,11 @@
 public struct AppDomainConstants {
     
     public static let business_online_domain = "app.clear.com.ai"
-    public static let business_test_domain = "us-\(EnvManager.shared.SHIP_PLACE_HOLDER)-mp.suanshubang.com"
+    public static let business_test_domain = "us-\(PREnvironmentManager.shared.SHIP_PLACE_HOLDER)-mp.suanshubang.com"
     
     // pay
     public static let unifypay_cleanai_online_domain = "pay.clear.com.ai"
-    public static let unifypay_cleanai_test_domain = "unifypay-\(EnvManager.shared.SHIP_PLACE_HOLDER)-mp.suanshubang.com"
+    public static let unifypay_cleanai_test_domain = "unifypay-\(PREnvironmentManager.shared.SHIP_PLACE_HOLDER)-mp.suanshubang.com"
 }
 
 public struct ApiConstants {

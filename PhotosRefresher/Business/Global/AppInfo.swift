@@ -7,7 +7,7 @@
 import UIKit
 
 
-class AppInfo: DynamicCommonParamsProvider {
+class AppInfo: PRDynamicCommonParamsProvider {
     
     enum LaunchType {
         case unknown        // 未知

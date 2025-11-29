@@ -28,7 +28,7 @@ class AppViewModel: ObservableObject {
 
     func initRequest(_ hasConfig: Bool = true) async {
         let couldInit = await MainActor.run {
-            if !NetworkObserver.shared.isReachable {
+            if !PRRequestHandlerObserver.shared.isReachable {
                 return false
             }
             
@@ -77,12 +77,12 @@ class AppViewModel: ObservableObject {
         
         // 非新安装首次启动，且没网，直接进入
         if AppInfo.lanuchType != .newInstall,
-           !NetworkObserver.shared.isReachable {
+           !PRRequestHandlerObserver.shared.isReachable {
             return true
         }
         
         // 有网直接请求&超时
-        if NetworkObserver.shared.isReachable {
+        if PRRequestHandlerObserver.shared.isReachable {
             configLoadTask?.cancel()
             configLoadTask = nil
             await self.checkProductData()// 调商品列表

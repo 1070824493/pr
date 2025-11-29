@@ -17,7 +17,7 @@ enum LaunchState {
 struct AppView: View {
     @EnvironmentObject var appUserDefaults: AppUserPreferences
     @EnvironmentObject var ConfigManager: ConfigManager
-    @EnvironmentObject var networkObserver: NetworkObserver
+    @EnvironmentObject var networkObserver: PRRequestHandlerObserver
     
     @StateObject var viewModel = AppViewModel()
     

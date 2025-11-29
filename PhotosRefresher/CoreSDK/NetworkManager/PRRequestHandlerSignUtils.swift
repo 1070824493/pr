@@ -4,7 +4,7 @@
 
 
 
-public class NetworkSignUtils {
+public class PRRequestHandlerSignUtils {
     
     private static var privateKey = ""
     private static var randomKey1 = ""

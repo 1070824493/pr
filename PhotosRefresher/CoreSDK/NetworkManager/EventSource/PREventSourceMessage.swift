@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct EventSourceMessage {
+public struct PREventSourceMessage {
     
     public var event: String?
     public var id: String?
@@ -16,7 +16,7 @@ public struct EventSourceMessage {
     
 }
 
-extension EventSourceMessage {
+extension PREventSourceMessage {
     
     internal init?(parsing string: String) {
         let fields = string.components(separatedBy: "\n").compactMap(Field.init(parsing:))
@@ -36,7 +36,7 @@ extension EventSourceMessage {
     
 }
 
-extension EventSourceMessage {
+extension PREventSourceMessage {
     
     internal struct Field {
         

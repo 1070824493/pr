@@ -46,7 +46,7 @@ extension View {
     
     func withEnvironments() -> some View {
         self.environmentObject(UIState.shared)
-            .environmentObject(NetworkObserver.shared)
+            .environmentObject(PRRequestHandlerObserver.shared)
             .environmentObject(AppUserPreferences.shared)
             .environmentObject(ConfigManager.shared)
     }

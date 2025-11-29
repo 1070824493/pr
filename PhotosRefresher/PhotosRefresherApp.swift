@@ -47,7 +47,7 @@ struct PhotosRefresherApp: App {
     
     private func applicationDidBecomeActive() {
         Task {
-            if (NetworkObserver.shared.isReachable) {
+            if (PRRequestHandlerObserver.shared.isReachable) {
                 let _ = await IdfaUtils.shared.requestIdfa()
             }
         }
@@ -57,13 +57,13 @@ struct PhotosRefresherApp: App {
     
     @available(iOS 16.4, *)
     func handlePurchaseIntent() {
-        PurchaseManager.shared.listenForPurchaseIntent { intent in
+        PROrderManager.shared.PRListenForPurchaseIntent { intent in
             Task {
                 do {
                     let productId = intent.product.id
                     guard !productId.isEmpty else { return }
                     let params: [String:String] = ["iapId": productId]
-                    let resp: CommonResponse<ProductInfoModel> = try await NetworkManager.shared.request(
+                    let resp: PRCommonResponse<ProductInfoModel> = try await PRRequestHandlerManager.shared.PRrequest(
                         url: ApiConstants.photosrefresher_product_getProductInfo,
                         method: .get,
                         parameters: params
@@ -111,7 +111,7 @@ class AppDelegateAdaptor: NSObject, UIApplicationDelegate, UNUserNotificationCen
 //    }
     
     private func initEnv() {
-        EnvManager.shared.initEnv(domainConfigs: [
+        PREnvironmentManager.shared.initEnv(domainConfigs: [
             "aivory": (
                 onlineDomain: AppDomainConstants.business_online_domain,
                 testDomain: AppDomainConstants.business_test_domain
@@ -124,34 +124,34 @@ class AppDelegateAdaptor: NSObject, UIApplicationDelegate, UNUserNotificationCen
     }
     
     private func initNetwork() {
-        NetworkSignUtils.registerKeys(
+        PRRequestHandlerSignUtils.registerKeys(
             privateKey: CommonAICuid.sharedInstance().getDeviceADID(),
             randomKey1: "S#ZCL@%V8T7D<MW#",
             randomKey2: "oc]s#LuxaFG>Atx(",
             randomKey3: "K*;z(i",
             prefixKey: "xtU7w90{g9@MqRH2"
         )
-        NetworkManager.shared.registerDynamicCommonParamsProvider(provider: AppInfo.self)
-        NetworkManager.shared.addCommonParameters(AppInfo.staticCommonParams)
+        PRRequestHandlerManager.shared.registerDynamicCommonParamsProvider(provider: AppInfo.self)
+        PRRequestHandlerManager.shared.addCommonParameters(AppInfo.staticCommonParams)
     }
     
     private func initPurchaseManager() {
-        PurchaseManager.shared.initialize(
+        PROrderManager.shared.initialize(
             createSubscriptionOrderApi: ApiConstants.photosrefresher_create_order,
             reportOrderApi: ApiConstants.photosrefresher_report_order,
             traceOrderApi: ApiConstants.photosrefresher_trace_order
         )
-        PurchaseManager.shared.registerCallback { result in
+        PROrderManager.shared.registerCallback { result in
             guard case .success(_) = result else {
                 print("Not a success")
                 return
             }
         }
-        PurchaseManager.shared.listenForTransactionUpdates()
+        PROrderManager.shared.PRListenForTransactionUpdates()
     }
     
     func listenNetWork() {
-        NetworkObserver.shared.startListening { online in
+        PRRequestHandlerObserver.shared.startListening { online in
             if online {
                 Task {
                     try await Task.sleep(nanoseconds: 1_000_000_000)

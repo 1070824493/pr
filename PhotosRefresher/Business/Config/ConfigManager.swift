@@ -33,7 +33,7 @@ class ConfigManager: ObservableObject {
     
     func refreshConfig() async -> Bool {
         do {
-            let res: CommonResponse<AppConfig> = try await NetworkManager.shared.request(url: ApiConstants.photosrefresher_init_config, method: .get)
+            let res: PRCommonResponse<AppConfig> = try await PRRequestHandlerManager.shared.PRrequest(url: ApiConstants.photosrefresher_init_config, method: .get)
             if !res.succeed() {
                 return false
             }

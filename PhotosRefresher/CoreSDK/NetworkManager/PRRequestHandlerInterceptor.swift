@@ -8,11 +8,11 @@ import Foundation
 import Alamofire
 
 
-public class CommonParameterInterceptor: RequestInterceptor, @unchecked Sendable {
+public class PRCommonParameterInterceptor: RequestInterceptor, @unchecked Sendable {
     
     private var commonParameters: [String: Any] = [:]
     private var commonCookies: [HTTPCookie] = []
-    private var dynamicCommonParamsProvider: DynamicCommonParamsProvider.Type?
+    private var dynamicCommonParamsProvider: PRDynamicCommonParamsProvider.Type?
     
     func addCommonParameters(_ parameters: [String: Any]) {
         for (key, value) in parameters {
@@ -26,7 +26,7 @@ public class CommonParameterInterceptor: RequestInterceptor, @unchecked Sendable
         }
     }
     
-    func registerDynamicCommonParamsProvider(provider: DynamicCommonParamsProvider.Type) {
+    func registerDynamicCommonParamsProvider(provider: PRDynamicCommonParamsProvider.Type) {
         dynamicCommonParamsProvider = provider
     }
     
@@ -34,7 +34,7 @@ public class CommonParameterInterceptor: RequestInterceptor, @unchecked Sendable
         var urlRequest = urlRequest
         
         do {
-            let randomKey = NetworkSignUtils.getRandomKey()
+            let randomKey = PRRequestHandlerSignUtils.getRandomKey()
             let dynamicCommonParams = dynamicCommonParamsProvider?.getDynamicCommonParams()
             switch urlRequest.method {
             case .get, .head, .connect, .options, .trace:
@@ -47,7 +47,7 @@ public class CommonParameterInterceptor: RequestInterceptor, @unchecked Sendable
                 
                 var signPercentEncodedQueryItems = urlRequest.percentEncodedQueryItems() ?? [:]
                 signPercentEncodedQueryItems.merge(addParameters) { (current, new) in current }
-                let sign = NetworkSignUtils.signVerify(signParam: signPercentEncodedQueryItems, randomKey: randomKey)
+                let sign = PRRequestHandlerSignUtils.signVerify(signParam: signPercentEncodedQueryItems, randomKey: randomKey)
                 
                 addParameters["sign"] = sign
                 urlRequest = try URLEncoding.default.encode(urlRequest, with: addParameters)
@@ -62,7 +62,7 @@ public class CommonParameterInterceptor: RequestInterceptor, @unchecked Sendable
                     }
                     bodyDict["_t_"] = String(Int(Date().timeIntervalSince1970))
                     
-                    let sign = NetworkSignUtils.signVerify(signParam: bodyDict, randomKey: randomKey)
+                    let sign = PRRequestHandlerSignUtils.signVerify(signParam: bodyDict, randomKey: randomKey)
                     bodyDict["sign"] = sign
                     urlRequest = try JSONEncoding.default.encode(urlRequest, with: bodyDict)
                 } else if contentType.contains("application/x-www-form-urlencoded") {
@@ -80,7 +80,7 @@ public class CommonParameterInterceptor: RequestInterceptor, @unchecked Sendable
                     }
                     addParameters["_t_"] = String(Int(Date().timeIntervalSince1970))
                     
-                    let sign = NetworkSignUtils.signVerify(signParam: addParameters, randomKey: randomKey)
+                    let sign = PRRequestHandlerSignUtils.signVerify(signParam: addParameters, randomKey: randomKey)
                     addParameters["sign"] = sign
                     urlRequest = try URLEncoding.default.encode(urlRequest, with: addParameters)
                 }
@@ -92,12 +92,12 @@ public class CommonParameterInterceptor: RequestInterceptor, @unchecked Sendable
         
         if !commonCookies.isEmpty {
             var cookieHeader = commonCookies.map { "\($0.name)=\($0.value)" }.joined(separator: "; ")
-            if EnvManager.shared.isTips() {
+            if PREnvironmentManager.shared.isTips() {
                 cookieHeader += "; __tips__=1"
             }
             urlRequest.setValue(cookieHeader, forHTTPHeaderField: "Cookie")
         } else {
-            if EnvManager.shared.isTips() {
+            if PREnvironmentManager.shared.isTips() {
                 urlRequest.setValue("__tips__=1", forHTTPHeaderField: "Cookie")
             }
         }
