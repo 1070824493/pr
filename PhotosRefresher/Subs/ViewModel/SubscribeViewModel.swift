@@ -1,11 +1,12 @@
 //
-//  SubscriptionViewModel.swift
-//  SwiftUITestProject
+//  SubscribeViewModel.swift
+//  PhotosRefresher
+//
+//  Created by tom on 2025/11/28.
 //
 
 import Foundation
 import UIKit
-
 
 
 // 触发购买的上下文（用于决定失败弹窗是否该弹）
@@ -277,3 +278,4 @@ extension PRSubscribeViewModel {
     
     private func currency(_ v: Double) -> String { String(format: "$%.2f", v) }
 }
+

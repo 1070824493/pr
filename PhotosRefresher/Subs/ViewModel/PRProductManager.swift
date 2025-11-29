@@ -1,22 +1,17 @@
 //
 //  ProductManager.swift
-//  SwiftUITestProject
+//  PhotosRefresher
 //
+//  Created by tom on 2025/11/28.
 //
 
-struct ScenePackageCache: Equatable {
-    var isAudit: Bool
-    var packageList: [SubscriptionPackageModel]
-    var activityList: [ActivityPackage]
-    var closeDelay: Int   // default 0
-    var retainTime: Int   // default 0
-}
+import Foundation
 
 final class PRProductManager: ObservableObject {
     static let shared = PRProductManager()
     private init() {}
     
-    @Published private var packageResp: [String: ScenePackageCache] = [:]
+    @Published private var packageResp: [String: SubscribeResponseModel] = [:]
     
     func packageList(for scene: PayScene = .normal) -> [SubscriptionPackageModel] {
         packageResp["\(scene.rawValue)"]?.packageList ?? []
@@ -49,16 +44,10 @@ final class PRProductManager: ObservableObject {
         }
         
         let d = resp.data
-        let payload = ScenePackageCache(
-            isAudit: d.isAudit,
-            packageList: d.packageList,
-            activityList: d.activityList,
-            closeDelay: d.closeDelay ?? 0,
-            retainTime: d.retainTime ?? 0
-        )
+       
         
         await MainActor.run {
-            packageResp["\(sendModel.scene)"] = payload
+            packageResp["\(sendModel.scene)"] = d
         }
         
         return packageList(for: PayScene(rawValue: sendModel.scene) ?? .normal)
