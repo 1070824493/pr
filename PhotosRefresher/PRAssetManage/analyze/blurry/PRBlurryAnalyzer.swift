@@ -9,77 +9,127 @@ import Foundation
 import Photos
 import CoreGraphics
 import CoreImage
+import UIKit
 
 /// 模糊图片检测
-/// - 策略: 亮度方差排除纯色/低对比 → 轻量“拉普拉斯近似”方差与自适应阈值
+/// - 策略: 亮度方差排除纯色/低对比 → 轻量"拉普拉斯近似"方差与自适应阈值
 /// - 输出: 模糊图片 `localIdentifier` 列表
 enum PRBlurryAnalyzer {
-    struct Params {
-        var blurThresholdBase: Double = 2.0
-        var flatVarYThreshold: Double = 90.0
-        var targetSize: CGSize = .init(width: 256, height: 256)
+    struct Configuration {
+        var blurDetectionThreshold: Double = 2.0
+        var uniformImageVarianceLimit: Double = 90.0
+        var processingDimensions: CGSize = .init(width: 256, height: 256)
     }
 
-    static func scanForLowResolutionEntities(in assets: [PHAsset], params: Params = .init()) async -> [String] {
-        var ids: [String] = []
-        ids.reserveCapacity(assets.count / 4)
-        let manager = PHImageManager.default()
-        let opt = PHImageRequestOptions(); opt.isSynchronous = true; opt.deliveryMode = .fastFormat; opt.resizeMode = .fast; opt.isNetworkAccessAllowed = true
-        for a in assets where a.mediaType == .image {
+    static func scanForLowResolutionEntities(in imageAssets: [PHAsset], params: Configuration = .init()) async -> [String] {
+        var blurryIdentifiers: [String] = []
+        blurryIdentifiers.reserveCapacity(imageAssets.count / 4)
+        let imageManager = PHImageManager.default()
+        let requestConfiguration = PHImageRequestOptions()
+        requestConfiguration.isSynchronous = true
+        requestConfiguration.deliveryMode = .fastFormat
+        requestConfiguration.resizeMode = .fast
+        requestConfiguration.isNetworkAccessAllowed = true
+        
+        for currentAsset in imageAssets where currentAsset.mediaType == .image {
             autoreleasepool {
-                if evaluateVisualAcuity(a, manager: manager, options: opt, target: params.targetSize, base: params.blurThresholdBase, flatThr: params.flatVarYThreshold) {
-                    ids.append(a.localIdentifier)
+                if assessImageClarity(currentAsset,
+                                    imageManager: imageManager,
+                                    requestConfig: requestConfiguration,
+                                    dimension: params.processingDimensions,
+                                    threshold: params.blurDetectionThreshold,
+                                    uniformityLimit: params.uniformImageVarianceLimit) {
+                    blurryIdentifiers.append(currentAsset.localIdentifier)
                 }
             }
         }
-        return ids
+        return blurryIdentifiers
     }
 
-    private static func evaluateVisualAcuity(_ asset: PHAsset, manager: PHImageManager, options: PHImageRequestOptions, target: CGSize, base: Double, flatThr: Double) -> Bool {
-        guard let cg = produceVisualRepresentation(for: asset, manager: manager, options: options, target: target)?.cgImage else { return false }
-        if measureLuminanceDispersion(cg) < flatThr { return false }
-        let lv = computeGradientMagnitudeVariance(cg)
-        let thr = deriveDynamicSharpnessLimit(cg, base: base)
-        return lv < thr
+    private static func assessImageClarity(_ photoAsset: PHAsset,
+                                         imageManager: PHImageManager,
+                                         requestConfig: PHImageRequestOptions,
+                                         dimension: CGSize,
+                                         threshold: Double,
+                                         uniformityLimit: Double) -> Bool {
+        guard let imageReference = produceVisualRepresentation(for: photoAsset,
+                                                          manager: imageManager,
+                                                          options: requestConfig,
+                                                          target: dimension)?.cgImage else {
+            return false
+        }
+        
+        if calculateLuminanceVariation(imageReference) < uniformityLimit {
+            return false
+        }
+        
+        let clarityScore = computeImageSharpnessMetric(imageReference)
+        let adaptiveThreshold = calculateAdaptiveClarityThreshold(imageReference, baseThreshold: threshold)
+        return clarityScore < adaptiveThreshold
     }
 
-    private static func computeGradientMagnitudeVariance(_ cg: CGImage) -> Double {
-        guard let data = cg.dataProvider?.data as Data? else { return 0 }
-        var acc: Double = 0
-        var cnt = 0
-        data.withUnsafeBytes { (p: UnsafeRawBufferPointer) in
-            let bytes = p.bindMemory(to: UInt8.self)
-            for i in stride(from: 0, to: bytes.count - 8, by: 8) {
-                acc += Double(abs(Int(bytes[i]) - Int(bytes[i + 4])))
-                cnt += 1
+    private static func produceVisualRepresentation(for asset: PHAsset,
+                                               manager: PHImageManager,
+                                               options: PHImageRequestOptions,
+                                               target: CGSize) -> UIImage? {
+        var resultImage: UIImage?
+        let semaphore = DispatchSemaphore(value: 0)
+        
+        manager.requestImage(for: asset,
+                           targetSize: target,
+                           contentMode: .aspectFill,
+                           options: options) { image, _ in
+            resultImage = image
+            semaphore.signal()
+        }
+        
+        semaphore.wait()
+        return resultImage
+    }
+
+    private static func computeImageSharpnessMetric(_ image: CGImage) -> Double {
+        guard let pixelData = image.dataProvider?.data as Data? else { return 0 }
+        var gradientSum: Double = 0
+        var sampleCounter = 0
+        
+        pixelData.withUnsafeBytes { (bufferPointer: UnsafeRawBufferPointer) in
+            let pixelBytes = bufferPointer.bindMemory(to: UInt8.self)
+            for index in stride(from: 0, to: pixelBytes.count - 8, by: 8) {
+                gradientSum += Double(abs(Int(pixelBytes[index]) - Int(pixelBytes[index + 4])))
+                sampleCounter += 1
             }
         }
-        return acc / Double(max(1, cnt))
+        return gradientSum / Double(max(1, sampleCounter))
     }
 
-    private static func deriveDynamicSharpnessLimit(_ cg: CGImage, base: Double) -> Double {
-        let varY = measureLuminanceDispersion(cg)
-        let k = min(1.0, max(0.0, varY / 60.0))
-        return base * (0.9 + 0.2 * k)
+    private static func calculateAdaptiveClarityThreshold(_ image: CGImage, baseThreshold: Double) -> Double {
+        let luminanceVariance = calculateLuminanceVariation(image)
+        let scalingFactor = min(1.0, max(0.0, luminanceVariance / 60.0))
+        return baseThreshold * (0.9 + 0.2 * scalingFactor)
     }
 
-    private static func measureLuminanceDispersion(_ cg: CGImage) -> Double {
-        guard let data = cg.dataProvider?.data as Data? else { return 0 }
-        let step = max(1, (cg.width * cg.height) / 4096)
-        var mean: Double = 0, m2: Double = 0, n: Double = 0
-        data.withUnsafeBytes { (p: UnsafeRawBufferPointer) in
-            let bytes = p.bindMemory(to: UInt8.self)
-            for i in stride(from: 0, to: cg.width * cg.height, by: step) {
-                let idx = i * 4
-                if idx + 2 >= bytes.count { break }
-                let b = Double(bytes[idx]), g = Double(bytes[idx+1]), r = Double(bytes[idx+2])
-                let y = 0.114*b + 0.587*g + 0.299*r
-                n += 1
-                let d = y - mean
-                mean += d / n
-                m2 += d * (y - mean)
+    private static func calculateLuminanceVariation(_ image: CGImage) -> Double {
+        guard let pixelData = image.dataProvider?.data as Data? else { return 0 }
+        let samplingInterval = max(1, (image.width * image.height) / 4096)
+        var runningAverage: Double = 0
+        var varianceAccumulator: Double = 0
+        var measurementCount: Double = 0
+        
+        pixelData.withUnsafeBytes { (bufferPointer: UnsafeRawBufferPointer) in
+            let pixelBytes = bufferPointer.bindMemory(to: UInt8.self)
+            for position in stride(from: 0, to: image.width * image.height, by: samplingInterval) {
+                let byteOffset = position * 4
+                if byteOffset + 2 >= pixelBytes.count { break }
+                let blue = Double(pixelBytes[byteOffset])
+                let green = Double(pixelBytes[byteOffset + 1])
+                let red = Double(pixelBytes[byteOffset + 2])
+                let luminanceValue = 0.114 * blue + 0.587 * green + 0.299 * red
+                measurementCount += 1
+                let difference = luminanceValue - runningAverage
+                runningAverage += difference / measurementCount
+                varianceAccumulator += difference * (luminanceValue - runningAverage)
             }
         }
-        return m2 / max(1, n - 1)
+        return varianceAccumulator / max(1, measurementCount - 1)
     }
 }

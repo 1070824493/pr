@@ -32,7 +32,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
 
         // 1) 取得当前类目的 map，并建立 id->model 的索引
         let map = mapFromManager(cardID)
-        modelIndex = Dictionary(uniqueKeysWithValues: map.assets.map { ($0.photoIdentifier, $0) })
+        modelIndex = Dictionary(uniqueKeysWithValues: map.assets.map { ($0.assetIdentifier, $0) })
 
         // 2) 根据 id 列表解析 PHAsset（仅用于显示）
         let newAssets = fetchAssetEntities(by: map.assetIDs)
@@ -61,12 +61,12 @@ final class PRDoubleFeedViewModel: ObservableObject {
             // 展平分组为单列表，便于选择/删除
             var map = PRPhotoAssetsMap(.similarphoto)
             map.assets = m.similarPhotosMap.doubleAssets.flatMap { $0 }
-            map.totalBytes = map.assets.reduce(0) { $0 &+ $1.photoBytes }
+            map.totalBytes = map.assets.reduce(0) { $0 &+ $1.storageSize }
             return map
         case .duplicatephoto:
             var map = PRPhotoAssetsMap(.duplicatephoto)
             map.assets = m.duplicatePhotosMap.doubleAssets.flatMap { $0 }
-            map.totalBytes = map.assets.reduce(0) { $0 &+ $1.photoBytes }
+            map.totalBytes = map.assets.reduce(0) { $0 &+ $1.storageSize }
             return map
 //        default:
 //            return PRPhotoAssetsMap(.screenshot)
@@ -92,7 +92,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
     private func recalcSelectedBytes() {
         var total: Int64 = 0
         for id in selectedIDs {
-            if let m = modelIndex[id] { total &+= m.photoBytes }
+            if let m = modelIndex[id] { total &+= m.storageSize }
         }
         selectedBytes = total
     }

@@ -12,78 +12,77 @@ import AVFoundation
 import Accelerate
 import CoreGraphics
 
-
 enum PRGroupMerge {
-    static func mergeAssetGroups(existing: [[String]], adding: [[String]]) -> [[String]] {
-        var groups = existing.map { Set($0) }
-        for raw in adding where raw.count >= 2 {
-            var s = Set(raw)
-            var toRemove: [Int] = []
-            for (i, g) in groups.enumerated() where !g.isDisjoint(with: s) {
-                s.formUnion(g)
-                toRemove.append(i)
+    static func mergeAssetGroups(existingGroups: [[String]], newGroups: [[String]]) -> [[String]] {
+        var mergedGroups = existingGroups.map { Set($0) }
+        for newGroup in newGroups where newGroup.count >= 2 {
+            var combinedSet = Set(newGroup)
+            var indicesToRemove: [Int] = []
+            for (index, existingSet) in mergedGroups.enumerated() where !existingSet.isDisjoint(with: combinedSet) {
+                combinedSet.formUnion(existingSet)
+                indicesToRemove.append(index)
             }
-            for i in toRemove.sorted(by: >) { groups.remove(at: i) }
-            groups.append(s)
+            for index in indicesToRemove.sorted(by: >) { mergedGroups.remove(at: index) }
+            mergedGroups.append(combinedSet)
         }
-        return groups.map(Array.init)
+        return mergedGroups.map(Array.init)
     }
 }
 
 /// 计算资源字节大小（聚合多个资源项）
 /// - 参数: `PHAsset`
 /// - 返回: 字节数（`Int64`）
-func computeResourceVolume(_ asset: PHAsset) -> Int64 {
-
-    let resources = PHAssetResource.assetResources(for: asset)
-        var sum: Int64 = 0
-        for res in resources {
-            if let n = res.value(forKey: "fileSize") as? NSNumber {
-                sum += n.int64Value
-            }
+func computeResourceVolume(_ mediaAsset: PHAsset) -> Int64 {
+    let assetResources = PHAssetResource.assetResources(for: mediaAsset)
+    var totalSize: Int64 = 0
+    for resourceItem in assetResources {
+        if let fileSizeValue = resourceItem.value(forKey: "fileSize") as? NSNumber {
+            totalSize += fileSizeValue.int64Value
         }
-        return sum
+    }
+    return totalSize
 }
 
 extension PHFetchResult where ObjectType == PHAsset {
     /// 将 `PHFetchResult<PHAsset>` 转为数组
     func toArray() -> [PHAsset] {
-        var arr: [PHAsset] = []; arr.reserveCapacity(count)
-        enumerateObjects { a,_,_ in arr.append(a) }
-        return arr
+        var assetArray: [PHAsset] = []
+        assetArray.reserveCapacity(count)
+        enumerateObjects { assetItem, _, _ in assetArray.append(assetItem) }
+        return assetArray
     }
 }
 
 /// 通过 `localIdentifier` 获取单个 `PHAsset`
-func fetchAssetEntity(by identifier: String) -> PHAsset? {
-    let assets = fetchAssetEntities(by: [identifier])
-    return assets.first
+func fetchAssetEntity(by assetIdentifier: String) -> PHAsset? {
+    let matchingAssets = fetchAssetEntities(by: [assetIdentifier])
+    return matchingAssets.first
 }
 
 /// 通过一组 `localIdentifier` 获取 `PHAsset` 列表（自动过滤空串与去重）
-func fetchAssetEntities(by identifiers: [String]) -> [PHAsset] {
-    guard !identifiers.isEmpty else {
+func fetchAssetEntities(by assetIdentifiers: [String]) -> [PHAsset] {
+    guard !assetIdentifiers.isEmpty else {
         print("❌ Identifiers array is empty")
         return []
     }
     
-    let fetchOptions = PHFetchOptions()
-    let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: identifiers, options: fetchOptions)
-    var fetched: [PHAsset] = []
-    fetched.reserveCapacity(fetchResult.count)
-    var dict: [String: PHAsset] = [:]
-    fetchResult.enumerateObjects { asset, _, _ in
-        dict[asset.localIdentifier] = asset
-        fetched.append(asset)
+    let fetchConfiguration = PHFetchOptions()
+    let fetchResults = PHAsset.fetchAssets(withLocalIdentifiers: assetIdentifiers, options: fetchConfiguration)
+    var retrievedAssets: [PHAsset] = []
+    retrievedAssets.reserveCapacity(fetchResults.count)
+    var identifierToAssetMap: [String: PHAsset] = [:]
+    fetchResults.enumerateObjects { assetItem, _, _ in
+        identifierToAssetMap[assetItem.localIdentifier] = assetItem
+        retrievedAssets.append(assetItem)
     }
-    if fetched.count < identifiers.count {
-        print("⚠️ Found \(fetched.count) out of \(identifiers.count) requested assets")
-        let missingIdentifiers = identifiers.filter { dict[$0] == nil }
+    if retrievedAssets.count < assetIdentifiers.count {
+        print("⚠️ Found \(retrievedAssets.count) out of \(assetIdentifiers.count) requested assets")
+        let missingIdentifiers = assetIdentifiers.filter { identifierToAssetMap[$0] == nil }
         if !missingIdentifiers.isEmpty { print("📋 Missing identifiers: \(missingIdentifiers)") }
     } else {
-        print("✅ Successfully found all \(fetched.count) assets")
+        print("✅ Successfully found all \(retrievedAssets.count) assets")
     }
-    return identifiers.compactMap { dict[$0] }
+    return assetIdentifiers.compactMap { identifierToAssetMap[$0] }
 }
 
 extension PRAssetsHelper {
@@ -97,13 +96,13 @@ extension PRAssetsHelper {
         from: String = "",
         completion: @escaping (Result<Void, Error>) -> Void
     ) {
-        let finalAssets: [PHAsset] = {
+        let assetsToDelete: [PHAsset] = {
             if !assets.isEmpty { return assets }
             if let ids = assetIDs, !ids.isEmpty { return fetchAssetEntities(by: ids) }
             return []
         }()
 
-        guard !finalAssets.isEmpty else {
+        guard !assetsToDelete.isEmpty else {
             completion(.success(()))
             return
         }
@@ -117,7 +116,7 @@ extension PRAssetsHelper {
                     onDismiss: { isSuccess in
                         uiState.fullScreenCoverDestination = nil
                         if isSuccess {
-                            self.executeResourcePurge(finalAssets, from: from, completion: completion)
+                            self.executeResourcePurge(assetsToDelete, from: from, completion: completion)
                         } else {
                             completion(.failure(PRAssetsExecError.requestCancelled))
                         }
@@ -125,7 +124,7 @@ extension PRAssetsHelper {
                 )
             }
         } else {
-            executeResourcePurge(finalAssets, from: from, completion: completion)
+            executeResourcePurge(assetsToDelete, from: from, completion: completion)
         }
     }
 }
@@ -142,33 +141,33 @@ class PRAssetsHelper {
         deliveryMode: PHImageRequestOptionsDeliveryMode = .opportunistic
     ) async throws -> UIImage {
         try await withCheckedThrowingContinuation { continuation in
-            let options = PHImageRequestOptions()
-            options.isSynchronous = false
-            options.deliveryMode = deliveryMode
-            options.resizeMode = .fast
-            options.isNetworkAccessAllowed = true
+            let requestConfiguration = PHImageRequestOptions()
+            requestConfiguration.isSynchronous = false
+            requestConfiguration.deliveryMode = deliveryMode
+            requestConfiguration.resizeMode = .fast
+            requestConfiguration.isNetworkAccessAllowed = true
             
             PHImageManager.default().requestImage(
                 for: asset,
                 targetSize: targetSize,
                 contentMode: .aspectFill,
-                options: options
-            ) { image, info in
-                if let error = info?[PHImageErrorKey] as? Error {
-                    continuation.resume(throwing: error)
+                options: requestConfiguration
+            ) { imageData, infoDictionary in
+                if let errorInfo = infoDictionary?[PHImageErrorKey] as? Error {
+                    continuation.resume(throwing: errorInfo)
                     return
                 }
                 
-                if let isDegraded = info?[PHImageResultIsDegradedKey] as? Bool, isDegraded {
+                if let isDegradedFlag = infoDictionary?[PHImageResultIsDegradedKey] as? Bool, isDegradedFlag {
                     return
                 }
                 
-                guard let image = image else {
+                guard let resultImage = imageData else {
                     continuation.resume(throwing: PRAssetsExecError.imageNotFound)
                     return
                 }
                 
-                continuation.resume(returning: image)
+                continuation.resume(returning: resultImage)
             }
         }
     }
@@ -179,28 +178,28 @@ class PRAssetsHelper {
         targetSize: CGSize = CGSize(width: 200, height: 200)
     ) async throws -> UIImage {
         try await withCheckedThrowingContinuation { continuation in
-            let options = PHImageRequestOptions()
-            options.isSynchronous = false
-            options.deliveryMode = .fastFormat
-            options.resizeMode = .fast
+            let requestConfiguration = PHImageRequestOptions()
+            requestConfiguration.isSynchronous = false
+            requestConfiguration.deliveryMode = .fastFormat
+            requestConfiguration.resizeMode = .fast
             
             PHImageManager.default().requestImage(
                 for: asset,
                 targetSize: targetSize,
                 contentMode: .aspectFill,
-                options: options
-            ) { image, info in
-                if let error = info?[PHImageErrorKey] as? Error {
-                    continuation.resume(throwing: error)
+                options: requestConfiguration
+            ) { imageData, infoDictionary in
+                if let errorInfo = infoDictionary?[PHImageErrorKey] as? Error {
+                    continuation.resume(throwing: errorInfo)
                     return
                 }
                 
-                guard let image = image else {
+                guard let resultImage = imageData else {
                     continuation.resume(throwing: PRAssetsExecError.imageNotFound)
                     return
                 }
                 
-                continuation.resume(returning: image)
+                continuation.resume(returning: resultImage)
             }
         }
     }
@@ -209,29 +208,28 @@ class PRAssetsHelper {
     func acquireCompositeImages(
         for assets: [PHAsset],
         targetSize: CGSize = CGSize(width: 200, height: 200),
-        useFaseter: Bool = false,
         faster: Bool = false
     ) async throws -> [String: UIImage] {
-        var results: [String: UIImage] = [:]
-        try await withThrowingTaskGroup(of: (String, UIImage).self) { group in
-            for asset in assets {
-                group.addTask {
-                    var image: UIImage
+        var imageResults: [String: UIImage] = [:]
+        try await withThrowingTaskGroup(of: (String, UIImage).self) { taskGroup in
+            for assetItem in assets {
+                taskGroup.addTask {
+                    var processedImage: UIImage
                     if faster {
-                        image = try await self.acquireRapidImage(for: asset, targetSize: targetSize)
+                        processedImage = try await self.acquireRapidImage(for: assetItem, targetSize: targetSize)
                     } else {
-                        image = try await self.acquireHighFidelityImage(for: asset, targetSize: targetSize)
+                        processedImage = try await self.acquireHighFidelityImage(for: assetItem, targetSize: targetSize)
                     }
-                    return (asset.localIdentifier, image)
+                    return (assetItem.localIdentifier, processedImage)
                 }
             }
             
-            for try await (assetID, image) in group {
-                results[assetID] = image
+            for try await (assetIdentifier, imageData) in taskGroup {
+                imageResults[assetIdentifier] = imageData
             }
         }
         
-        return results
+        return imageResults
     }
     
     /// 限并发批量加载缩略图（分块）
@@ -241,56 +239,56 @@ class PRAssetsHelper {
         maxConcurrentTasks: Int = 4,
         faster: Bool = false
     ) async throws -> [String: UIImage] {
-        var results: [String: UIImage] = [:]
-        let assetChunks = assets.chunked(into: maxConcurrentTasks)
+        var imageResults: [String: UIImage] = [:]
+        let assetBatches = assets.chunked(into: maxConcurrentTasks)
         
-        for chunk in assetChunks {
-            try await withThrowingTaskGroup(of: (String, UIImage).self) { group in
-                for asset in chunk {
-                    group.addTask {
-                        var image: UIImage
+        for batch in assetBatches {
+            try await withThrowingTaskGroup(of: (String, UIImage).self) { taskGroup in
+                for assetItem in batch {
+                    taskGroup.addTask {
+                        var processedImage: UIImage
                         if faster {
-                            image = try await self.acquireRapidImage(for: asset, targetSize: targetSize)
+                            processedImage = try await self.acquireRapidImage(for: assetItem, targetSize: targetSize)
                         } else {
-                            image = try await self.acquireHighFidelityImage(for: asset, targetSize: targetSize)
+                            processedImage = try await self.acquireHighFidelityImage(for: assetItem, targetSize: targetSize)
                         }
-                        return (asset.localIdentifier, image)
+                        return (assetItem.localIdentifier, processedImage)
                     }
                 }
                 
-                for try await (assetID, image) in group {
-                    results[assetID] = image
+                for try await (assetIdentifier, imageData) in taskGroup {
+                    imageResults[assetIdentifier] = imageData
                 }
             }
         }
         
-        return results
+        return imageResults
     }
     
     /// 执行删除（已授权）
-    private func executeResourcePurge(_ assets: [PHAsset], from: String, completion: @escaping (Result<Void, Error>) -> Void) {
+    private func executeResourcePurge(_ assetsToDelete: [PHAsset], from: String, completion: @escaping (Result<Void, Error>) -> Void) {
         
-        guard !assets.isEmpty else {
+        guard !assetsToDelete.isEmpty else {
             completion(.success(()))
             return
         }
         
-        let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
-        guard status == .authorized || status == .limited else {
+        let authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+        guard authorizationStatus == .authorized || authorizationStatus == .limited else {
             completion(.failure(PRAssetsExecError.authorizationDenied))
             return
         }
         
         PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.deleteAssets(assets as NSArray)
-        }) { success, error in
+            PHAssetChangeRequest.deleteAssets(assetsToDelete as NSArray)
+        }) { successStatus, errorInfo in
 //            StatisticsManager.log(name: "JHQ_002", params: ["from": from])
             DispatchQueue.main.async {
-                if success {
-                    PRPhotoMapManager.shared.lastDeleteAssets = assets
+                if successStatus {
+                    PRPhotoMapManager.shared.lastDeleteAssets = assetsToDelete
                     completion(.success(()))
                 } else {
-                    completion(.failure(error ?? PRAssetsExecError.unknown))
+                    completion(.failure(errorInfo ?? PRAssetsExecError.unknown))
                 }
             }
         }
@@ -317,59 +315,63 @@ enum PRAssetsExecError: Error, LocalizedError {
     }
 }
 
-
 final class PRPHashCache {
     static let shared = PRPHashCache()
-    private let cache = NSCache<NSString, NSNumber>()
+    private let storageCache = NSCache<NSString, NSNumber>()
     private init() {
-        cache.countLimit = 20_000        // 按库规模调整
-        cache.totalCostLimit = 0          // 不按 cost 驱逐就保持 0
+        storageCache.countLimit = 20_000
+        storageCache.totalCostLimit = 0
     }
-    @inline(__always) func accessFingerprint(_ id: String) -> UInt64? {
-        cache.object(forKey: id as NSString)?.uint64Value
+    @inline(__always) func accessFingerprint(_ identifier: String) -> UInt64? {
+        storageCache.object(forKey: identifier as NSString)?.uint64Value
     }
-    @inline(__always) func depositFingerprint(_ id: String, value: UInt64) {
-        cache.setObject(NSNumber(value: value), forKey: id as NSString)
+    @inline(__always) func depositFingerprint(_ identifier: String, value: UInt64) {
+        storageCache.setObject(NSNumber(value: value), forKey: identifier as NSString)
     }
 }
 
 // MARK: - 这里主要给各个鉴别模块用
-func produceVisualRepresentation(for asset: PHAsset,
+func produceVisualRepresentation(for mediaAsset: PHAsset,
                        manager: PHImageManager = PHImageManager.default(),
                        options: PHImageRequestOptions,
                        target: CGSize,
                        contentMode: PHImageContentMode = .aspectFit) -> UIImage? {
-    var out: UIImage?
+    var outputImage: UIImage?
     autoreleasepool {
-        manager.requestImage(for: asset,
+        manager.requestImage(for: mediaAsset,
                              targetSize: target,
                              contentMode: contentMode,
-                             options: options) { img, _ in
-            out = img
+                             options: options) { imageData, _ in
+            outputImage = imageData
         }
     }
-    return out
+    return outputImage
 }
-func deriveVideoFrame(for asset: PHAsset, target: CGSize) -> UIImage? {
-    let sema = DispatchSemaphore(value: 0)
-    var avAsset: AVAsset?
-    let vOpts = PHVideoRequestOptions()
-    vOpts.version = .current; vOpts.deliveryMode = .fastFormat
-    PHImageManager.default().requestAVAsset(forVideo: asset, options: vOpts) { a, _, _ in
-        avAsset = a; sema.signal()
+
+func deriveVideoFrame(for mediaAsset: PHAsset, target: CGSize) -> UIImage? {
+    let synchronizationSemaphore = DispatchSemaphore(value: 0)
+    var videoAsset: AVAsset?
+    let videoOptions = PHVideoRequestOptions()
+    videoOptions.version = .current
+    videoOptions.deliveryMode = .fastFormat
+    PHImageManager.default().requestAVAsset(forVideo: mediaAsset, options: videoOptions) { asset, _, _ in
+        videoAsset = asset
+        synchronizationSemaphore.signal()
     }
-    _ = sema.wait(timeout: .now() + .seconds(2))
-    guard let avAsset else { return nil }
-    let gen = AVAssetImageGenerator(asset: avAsset)
-    gen.appliesPreferredTrackTransform = true
-    gen.maximumSize = target
-    gen.requestedTimeToleranceBefore = .zero
-    gen.requestedTimeToleranceAfter = .zero
-    let duration = CMTimeGetSeconds(avAsset.duration)
-    let probes = [max(0, duration*0.5), max(0, duration*0.25), max(0, duration*0.75), 0.0]
-    for t in probes {
-        let time = CMTime(seconds: t, preferredTimescale: 600)
-        if let cg = try? gen.copyCGImage(at: time, actualTime: nil) { return UIImage(cgImage: cg) }
+    _ = synchronizationSemaphore.wait(timeout: .now() + .seconds(2))
+    guard let videoAsset else { return nil }
+    let imageGenerator = AVAssetImageGenerator(asset: videoAsset)
+    imageGenerator.appliesPreferredTrackTransform = true
+    imageGenerator.maximumSize = target
+    imageGenerator.requestedTimeToleranceBefore = .zero
+    imageGenerator.requestedTimeToleranceAfter = .zero
+    let videoDuration = CMTimeGetSeconds(videoAsset.duration)
+    let sampleTimes = [max(0, videoDuration*0.5), max(0, videoDuration*0.25), max(0, videoDuration*0.75), 0.0]
+    for timePoint in sampleTimes {
+        let timeStamp = CMTime(seconds: timePoint, preferredTimescale: 600)
+        if let frameImage = try? imageGenerator.copyCGImage(at: timeStamp, actualTime: nil) {
+            return UIImage(cgImage: frameImage)
+        }
     }
     return nil
 }
@@ -377,214 +379,243 @@ func deriveVideoFrame(for asset: PHAsset, target: CGSize) -> UIImage? {
 // MARK: - Hashes & Sizes
 func synthesizeVisualFingerprints(
     assets: [PHAsset],
-    target: CGSize,                         // 建议 64×64
-    options: PHImageRequestOptions          // 建议 isSynchronous = true / fastFormat / fast
+    target: CGSize,
+    options: PHImageRequestOptions
 ) -> (p: [String: UInt64], d: [String: UInt64], wh: [String: (Int, Int)]) {
     
-    var pOut: [String: UInt64] = [:]
-    var dOut: [String: UInt64] = [:]
-    var whOut: [String: (Int, Int)] = [:]
-    pOut.reserveCapacity(assets.count)
-    dOut.reserveCapacity(assets.count)
-    whOut.reserveCapacity(assets.count)
+    var perceptualHashes: [String: UInt64] = [:]
+    var differenceHashes: [String: UInt64] = [:]
+    var dimensionsMap: [String: (Int, Int)] = [:]
+    perceptualHashes.reserveCapacity(assets.count)
+    differenceHashes.reserveCapacity(assets.count)
+    dimensionsMap.reserveCapacity(assets.count)
     
-    let mgr = PHImageManager.default()
+    let imageManager = PHImageManager.default()
     
-    for a in assets {
+    for assetItem in assets {
         autoreleasepool {
-            let id = a.localIdentifier
-            whOut[id] = (a.pixelWidth, a.pixelHeight)
+            let assetIdentifier = assetItem.localIdentifier
+            dimensionsMap[assetIdentifier] = (assetItem.pixelWidth, assetItem.pixelHeight)
             
-            // 1) 命中缓存：直接得 pHash，且通常无需解码图像
-            if let cached = PRPHashCache.shared.accessFingerprint(id) {
-                pOut[id] = cached
-                // 仍可能需要 dHash；下面按需要再取图
+            if let cachedHash = PRPHashCache.shared.accessFingerprint(assetIdentifier) {
+                perceptualHashes[assetIdentifier] = cachedHash
             }
             
-            var img: UIImage? = nil
-            // 2) 只有在确实需要 pHash 或 dHash 时才解码图像/取关键帧
-            if pOut[id] == nil || dOut[id] == nil {
-                if a.mediaType == .video {
-                    img = securelyDeriveVideoFrame(for: a, target: target)
+            var processedImage: UIImage? = nil
+            if perceptualHashes[assetIdentifier] == nil || differenceHashes[assetIdentifier] == nil {
+                if assetItem.mediaType == .video {
+                    processedImage = securelyDeriveVideoFrame(for: assetItem, target: target)
                 } else {
-                    img = produceVisualRepresentation(for: a, manager: mgr, options: options, target: target)
+                    processedImage = produceVisualRepresentation(for: assetItem, manager: imageManager, options: options, target: target)
                 }
             }
             
-            // 3) 计算 pHash
-            if pOut[id] == nil, let ui = img, let ph = computePerceptualHash(from: ui) {
-                pOut[id] = ph
-                PRPHashCache.shared.depositFingerprint(id, value: ph)   // 写缓存（线程安全）
+            if perceptualHashes[assetIdentifier] == nil,
+               let imageData = processedImage,
+               let perceptualHash = computePerceptualHash(from: imageData) {
+                perceptualHashes[assetIdentifier] = perceptualHash
+                PRPHashCache.shared.depositFingerprint(assetIdentifier, value: perceptualHash)
             }
             
-            // 4) 计算 dHash（只在拿到图像时才算）
-            if dOut[id] == nil, let ui = img, let dh = computeDifferenceHash(from: ui) {
-                dOut[id] = dh
+            if differenceHashes[assetIdentifier] == nil,
+               let imageData = processedImage,
+               let differenceHash = computeDifferenceHash(from: imageData) {
+                differenceHashes[assetIdentifier] = differenceHash
             }
-            // img 出作用域后由 autoreleasepool 回收
         }
     }
-    return (pOut, dOut, whOut)
+    return (perceptualHashes, differenceHashes, dimensionsMap)
 }
 
 // MARK: - 视频关键帧取图（加一层 autoreleasepool 更稳）
 @inline(__always)
-private func securelyDeriveVideoFrame(for asset: PHAsset, target: CGSize) -> UIImage? {
+private func securelyDeriveVideoFrame(for mediaAsset: PHAsset, target: CGSize) -> UIImage? {
     return autoreleasepool(invoking: { () -> UIImage? in
-        deriveVideoFrame(for: asset, target: target)
+        deriveVideoFrame(for: mediaAsset, target: target)
     })
 }
 
-
-func computeDifferenceHash(from image: UIImage) -> UInt64? {
-    guard let cg = image.cgImage else { return nil }
-    let W = 9, H = 8
-    let grayCS = CGColorSpaceCreateDeviceGray()
-    guard let ctx = CGContext(data: nil, width: W, height: H, bitsPerComponent: 8, bytesPerRow: W, space: grayCS, bitmapInfo: CGImageAlphaInfo.none.rawValue) else { return nil }
-    ctx.interpolationQuality = .low
-    ctx.clear(CGRect(x: 0, y: 0, width: W, height: H))
-    ctx.draw(cg, in: CGRect(x: 0, y: 0, width: W, height: H))
-    guard let data = ctx.data else { return nil }
-    let p = data.bindMemory(to: UInt8.self, capacity: W*H)
-    
-    var hash: UInt64 = 0
-    var bit: UInt64 = 1 << 63
-    for y in 0..<H {
-        for x in 0..<(W-1) {
-            let a = p[y*W + x], b = p[y*W + x + 1]
-            if a > b { hash |= bit }
-            bit >>= 1
-        }
-    }
-    return hash
-}
-
-func computePerceptualHash(from image: UIImage) -> UInt64? {
-    // 仅缓存 DCT 实例（线程安全且不捕获外部变量）
-    struct DCTPool {
-        static let side = 32
-        static let row = vDSP.DCT(count: side, transformType: .II)
-        static let col = vDSP.DCT(count: side, transformType: .II)
-    }
-    
-    let side = DCTPool.side
-    guard let cg = image.cgImage else { return nil }
-    
-    // 灰度 32x32
-    let grayCS = CGColorSpaceCreateDeviceGray()
-    guard let ctx = CGContext(
-        data: nil, width: side, height: side,
-        bitsPerComponent: 8, bytesPerRow: side,
-        space: grayCS, bitmapInfo: CGImageAlphaInfo.none.rawValue
+func computeDifferenceHash(from imageData: UIImage) -> UInt64? {
+    guard let cgImage = imageData.cgImage else { return nil }
+    let outputWidth = 9, outputHeight = 8
+    let grayColorSpace = CGColorSpaceCreateDeviceGray()
+    guard let context = CGContext(
+        data: nil,
+        width: outputWidth,
+        height: outputHeight,
+        bitsPerComponent: 8,
+        bytesPerRow: outputWidth,
+        space: grayColorSpace,
+        bitmapInfo: CGImageAlphaInfo.none.rawValue
     ) else { return nil }
     
-    ctx.interpolationQuality = .low
-    let rect = AVMakeRect(
-        aspectRatio: CGSize(width: cg.width, height: cg.height),
-        insideRect: CGRect(x: 0, y: 0, width: side, height: side)
+    context.interpolationQuality = .low
+    context.clear(CGRect(x: 0, y: 0, width: outputWidth, height: outputHeight))
+    context.draw(cgImage, in: CGRect(x: 0, y: 0, width: outputWidth, height: outputHeight))
+    guard let pixelData = context.data else { return nil }
+    let pixelBytes = pixelData.bindMemory(to: UInt8.self, capacity: outputWidth * outputHeight)
+    
+    var hashValue: UInt64 = 0
+    var currentBit: UInt64 = 1 << 63
+    for row in 0..<outputHeight {
+        for column in 0..<(outputWidth - 1) {
+            let leftPixel = pixelBytes[row * outputWidth + column]
+            let rightPixel = pixelBytes[row * outputWidth + column + 1]
+            if leftPixel > rightPixel { hashValue |= currentBit }
+            currentBit >>= 1
+        }
+    }
+    return hashValue
+}
+
+func computePerceptualHash(from imageData: UIImage) -> UInt64? {
+    struct DCTPool {
+        static let dimension = 32
+        static let rowTransform = vDSP.DCT(count: dimension, transformType: .II)
+        static let columnTransform = vDSP.DCT(count: dimension, transformType: .II)
+    }
+    
+    let dimension = DCTPool.dimension
+    guard let cgImage = imageData.cgImage else { return nil }
+    
+    let grayColorSpace = CGColorSpaceCreateDeviceGray()
+    guard let context = CGContext(
+        data: nil,
+        width: dimension,
+        height: dimension,
+        bitsPerComponent: 8,
+        bytesPerRow: dimension,
+        space: grayColorSpace,
+        bitmapInfo: CGImageAlphaInfo.none.rawValue
+    ) else { return nil }
+    
+    context.interpolationQuality = .low
+    let drawingRect = AVMakeRect(
+        aspectRatio: CGSize(width: cgImage.width, height: cgImage.height),
+        insideRect: CGRect(x: 0, y: 0, width: dimension, height: dimension)
     )
-    ctx.clear(CGRect(x: 0, y: 0, width: side, height: side))
-    ctx.draw(cg, in: rect)
+    context.clear(CGRect(x: 0, y: 0, width: dimension, height: dimension))
+    context.draw(cgImage, in: drawingRect)
     
-    guard let data = ctx.data else { return nil }
-    let u8 = data.bindMemory(to: UInt8.self, capacity: side * side)
+    guard let pixelData = context.data else { return nil }
+    let pixelBytes = pixelData.bindMemory(to: UInt8.self, capacity: dimension * dimension)
     
-    // 临时缓冲（放函数内，避免并发写冲突）
-    var buf  = [Float](repeating: 0, count: side * side)
-    var tmp  = [Float](repeating: 0, count: side * side)
-    var dct2 = [Float](repeating: 0, count: side * side)
+    var floatBuffer = [Float](repeating: 0, count: dimension * dimension)
+    var tempBuffer = [Float](repeating: 0, count: dimension * dimension)
+    var dctResult = [Float](repeating: 0, count: dimension * dimension)
     
-    // U8 -> Float
-    for i in 0..<(side * side) { buf[i] = Float(u8[i]) }
-    
-    // 行 DCT（复用 row/out 缓冲，避免循环内频繁分配）
-    var row  = [Float](repeating: 0, count: side)
-    var out  = [Float](repeating: 0, count: side)
-    for r in 0..<side {
-        let off = r * side
-        // 拷贝一行到 row
-        for c in 0..<side { row[c] = buf[off + c] }
-        DCTPool.row?.transform(row, result: &out)
-        for c in 0..<side { tmp[off + c] = out[c] }
+    for index in 0..<(dimension * dimension) {
+        floatBuffer[index] = Float(pixelBytes[index])
     }
     
-    // 列 DCT
-    var col = [Float](repeating: 0, count: side)
-    for c in 0..<side {
-        for r in 0..<side { col[r] = tmp[r * side + c] }
-        DCTPool.col?.transform(col, result: &out)
-        for r in 0..<side { dct2[r * side + c] = out[r] }
-    }
-    
-    // 取左上 8x8 系数并阈值化
-    let n = 8
-    var coeffs = [Float](repeating: 0, count: n * n)
-    var k = 0
-    for r in 0..<n {
-        for c in 0..<n {
-            coeffs[k] = dct2[r * side + c]
-            k += 1
+    var rowBuffer = [Float](repeating: 0, count: dimension)
+    var outputBuffer = [Float](repeating: 0, count: dimension)
+    for row in 0..<dimension {
+        let rowOffset = row * dimension
+        for column in 0..<dimension {
+            rowBuffer[column] = floatBuffer[rowOffset + column]
+        }
+        DCTPool.rowTransform?.transform(rowBuffer, result: &outputBuffer)
+        for column in 0..<dimension {
+            tempBuffer[rowOffset + column] = outputBuffer[column]
         }
     }
     
-    // 中位数阈值
-    let median: Float = {
-        var arr = coeffs
-        arr.sort()
-        let mid = arr.count / 2
-        return arr.count % 2 == 0 ? 0.5 * (arr[mid - 1] + arr[mid]) : arr[mid]
+    var columnBuffer = [Float](repeating: 0, count: dimension)
+    for column in 0..<dimension {
+        for row in 0..<dimension {
+            columnBuffer[row] = tempBuffer[row * dimension + column]
+        }
+        DCTPool.columnTransform?.transform(columnBuffer, result: &outputBuffer)
+        for row in 0..<dimension {
+            dctResult[row * dimension + column] = outputBuffer[row]
+        }
+    }
+    
+    let coefficientSize = 8
+    var coefficients = [Float](repeating: 0, count: coefficientSize * coefficientSize)
+    var coefficientIndex = 0
+    for row in 0..<coefficientSize {
+        for column in 0..<coefficientSize {
+            coefficients[coefficientIndex] = dctResult[row * dimension + column]
+            coefficientIndex += 1
+        }
+    }
+    
+    let medianValue: Float = {
+        var sortedCoefficients = coefficients
+        sortedCoefficients.sort()
+        let middleIndex = sortedCoefficients.count / 2
+        return sortedCoefficients.count % 2 == 0 ?
+            0.5 * (sortedCoefficients[middleIndex - 1] + sortedCoefficients[middleIndex]) :
+            sortedCoefficients[middleIndex]
     }()
     
-    var hash: UInt64 = 0
-    for (i, v) in coeffs.enumerated() {
-        if v > median { hash |= (1 << UInt64(63 - i)) }
+    var finalHash: UInt64 = 0
+    for (index, coefficient) in coefficients.enumerated() {
+        if coefficient > medianValue {
+            finalHash |= (1 << UInt64(63 - index))
+        }
     }
-    return hash
+    return finalHash
 }
 
-
-func computeLaplacianOperatorScore(from image: UIImage) -> Float? {
-    guard let cg = image.cgImage else { return nil }
-    let w = 128, h = 128
-    let grayCS = CGColorSpaceCreateDeviceGray()
-    guard let ctx = CGContext(data: nil, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w, space: grayCS, bitmapInfo: CGImageAlphaInfo.none.rawValue) else { return nil }
-    ctx.interpolationQuality = .low
-    let rect = AVMakeRect(aspectRatio: CGSize(width: cg.width, height: cg.height), insideRect: CGRect(x: 0, y: 0, width: w, height: h))
-    ctx.clear(CGRect(x: 0, y: 0, width: w, height: h))
-    ctx.draw(cg, in: rect)
-    guard let data = ctx.data else { return nil }
-    let p = data.bindMemory(to: UInt8.self, capacity: w*h)
-    var g = [Float](repeating: 0, count: w*h)
-    for i in 0..<(w*h) { g[i] = Float(p[i]) / 255.0 }
+func computeLaplacianOperatorScore(from imageData: UIImage) -> Float? {
+    guard let cgImage = imageData.cgImage else { return nil }
+    let processingWidth = 128, processingHeight = 128
+    let grayColorSpace = CGColorSpaceCreateDeviceGray()
+    guard let context = CGContext(
+        data: nil,
+        width: processingWidth,
+        height: processingHeight,
+        bitsPerComponent: 8,
+        bytesPerRow: processingWidth,
+        space: grayColorSpace,
+        bitmapInfo: CGImageAlphaInfo.none.rawValue
+    ) else { return nil }
     
-    let k: [Float] = [1, -2, 1, -2, 4, -2, 1, -2, 1]
-    var lap = [Float](repeating: 0, count: w*h)
-    for y in 1..<(h-1) {
-        for x in 1..<(w-1) {
-            var s: Float = 0
-            s += g[(y-1)*w + (x-1)]*k[0]
-            s += g[(y-1)*w + x]*k[1]
-            s += g[(y-1)*w + (x + 1)]*k[2]
-            s += g[y*w + (x-1)]*k[3]
-            s += g[y*w + x]*k[4]
-            s += g[y*w + (x + 1)]*k[5]
-            s += g[(y + 1)*w + (x-1)]*k[6]
-            s += g[(y + 1)*w + x]*k[7]
-            s += g[(y + 1)*w + (x + 1)]*k[8]
-            lap[y*w + x] = s
+    context.interpolationQuality = .low
+    let drawingRect = AVMakeRect(
+        aspectRatio: CGSize(width: cgImage.width, height: cgImage.height),
+        insideRect: CGRect(x: 0, y: 0, width: processingWidth, height: processingHeight)
+    )
+    context.clear(CGRect(x: 0, y: 0, width: processingWidth, height: processingHeight))
+    context.draw(cgImage, in: drawingRect)
+    
+    guard let pixelData = context.data else { return nil }
+    let pixelBytes = pixelData.bindMemory(to: UInt8.self, capacity: processingWidth * processingHeight)
+    var normalizedValues = [Float](repeating: 0, count: processingWidth * processingHeight)
+    for index in 0..<(processingWidth * processingHeight) {
+        normalizedValues[index] = Float(pixelBytes[index]) / 255.0
+    }
+    
+    let kernelWeights: [Float] = [1, -2, 1, -2, 4, -2, 1, -2, 1]
+    var laplacianResults = [Float](repeating: 0, count: processingWidth * processingHeight)
+    for row in 1..<(processingHeight - 1) {
+        for column in 1..<(processingWidth - 1) {
+            var convolutionSum: Float = 0
+            convolutionSum += normalizedValues[(row-1)*processingWidth + (column-1)] * kernelWeights[0]
+            convolutionSum += normalizedValues[(row-1)*processingWidth + column] * kernelWeights[1]
+            convolutionSum += normalizedValues[(row-1)*processingWidth + (column + 1)] * kernelWeights[2]
+            convolutionSum += normalizedValues[row*processingWidth + (column-1)] * kernelWeights[3]
+            convolutionSum += normalizedValues[row*processingWidth + column] * kernelWeights[4]
+            convolutionSum += normalizedValues[row*processingWidth + (column + 1)] * kernelWeights[5]
+            convolutionSum += normalizedValues[(row + 1)*processingWidth + (column-1)] * kernelWeights[6]
+            convolutionSum += normalizedValues[(row + 1)*processingWidth + column] * kernelWeights[7]
+            convolutionSum += normalizedValues[(row + 1)*processingWidth + (column + 1)] * kernelWeights[8]
+            laplacianResults[row*processingWidth + column] = convolutionSum
         }
     }
     
-    let n = vDSP_Length(w*h)
-    var mean: Float = 0
-    vDSP_meanv(lap, 1, &mean, n)
-    var squares = [Float](repeating: 0, count: w*h)
-    vDSP_vsq(lap, 1, &squares, 1, n)
-    var squareMean: Float = 0
-    vDSP_meanv(squares, 1, &squareMean, n)
-    let variance = squareMean - mean*mean
-    return variance
+    let elementCount = vDSP_Length(processingWidth * processingHeight)
+    var meanValue: Float = 0
+    vDSP_meanv(laplacianResults, 1, &meanValue, elementCount)
+    var squaredValues = [Float](repeating: 0, count: processingWidth * processingHeight)
+    vDSP_vsq(laplacianResults, 1, &squaredValues, 1, elementCount)
+    var squaredMean: Float = 0
+    vDSP_meanv(squaredValues, 1, &squaredMean, elementCount)
+    let varianceValue = squaredMean - meanValue * meanValue
+    return varianceValue
 }
 
-private let _cuLogStart = CFAbsoluteTimeGetCurrent()
-
+private let _performanceLogStartTime = CFAbsoluteTimeGetCurrent()

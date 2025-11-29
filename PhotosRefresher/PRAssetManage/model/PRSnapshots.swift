@@ -8,37 +8,37 @@
 import Foundation
 
 
-let kBytesSchemaVersion: Int = 1
-let kPersistEveryN: Int = 3
+let kDataFormatVersion: Int = 1
+let kSaveInterval: Int = 3
 
 public struct PRDashboardCell: Codable {
-    public var category: PRPhotoCategory
-    public var bytes: Int64
-    public var repID: [String]
-    public var count: Int
+    public var classification: PRPhotoCategory
+    public var storageUsage: Int64
+    public var previewIdentifiers: [String]
+    public var elementCount: Int
 
     public init(category: PRPhotoCategory, bytes: Int64, repID: [String], count: Int) {
-        self.category = category
-        self.bytes = bytes
-        self.repID = repID
-        self.count = count
+        self.classification = category
+        self.storageUsage = bytes
+        self.previewIdentifiers = repID
+        self.elementCount = count
     }
 }
 
 public struct PRDashboardSnapshot: Codable {
-    public var cells: [PRDashboardCell]
-    public var totalSize: Int64
-    public var updatedAt: Date
+    public var cellCollectioncellCollection: [PRDashboardCell]
+    public var aggregateSize: Int64
+    public var modificationDate: Date
 
     public init(cells: [PRDashboardCell], totalSize: Int64, updatedAt: Date) {
-        self.cells = cells
-        self.totalSize = totalSize
-        self.updatedAt = updatedAt
+        self.cellCollectioncellCollection = cells
+        self.aggregateSize = totalSize
+        self.modificationDate = updatedAt
     }
 }
 
 extension PRCacheFiles {
-    var dashboard: URL { dir.appendingPathComponent("dashboard.json") }
+    var dashboard: URL { storageDirectory.appendingPathComponent("dashboard.json") }
 }
 
 struct PRChunkSnapshot: Codable {
@@ -47,15 +47,15 @@ struct PRChunkSnapshot: Codable {
 }
 
 struct PRProgressSnapshot: Codable {
-    var snapshotHash: String
-    var lastA: Int
-    var lastSimilar: Int
-    var lastDuplicate: Int
-    var lastLarge: Int
-    var lastBlurry: Int
-    var lastText: Int
-    var bytesSchemaVersion: Int
-    var updatedAt: Date
+    var analysisIdentifier: String
+    var lastPrimaryPhase: Int
+    var lastSimilarityPhase: Int
+    var lastDuplicationPhase: Int
+    var lastOversizedPhase: Int
+    var lastBlurDetectionPhase: Int
+    var lastTextDetectionPhase: Int
+    var dataFormatVersion: Int
+    var analysisTimestamp: Date
 }
 
 struct PRMapsSnapshot: Codable {
@@ -79,8 +79,8 @@ struct PRMapsSnapshot: Codable {
 }
 
 struct PRCacheFiles {
-    let dir: URL
-    var progress: URL { dir.appendingPathComponent("progress.json") }
-    var maps: URL { dir.appendingPathComponent("maps.json") }
-    func locateSegmentFile(_ i: Int) -> URL { dir.appendingPathComponent("chunk_\(i).json") }
+    let storageDirectory: URL
+    var progress: URL { storageDirectory.appendingPathComponent("progress.json") }
+    var maps: URL { storageDirectory.appendingPathComponent("maps.json") }
+    func locateSegmentFile(_ i: Int) -> URL { storageDirectory.appendingPathComponent("chunk_\(i).json") }
 }

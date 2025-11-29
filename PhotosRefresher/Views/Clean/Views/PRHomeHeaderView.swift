@@ -50,7 +50,7 @@ struct PRHomeHeaderView: View {
                             .fill(Color.hexColor(0x50D97D))
                             .frame(width: 3, height: 10)
                             .padding(.trailing, 2)
-                        Text("App & data: \(d.used.prettyBytes)")
+                        Text("App & data: \(d.utilizedCapacity.prettyBytes)")
                             .font(.regular12)
                             .foregroundColor(Color.hexColor(0x666666))
 
@@ -60,7 +60,7 @@ struct PRHomeHeaderView: View {
                             .fill(Color.hexColor(0xFF5A5A))
                             .frame(width: 3, height: 10)
                             .padding(.trailing, 2)
-                        Text("Total: \(d.total.prettyBytes)")
+                        Text("Total: \(d.totalCapacity.prettyBytes)")
                             .font(.regular12)
                             .foregroundColor(Color.hexColor(0x666666))
                     }
@@ -70,9 +70,9 @@ struct PRHomeHeaderView: View {
             }
             .padding(.top, 8)
             
-            if let d = disk, d.total > 0 {
-                let total = max(1.0, Double(d.total))
-                let used = max(0.0, min(Double(d.used), total))
+            if let d = disk, d.totalCapacity > 0 {
+                let total = max(1.0, Double(d.totalCapacity))
+                let used = max(0.0, min(Double(d.utilizedCapacity), total))
                 let clutter = max(0.0, min(Double(totalCleanable), total))
                 let usedProgress = used / total
                 let clutterProgress = clutter / total

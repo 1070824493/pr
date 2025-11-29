@@ -12,13 +12,15 @@ import Photos
 /// - 输入: `PHAsset` 列表
 /// - 输出: 达到字节阈值的视频 `localIdentifier` 列表
 enum PRLargeVideoAnalyzer {
-    static func detectVoluminousVideoEntities(in assets: [PHAsset], thresholdBytes: Int64) async -> [String] {
-        var ids: [String] = []
-        ids.reserveCapacity(assets.count / 4)
-        for a in assets where a.mediaType == .video {
-            let sz = computeResourceVolume(a)
-            if sz >= thresholdBytes { ids.append(a.localIdentifier) }
+    static func detectVoluminousVideoEntities(in mediaAssets: [PHAsset], thresholdBytes: Int64) async -> [String] {
+        var oversizedVideoIdentifiers: [String] = []
+        oversizedVideoIdentifiers.reserveCapacity(mediaAssets.count / 4)
+        for mediaItem in mediaAssets where mediaItem.mediaType == .video {
+            let resourceSize = computeResourceVolume(mediaItem)
+            if resourceSize >= thresholdBytes {
+                oversizedVideoIdentifiers.append(mediaItem.localIdentifier)
+            }
         }
-        return ids
+        return oversizedVideoIdentifiers
     }
 }

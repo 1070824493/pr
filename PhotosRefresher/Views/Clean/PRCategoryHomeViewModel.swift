@@ -46,11 +46,11 @@ final class PRCategoryHomeViewModel: ObservableObject {
             .sink { [weak self] dash in
                 guard let self, let dash = dash else { return }
 
-                self.totalCleanable = dash.totalSize
+                self.totalCleanable = dash.aggregateSize
                 var out: [PRPhotoCategory: CategoryItemVM] = [:]
                 
-                let validIDs = dash.cells
-                    .compactMap({$0.repID}).reduce(into: []) { partialResult, ids in
+                let validIDs = dash.cellCollectioncellCollection
+                    .compactMap({$0.previewIdentifiers}).reduce(into: []) { partialResult, ids in
                         return partialResult += ids
                     }
                 
@@ -58,9 +58,9 @@ final class PRCategoryHomeViewModel: ObservableObject {
                     validIDs.contains(key)
                 }
 
-                for cell in dash.cells {
+                for cell in dash.cellCollectioncellCollection {
 
-                    let assets = cell.repID.compactMap { id in
+                    let assets = cell.previewIdentifiers.compactMap { id in
                         if let cached = self.assetCache[id] {
                             return cached
                         } else if let newA = self.manager.resolveAssetEntity(for: id) {
@@ -70,12 +70,12 @@ final class PRCategoryHomeViewModel: ObservableObject {
                         return nil
                     }
 
-                    out[cell.category] = CategoryItemVM(
-                        category: cell.category,
-                        bytes: cell.bytes,
-                        repID: cell.repID,
+                    out[cell.classification] = CategoryItemVM(
+                        category: cell.classification,
+                        bytes: cell.storageUsage,
+                        repID: cell.previewIdentifiers,
                         repAsset: assets,
-                        totalCount: cell.count
+                        totalCount: cell.elementCount
                     )
                 }
                 self.snapshots = out

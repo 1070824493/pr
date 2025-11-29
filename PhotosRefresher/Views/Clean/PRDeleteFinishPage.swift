@@ -43,8 +43,8 @@ public struct PRDeleteFinishPage: View {
 
     mutating func checkPRDiskSpace() {
         let disk = assessStorageMetrics()
-        totalGB = disk?.total ?? 0
-        usedGB = disk?.used ?? 0
+        totalGB = disk?.totalCapacity ?? 0
+        usedGB = disk?.utilizedCapacity ?? 0
         clutterGB = PRPhotoMapManager.shared.totalSize
     }
 

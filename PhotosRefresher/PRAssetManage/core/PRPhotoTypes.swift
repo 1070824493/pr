@@ -24,31 +24,31 @@ public enum PRPhotoPipelineState: Equatable {
 }
 
 public struct PRPhotoAssetModel: Codable, Hashable {
-    public var photoIdentifier: String
-    public var photoBytes: Int64
-    public var photoDate: Int64
-    public var photoAsset: PHAsset?
+    public var assetIdentifier: String
+    public var storageSize: Int64
+    public var creationTimestamp: Int64
+    public var underlyingAsset: PHAsset?
 
     public init(id: String, bytes: Int64, date: Int64, asset: PHAsset? = nil) {
-        self.photoIdentifier = id
-        self.photoBytes = bytes
-        self.photoDate = date
-        self.photoAsset = asset
+        self.assetIdentifier = id
+        self.storageSize = bytes
+        self.creationTimestamp = date
+        self.underlyingAsset = asset
     }
 
     private enum CodingKeys: String, CodingKey { case photoIdentifier, photoBytes, photoDate }
     public init(from decoder: Decoder) throws {
-        let c = try decoder.container(keyedBy: CodingKeys.self)
-        photoIdentifier = try c.decode(String.self, forKey: .photoIdentifier)
-        photoBytes = try c.decode(Int64.self, forKey: .photoBytes)
-        photoDate  = try c.decode(Int64.self, forKey: .photoDate)
-        photoAsset = nil
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        assetIdentifier = try container.decode(String.self, forKey: .photoIdentifier)
+        storageSize = try container.decode(Int64.self, forKey: .photoBytes)
+        creationTimestamp  = try container.decode(Int64.self, forKey: .photoDate)
+        underlyingAsset = nil
     }
     public func encode(to encoder: Encoder) throws {
-        var c = encoder.container(keyedBy: CodingKeys.self)
-        try c.encode(photoIdentifier, forKey: .photoIdentifier)
-        try c.encode(photoBytes,      forKey: .photoBytes)
-        try c.encode(photoDate,       forKey: .photoDate)
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(assetIdentifier, forKey: .photoIdentifier)
+        try container.encode(storageSize,      forKey: .photoBytes)
+        try container.encode(creationTimestamp,       forKey: .photoDate)
     }
 }
 
@@ -60,7 +60,7 @@ public struct PRPhotoAssetsMap: Codable {
     public var doubleAssetIDs: [[String]] = []
     public var doubleAssets: [[PRPhotoAssetModel]] = []
 
-    public var assetIDs: [String] { assets.map(\.photoIdentifier) }
+    public var assetIDs: [String] { assets.map(\.assetIdentifier) }
 
     public init(_ c: PRPhotoCategory) { self.category = c }
 

@@ -13,57 +13,58 @@ import Photos
 /// - 并发: `actor` 保证内部状态串行化
 actor PRChunkScheduler {
     let chunkSize: Int
-    private let files: PRCacheFiles
-    private var allIds: [String] = []
-    private(set) var snapshotHash: String = ""
+    private let fileManager: PRCacheFiles
+    private var assetIdentifiers: [String] = []
+    private(set) var snapshotIdentifier: String = ""
 
     init(chunkSize: Int, files: PRCacheFiles) {
         self.chunkSize = chunkSize
-        self.files = files
+        self.fileManager = files
     }
 
-    func configureSnapshotParameters(with assetsDesc: [PHAsset]) {
-        allIds = assetsDesc.map(\.localIdentifier)
-        snapshotHash = "\(allIds.hashValue)_\(allIds.count)"
+    func configureSnapshotParameters(with assetCollection: [PHAsset]) {
+        assetIdentifiers = assetCollection.map(\.localIdentifier)
+        snapshotIdentifier = "\(assetIdentifiers.hashValue)_\(assetIdentifiers.count)"
     }
 
     func calculateSegmentQuantity() -> Int {
-        guard !allIds.isEmpty else { return 0 }
-        return (allIds.count + chunkSize - 1) / chunkSize
+        guard !assetIdentifiers.isEmpty else { return 0 }
+        return (assetIdentifiers.count + chunkSize - 1) / chunkSize
     }
 
     func materializeSegmentAtIndex(index: Int) -> PRChunkSnapshot? {
         guard index >= 0, index < calculateSegmentQuantity() else { return nil }
-        let u = files.locateSegmentFile(index)
+        let fileLocation = fileManager.locateSegmentFile(index)
 
-        if let data = try? Data(contentsOf: u),
-           let s = try? JSONDecoder().decode(PRChunkSnapshot.self, from: data) {
-            return s
+        if let fileData = try? Data(contentsOf: fileLocation),
+           let decodedSnapshot = try? JSONDecoder().decode(PRChunkSnapshot.self, from: fileData) {
+            return decodedSnapshot
         }
 
-        let lo = index * chunkSize
-        let hi = min(lo + chunkSize, allIds.count)
-        let ids = Array(allIds[lo..<hi])
+        let startIndex = index * chunkSize
+        let endIndex = min(startIndex + chunkSize, assetIdentifiers.count)
+        let segmentIdentifiers = Array(assetIdentifiers[startIndex..<endIndex])
 
-        let assets = PHAsset.fetchAssets(withLocalIdentifiers: ids, options: nil).toArray()
-        var dateMap: [String:Int64] = [:]
-        var sizeMap: [String:Int64] = [:]
-        dateMap.reserveCapacity(assets.count)
-        sizeMap.reserveCapacity(assets.count)
+        let segmentAssets = PHAsset.fetchAssets(withLocalIdentifiers: segmentIdentifiers, options: nil).toArray()
+        var creationDateMap: [String:Int64] = [:]
+        var fileSizeMap: [String:Int64] = [:]
+        creationDateMap.reserveCapacity(segmentAssets.count)
+        fileSizeMap.reserveCapacity(segmentAssets.count)
 
-        for a in assets {
-            dateMap[a.localIdentifier] = Int64((a.creationDate ?? .distantPast).timeIntervalSince1970)
-            sizeMap[a.localIdentifier] = computeResourceVolume(a)
+        for assetItem in segmentAssets {
+            creationDateMap[assetItem.localIdentifier] = Int64((assetItem.creationDate ?? .distantPast).timeIntervalSince1970)
+            fileSizeMap[assetItem.localIdentifier] = computeResourceVolume(assetItem)
         }
 
-        var entries = [PRPhotoAssetModel](); entries.reserveCapacity(ids.count)
-        for id in ids {
-            entries.append(.init(id: id, bytes: sizeMap[id] ?? 0, date: dateMap[id] ?? 0))
+        var assetEntries = [PRPhotoAssetModel](); assetEntries.reserveCapacity(segmentIdentifiers.count)
+        for identifier in segmentIdentifiers {
+            assetEntries.append(.init(id: identifier, bytes: fileSizeMap[identifier] ?? 0, date: creationDateMap[identifier] ?? 0))
         }
 
-        let snap = PRChunkSnapshot(index: index, entries: entries)
-        if let data = try? JSONEncoder().encode(snap) { try? data.write(to: u, options: .atomic) }
-        return snap
+        let chunkSnapshot = PRChunkSnapshot(index: index, entries: assetEntries)
+        if let encodedData = try? JSONEncoder().encode(chunkSnapshot) {
+            try? encodedData.write(to: fileLocation, options: .atomic)
+        }
+        return chunkSnapshot
     }
 }
-

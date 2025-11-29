@@ -131,7 +131,7 @@ struct PRDuplicatePage: View {
                 toggleAll: {
                     withAnimation(nil) {
                         if allSelected { selectedIDs.removeAll() }
-                        else { selectedIDs = Set(flatModels.map { $0.photoIdentifier }) }
+                        else { selectedIDs = Set(flatModels.map { $0.assetIdentifier }) }
                         recalcSelectedBytes() // ✅ 直接用 model.bytes 相加
                     }
                 },
@@ -179,11 +179,11 @@ struct PRDuplicatePage: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 8) {
-                    ForEach(doubleModels[section], id: \.photoIdentifier) { model in
+                    ForEach(doubleModels[section], id: \.assetIdentifier) { model in
                         HCell(
                             model: model,
-                            isSelected: selectedIDs.contains(model.photoIdentifier),
-                            isBest: doubleModels[section].first?.photoIdentifier == model.photoIdentifier,
+                            isSelected: selectedIDs.contains(model.assetIdentifier),
+                            isBest: doubleModels[section].first?.assetIdentifier == model.assetIdentifier,
                             // ✅ 使用统一的缩略图 Provider + 通过 manager.fetchOrResolvePHAsset 懒解析
                             thumbProvider: thumbProvider
                         ) {
@@ -223,7 +223,7 @@ struct PRDuplicatePage: View {
                                 // 乐观刷新
                                 let delSet = delIDs
                                 doubleModels = doubleModels
-                                    .map { group in group.filter { !delSet.contains($0.photoIdentifier) } }
+                                    .map { group in group.filter { !delSet.contains($0.assetIdentifier) } }
                                     .filter { !$0.isEmpty }
                                 selectedIDs.subtract(delSet)
                                 selectedBytes = 0
@@ -316,13 +316,13 @@ private extension PRDuplicatePage {
             // 默认选中每组“除第一张外”的全部
             var set = Set<String>()
             for group in newDouble {
-                for (idx, m) in group.enumerated() where idx > 0 { set.insert(m.photoIdentifier) }
+                for (idx, m) in group.enumerated() where idx > 0 { set.insert(m.assetIdentifier) }
             }
             selectedIDs = set
             recalcSelectedBytes()
         } else {
             // 仅保留仍存在于新结果中的选中项
-            let alive = Set(newDouble.flatMap { $0.map(\.photoIdentifier) })
+            let alive = Set(newDouble.flatMap { $0.map(\.assetIdentifier) })
             selectedIDs = selectedIDs.intersection(alive)
             recalcSelectedBytes()
         }
@@ -330,19 +330,19 @@ private extension PRDuplicatePage {
 
     func isSectionAllSelected(_ section: Int) -> Bool {
         guard doubleModels.indices.contains(section) else { return false }
-        let ids = Set(doubleModels[section].map(\.photoIdentifier))
+        let ids = Set(doubleModels[section].map(\.assetIdentifier))
         return !ids.isEmpty && ids.isSubset(of: selectedIDs)
     }
 
     func toggleSectionSelection(_ section: Int) {
         guard doubleModels.indices.contains(section) else { return }
-        let ids = Set(doubleModels[section].map(\.photoIdentifier))
+        let ids = Set(doubleModels[section].map(\.assetIdentifier))
         if ids.isSubset(of: selectedIDs) { selectedIDs.subtract(ids) }
         else { selectedIDs.formUnion(ids) }
     }
 
     func toggle(_ model: PRPhotoAssetModel) {
-        let id = model.photoIdentifier
+        let id = model.assetIdentifier
         if selectedIDs.contains(id) { selectedIDs.remove(id) } else { selectedIDs.insert(id) }
     }
 
@@ -352,8 +352,8 @@ private extension PRDuplicatePage {
         let idx = Set(selectedIDs)
         let total = doubleModels
             .flatMap { $0 }
-            .filter { idx.contains($0.photoIdentifier) }
-            .reduce(Int64(0)) { $0 &+ $1.photoBytes }
+            .filter { idx.contains($0.assetIdentifier) }
+            .reduce(Int64(0)) { $0 &+ $1.storageSize }
         selectedBytes = total
     }
 
@@ -384,7 +384,7 @@ private struct HCell: View {
 
     var body: some View {
         // 运行期解析 PHAsset（内部有 NSCache；无则显示占位）
-        let asset = PRPhotoMapManager.shared.resolveAssetEntity(for: model.photoIdentifier)
+        let asset = PRPhotoMapManager.shared.resolveAssetEntity(for: model.assetIdentifier)
 
         ZStack(alignment: .bottomTrailing) {
             if let a = asset {
