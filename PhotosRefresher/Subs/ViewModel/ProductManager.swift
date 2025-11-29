@@ -6,7 +6,7 @@
 
 struct ScenePackageCache: Equatable {
     var isAudit: Bool
-    var packageList: [SubscriptionPackage]
+    var packageList: [SubscriptionPackageModel]
     var activityList: [ActivityPackage]
     var closeDelay: Int   // default 0
     var retainTime: Int   // default 0
@@ -16,28 +16,28 @@ final class ProductManager: ObservableObject {
     static let shared = ProductManager()
     private init() {}
     
-    @Published private var cache: [String: ScenePackageCache] = [:]
+    @Published private var packageResp: [String: ScenePackageCache] = [:]
     
-    func packageList(for scene: PayScene = .normal) -> [SubscriptionPackage] {
-        cache["\(scene.rawValue)"]?.packageList ?? []
+    func packageList(for scene: PayScene = .normal) -> [SubscriptionPackageModel] {
+        packageResp["\(scene.rawValue)"]?.packageList ?? []
     }
     func activityList(for scene: PayScene = .normal) -> [ActivityPackage] {
-        cache["\(scene.rawValue)"]?.activityList ?? []
+        packageResp["\(scene.rawValue)"]?.activityList ?? []
     }
     func isAudit(for scene: PayScene = .normal) -> Bool {
-        cache["\(scene.rawValue)"]?.isAudit ?? false
+        packageResp["\(scene.rawValue)"]?.isAudit ?? false
     }
     func closeDelay(for scene: PayScene = .normal) -> Int {
-        cache["\(scene.rawValue)"]?.closeDelay ?? 0
+        packageResp["\(scene.rawValue)"]?.closeDelay ?? 0
     }
     func retainTime(for scene: PayScene = .normal) -> Int {
-        cache["\(scene.rawValue)"]?.retainTime ?? 0
+        packageResp["\(scene.rawValue)"]?.retainTime ?? 0
     }
     
     @discardableResult
-    func refreshPackageList(_ sendModel: SubscribeListRequestModel) async -> [SubscriptionPackage] {
+    func refreshPackageList(_ sendModel: SubscribeListRequestModel) async -> [SubscriptionPackageModel] {
         
-        let resp: CommonResponse<SubscriptionPackageResponse>? =
+        let resp: CommonResponse<SubscribeResponseModel>? =
         try? await NetworkManager.shared.request(
             url: ApiConstants.photosrefresher_subscribe_home,
             method: .get,
@@ -58,7 +58,7 @@ final class ProductManager: ObservableObject {
         )
         
         await MainActor.run {
-            cache["\(sendModel.scene)"] = payload
+            packageResp["\(sendModel.scene)"] = payload
         }
         
         return packageList(for: PayScene(rawValue: sendModel.scene) ?? .normal)
@@ -66,8 +66,8 @@ final class ProductManager: ObservableObject {
 }
 
 extension ProductManager {
-    func package(for skuId: Int) -> SubscriptionPackage? {
-        for (_, sceneCache) in cache {
+    func package(for skuId: Int) -> SubscriptionPackageModel? {
+        for (_, sceneCache) in packageResp {
             if let p = sceneCache.packageList.first(where: { $0.skuId == skuId }) {
                 return p
             }

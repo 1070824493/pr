@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SubscribeNormalPage: View {
     
-    @EnvironmentObject var viewModel: SubscriptionViewModel
+    @EnvironmentObject var viewModel: SubscribeViewModel
     
     var body: some View {
         ZStack {

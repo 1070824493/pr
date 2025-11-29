@@ -23,7 +23,7 @@ struct SubscribeSwitchPage: View {
         }
     }
     
-    @EnvironmentObject var viewModel: SubscriptionViewModel
+    @EnvironmentObject var viewModel: SubscribeViewModel
     
     var body: some View {
         ZStack {
@@ -138,7 +138,7 @@ struct SubscribeSwitchPage: View {
                             
                             Spacer()
                             
-                            if isDiscountEnable {                            
+                            if isDiscountEnable {
                                 Text("First week ")
                                     .font(.system(size: 14.fit, weight: .bold))
                                     .foregroundColor(Color.hexColor(0x00D185))

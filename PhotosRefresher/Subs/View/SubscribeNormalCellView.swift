@@ -9,9 +9,9 @@ import SwiftUI
 
 struct SubscribeNormalCellView: View {
     
-    let item: SubscriptionPackage
+    let item: SubscriptionPackageModel
     
-    @EnvironmentObject var viewModel: SubscriptionViewModel
+    @EnvironmentObject var viewModel: SubscribeViewModel
     
     private var isSelected: Bool { viewModel.selectedPackageId == item.skuId }
     

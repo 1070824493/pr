@@ -30,9 +30,9 @@ public enum PaySource: Int {
 /// 订阅页场景
 public enum PayScene: Int { case normal = 1 }
  
-class SubscriptionViewModel: ObservableObject {
+class SubscribeViewModel: ObservableObject {
 
-    @Published var packageList: [SubscriptionPackage] = []
+    @Published var packageList: [SubscriptionPackageModel] = []
     @Published var selectedPackageId: Int = -1
     @Published var purchasing = false
 
@@ -45,7 +45,7 @@ class SubscriptionViewModel: ObservableObject {
         ProductManager.shared.isAudit(for: payScene)
     }
 
-    var selectPackage: SubscriptionPackage? {
+    var selectPackage: SubscriptionPackageModel? {
         packageList.first { $0.skuId == selectedPackageId }
     }
 
@@ -55,8 +55,8 @@ class SubscriptionViewModel: ObservableObject {
         self.paySource = paySource
         self.onDismiss = onDismiss
         self.packageList = [
-            .init(skuId: 204, priceSale: 1999,  priceFirst: 29,  price: 1999,  duration: 7,   recommendSku: true, beOffered: 0, freeDays: 0),
-            .init(skuId: 206, priceSale: 3999, priceFirst: 3999, price: 3999, duration: 365, recommendSku: false,  beOffered: 0, freeDays: 0)
+            .init(skuId: 204, priceSale: 1999,  priceFirst: 29,  duration: 7,   recommendSku: true, beOffered: 0, freeDays: 0),
+            .init(skuId: 206, priceSale: 3999, priceFirst: 3999, duration: 365, recommendSku: false,  beOffered: 0, freeDays: 0)
         ]
         self.selectedPackageId = packageList.first?.skuId ?? 204
     }
@@ -83,10 +83,10 @@ class SubscriptionViewModel: ObservableObject {
 }
 
 //MARK: -- 订阅入口
-extension SubscriptionViewModel {
+extension SubscribeViewModel {
     
     @discardableResult
-    func purchase(package: SubscriptionPackage? = nil) async -> Bool {
+    func purchase(package: SubscriptionPackageModel? = nil) async -> Bool {
         guard let pkg = package ?? selectPackage else { return false }
         guard pkg.skuId > 0 else { return false }
 
@@ -176,7 +176,7 @@ extension SubscriptionViewModel {
 }
 
 //MARK: -- 点击事件
-extension SubscriptionViewModel {
+extension SubscribeViewModel {
     func restore() {
         Task {
             let succeed = await PurchaseManager.shared.restore()
@@ -197,9 +197,9 @@ extension SubscriptionViewModel {
 }
 
 //MARK: -- 商品的一些展示文案
-extension SubscriptionViewModel {
+extension SubscribeViewModel {
     
-    func titleFor(_ p: SubscriptionPackage) -> String {
+    func titleFor(_ p: SubscriptionPackageModel) -> String {
         if isAudit {
             var times: String = "day"
             switch p.duration {
@@ -222,7 +222,7 @@ extension SubscriptionViewModel {
         }
     }
     
-    func switchTitle(_ p: SubscriptionPackage) -> String {
+    func switchTitle(_ p: SubscriptionPackageModel) -> String {
         var times: String = "day"
         switch p.duration {
             case 365: times = "year"
@@ -237,7 +237,7 @@ extension SubscriptionViewModel {
         return freeDaysAudit + beOfferedAudit + auditlast
     }
     
-    func durationForDisplay(_ p: SubscriptionPackage) -> String {
+    func durationForDisplay(_ p: SubscriptionPackageModel) -> String {
         if isAudit {
             return "auto-renew, cancel anytime."
         }
@@ -251,15 +251,15 @@ extension SubscriptionViewModel {
         }
     }
     
-    private func isFreeTrialDisplay(_ p: SubscriptionPackage) -> Bool {
+    private func isFreeTrialDisplay(_ p: SubscriptionPackageModel) -> Bool {
         (p.freeDays > 0) ? true : false
     }
     
-    private func isFirstOfferDisplay(_ p: SubscriptionPackage) -> Bool {
+    private func isFirstOfferDisplay(_ p: SubscriptionPackageModel) -> Bool {
         p.beOffered == 0
     }
     
-    func priceForDisplay(_ p: SubscriptionPackage) -> String {
+    func priceForDisplay(_ p: SubscriptionPackageModel) -> String {
         if isAudit {
             return ""
         }

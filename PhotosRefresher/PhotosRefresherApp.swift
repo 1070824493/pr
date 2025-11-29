@@ -15,7 +15,7 @@ struct PhotosRefresherApp: App {
     @Environment(\.scenePhase) var scenePhase
     @StateObject private var uiState = UIState.shared
     
-    @StateObject var subscribeVM = SubscriptionViewModel(paySource: .appStorePay, onDismiss: nil)
+    @StateObject var subscribeVM = SubscribeViewModel(paySource: .appStorePay, onDismiss: nil)
     
     var body: some Scene {
         WindowGroup {
@@ -63,12 +63,12 @@ struct PhotosRefresherApp: App {
                     let productId = intent.product.id
                     guard !productId.isEmpty else { return }
                     let params: [String:String] = ["iapId": productId]
-                    let resp: CommonResponse<ProductInfoDTO> = try await NetworkManager.shared.request(
+                    let resp: CommonResponse<ProductInfoModel> = try await NetworkManager.shared.request(
                         url: ApiConstants.photosrefresher_product_getProductInfo,
                         method: .get,
                         parameters: params
                     )
-                    let product = SubscriptionPackage(skuId: Int(resp.data.skuId), priceSale: 0, priceFirst: 0, price: 0, duration: 0, recommendSku: false, beOffered: 0, freeDays: 0)
+                    let product = SubscriptionPackageModel(skuId: Int(resp.data.skuId), priceSale: 0, priceFirst: 0, duration: 0, recommendSku: false, beOffered: 0, freeDays: 0)
                     await subscribeVM.purchase(package: product)
                      
                 } catch {

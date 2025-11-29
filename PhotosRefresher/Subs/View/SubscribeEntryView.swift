@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct SubscriptionEntryView: View {
+struct SubscribeEntryView: View {
     
-    @StateObject var subscribeVM: SubscriptionViewModel
+    @StateObject var subscribeVM: SubscribeViewModel
     
     let paySource: PaySource
     var onDismiss: ((_ result: Bool) -> Void)?
@@ -19,7 +19,7 @@ struct SubscriptionEntryView: View {
         
         self.paySource = paySource
         self.onDismiss = onDismiss
-        _subscribeVM = StateObject(wrappedValue: SubscriptionViewModel(paySource: paySource, onDismiss: onDismiss)) 
+        _subscribeVM = StateObject(wrappedValue: SubscribeViewModel(paySource: paySource, onDismiss: onDismiss)) 
     }
 
     var body: some View {

@@ -33,7 +33,7 @@
 		E2242B8E2ECF106300C867D4 /* JsonUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B7C2ECF106300C867D4 /* JsonUtils.swift */; };
 		E2242B8F2ECF106300C867D4 /* Permissions+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B5F2ECF106300C867D4 /* Permissions+Alert.swift */; };
 		E2242B902ECF106300C867D4 /* PermissonsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B022ECF106300C867D4 /* PermissonsManager.swift */; };
-		E2242B922ECF106300C867D4 /* SubscriptionEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B6F2ECF106300C867D4 /* SubscriptionEntryView.swift */; };
+		E2242B922ECF106300C867D4 /* SubscribeEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B6F2ECF106300C867D4 /* SubscribeEntryView.swift */; };
 		E2242B932ECF106300C867D4 /* TextAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B4F2ECF106300C867D4 /* TextAnalyzer.swift */; };
 		E2242B942ECF106300C867D4 /* GlobalOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B072ECF106300C867D4 /* GlobalOverlay.swift */; };
 		E2242B962ECF106300C867D4 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B282ECF106300C867D4 /* String+Extension.swift */; };
@@ -65,7 +65,7 @@
 		E2242BB62ECF106300C867D4 /* Font+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B192ECF106300C867D4 /* Font+Extension.swift */; };
 		E2242BB72ECF106300C867D4 /* URL+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B2B2ECF106300C867D4 /* URL+Extension.swift */; };
 		E2242BB82ECF106300C867D4 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B792ECF106300C867D4 /* Functions.swift */; };
-		E2242BB92ECF106300C867D4 /* SubscriptionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B6D2ECF106300C867D4 /* SubscriptionViewModel.swift */; };
+		E2242BB92ECF106300C867D4 /* SubscribeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B6D2ECF106300C867D4 /* SubscribeViewModel.swift */; };
 		E2242BBA2ECF106300C867D4 /* PayHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B412ECF106300C867D4 /* PayHelper.swift */; };
 		E2242BBB2ECF106300C867D4 /* IdfaUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B7A2ECF106300C867D4 /* IdfaUtils.swift */; };
 		E2242BBC2ECF106300C867D4 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B092ECF106300C867D4 /* UserManager.swift */; };
@@ -102,7 +102,7 @@
 		E2242BDC2ECF106300C867D4 /* EventSourceSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B322ECF106300C867D4 /* EventSourceSerializer.swift */; };
 		E2242BDD2ECF106300C867D4 /* PRPhotoTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B5A2ECF106300C867D4 /* PRPhotoTypes.swift */; };
 		E2242BDE2ECF106300C867D4 /* ImageUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B7B2ECF106300C867D4 /* ImageUtils.swift */; };
-		E2242BDF2ECF106300C867D4 /* SubscriptionPackageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AFD2ECF106300C867D4 /* SubscriptionPackageModel.swift */; };
+		E2242BDF2ECF106300C867D4 /* SubscribeResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AFD2ECF106300C867D4 /* SubscribeResponseModel.swift */; };
 		E2242BE02ECF106300C867D4 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B252ECF106300C867D4 /* Data+Extension.swift */; };
 		E2242BE22ECF106300C867D4 /* MarketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B052ECF106300C867D4 /* MarketManager.swift */; };
 		E2242BE32ECF106300C867D4 /* ReviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AF62ECF106300C867D4 /* ReviewManager.swift */; };
@@ -188,7 +188,7 @@
 		E2242AF72ECF106300C867D4 /* UIState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIState.swift; sourceTree = "<group>"; };
 		E2242AF92ECF106300C867D4 /* LocalizableManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizableManager.swift; sourceTree = "<group>"; };
 		E2242AFB2ECF106300C867D4 /* ConfigModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigModel.swift; sourceTree = "<group>"; };
-		E2242AFD2ECF106300C867D4 /* SubscriptionPackageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionPackageModel.swift; sourceTree = "<group>"; };
+		E2242AFD2ECF106300C867D4 /* SubscribeResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeResponseModel.swift; sourceTree = "<group>"; };
 		E2242AFE2ECF106300C867D4 /* UserInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
 		E2242B002ECF106300C867D4 /* ATTrackingManager+Limit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ATTrackingManager+Limit.h"; sourceTree = "<group>"; };
 		E2242B012ECF106300C867D4 /* ATTrackingManager+Limit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ATTrackingManager+Limit.m"; sourceTree = "<group>"; };
@@ -261,8 +261,8 @@
 		E2242B5F2ECF106300C867D4 /* Permissions+Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Permissions+Alert.swift"; sourceTree = "<group>"; };
 		E2242B602ECF106300C867D4 /* PhotoMapHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoMapHelpers.swift; sourceTree = "<group>"; };
 		E2242B622ECF106300C867D4 /* PRAssetThumbnailProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAssetThumbnailProvider.swift; sourceTree = "<group>"; };
-		E2242B6D2ECF106300C867D4 /* SubscriptionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionViewModel.swift; sourceTree = "<group>"; };
-		E2242B6F2ECF106300C867D4 /* SubscriptionEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionEntryView.swift; sourceTree = "<group>"; };
+		E2242B6D2ECF106300C867D4 /* SubscribeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeViewModel.swift; sourceTree = "<group>"; };
+		E2242B6F2ECF106300C867D4 /* SubscribeEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeEntryView.swift; sourceTree = "<group>"; };
 		E2242B712ECF106300C867D4 /* ProductManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductManager.swift; sourceTree = "<group>"; };
 		E2242B782ECF106300C867D4 /* DeviceUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceUtils.swift; sourceTree = "<group>"; };
 		E2242B792ECF106300C867D4 /* Functions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
@@ -342,7 +342,7 @@
 		1EB31A002ED99DD600884DD1 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				E2242B6F2ECF106300C867D4 /* SubscriptionEntryView.swift */,
+				E2242B6F2ECF106300C867D4 /* SubscribeEntryView.swift */,
 				1EB31A012ED99DFD00884DD1 /* SubscribeSwitchPage.swift */,
 				1EB31A052ED9B91900884DD1 /* SubscribeNormalPage.swift */,
 				1EB31A072ED9BBA600884DD1 /* SubscribeNormalCellView.swift */,
@@ -355,7 +355,7 @@
 			isa = PBXGroup;
 			children = (
 				E2242B712ECF106300C867D4 /* ProductManager.swift */,
-				E2242B6D2ECF106300C867D4 /* SubscriptionViewModel.swift */,
+				E2242B6D2ECF106300C867D4 /* SubscribeViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -363,6 +363,7 @@
 		1EB31A042ED99F5500884DD1 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				E2242AFD2ECF106300C867D4 /* SubscribeResponseModel.swift */,
 				1EB31A092ED9C7F900884DD1 /* SubscribeListRequestModel.swift */,
 			);
 			path = Model;
@@ -402,7 +403,7 @@
 				E2242B452ECF106300C867D4 /* CoreSDK */,
 				E2242B482ECF106300C867D4 /* Modify */,
 				E2242B642ECF106300C867D4 /* PhotoAnalyzer */,
-				E2242B772ECF106300C867D4 /* Subscribe */,
+				E2242B772ECF106300C867D4 /* Subs */,
 				E2242B7E2ECF106300C867D4 /* Utils */,
 				E2242C0C2ECF10B800C867D4 /* Views */,
 				E2242ACC2ECEEFE100C867D4 /* Resources */,
@@ -494,7 +495,6 @@
 			isa = PBXGroup;
 			children = (
 				E2242AFB2ECF106300C867D4 /* ConfigModel.swift */,
-				E2242AFD2ECF106300C867D4 /* SubscriptionPackageModel.swift */,
 				E2242AFE2ECF106300C867D4 /* UserInfo.swift */,
 			);
 			path = Network;
@@ -806,14 +806,14 @@
 			path = PhotoAnalyzer;
 			sourceTree = "<group>";
 		};
-		E2242B772ECF106300C867D4 /* Subscribe */ = {
+		E2242B772ECF106300C867D4 /* Subs */ = {
 			isa = PBXGroup;
 			children = (
 				1EB31A042ED99F5500884DD1 /* Model */,
 				1EB31A032ED99F4F00884DD1 /* ViewModel */,
 				1EB31A002ED99DD600884DD1 /* View */,
 			);
-			path = Subscribe;
+			path = Subs;
 			sourceTree = "<group>";
 		};
 		E2242B7E2ECF106300C867D4 /* Utils */ = {
@@ -1140,7 +1140,7 @@
 				E2242B8E2ECF106300C867D4 /* JsonUtils.swift in Sources */,
 				E2242B8F2ECF106300C867D4 /* Permissions+Alert.swift in Sources */,
 				E2242B902ECF106300C867D4 /* PermissonsManager.swift in Sources */,
-				E2242B922ECF106300C867D4 /* SubscriptionEntryView.swift in Sources */,
+				E2242B922ECF106300C867D4 /* SubscribeEntryView.swift in Sources */,
 				E2242B932ECF106300C867D4 /* TextAnalyzer.swift in Sources */,
 				E2242B942ECF106300C867D4 /* GlobalOverlay.swift in Sources */,
 				E2242B962ECF106300C867D4 /* String+Extension.swift in Sources */,
@@ -1175,7 +1175,7 @@
 				E2242BB62ECF106300C867D4 /* Font+Extension.swift in Sources */,
 				E2242BB72ECF106300C867D4 /* URL+Extension.swift in Sources */,
 				E2242BB82ECF106300C867D4 /* Functions.swift in Sources */,
-				E2242BB92ECF106300C867D4 /* SubscriptionViewModel.swift in Sources */,
+				E2242BB92ECF106300C867D4 /* SubscribeViewModel.swift in Sources */,
 				1EB319812ED1A34200884DD1 /* BreathingModifier.swift in Sources */,
 				E2242BBA2ECF106300C867D4 /* PayHelper.swift in Sources */,
 				E2242BBB2ECF106300C867D4 /* IdfaUtils.swift in Sources */,
@@ -1217,7 +1217,7 @@
 				E2242BDC2ECF106300C867D4 /* EventSourceSerializer.swift in Sources */,
 				E2242BDD2ECF106300C867D4 /* PRPhotoTypes.swift in Sources */,
 				E2242BDE2ECF106300C867D4 /* ImageUtils.swift in Sources */,
-				E2242BDF2ECF106300C867D4 /* SubscriptionPackageModel.swift in Sources */,
+				E2242BDF2ECF106300C867D4 /* SubscribeResponseModel.swift in Sources */,
 				1EB31A022ED99DFD00884DD1 /* SubscribeSwitchPage.swift in Sources */,
 				E2242BE02ECF106300C867D4 /* Data+Extension.swift in Sources */,
 				E2242BE22ECF106300C867D4 /* MarketManager.swift in Sources */,
