@@ -8,7 +8,7 @@
 import SwiftUI
 import Lottie
 
-struct MALottieView: UIViewRepresentable {
+struct PRLottieView: UIViewRepresentable {
     let animationName: String
     let loopMode: LottieLoopMode
     let speed: CGFloat

@@ -79,7 +79,7 @@ struct PRAlbumPermissionView: View {
             Spacer(minLength: 0)
 
             ZStack {
-                MALottieView(
+                PRLottieView(
                     animationName: "AlbumPermissionLoading/data",
                     loopMode: .loop,
                     speed: 1.0,

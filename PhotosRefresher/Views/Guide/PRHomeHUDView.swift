@@ -81,7 +81,7 @@ struct PRHomeHUDView: View {
 
                     VStack(spacing: 12) {
                         if hasLottie {
-                            MALottieView(
+                            PRLottieView(
                                 animationName: "HomeLoading/data",
                                 loopMode: .loop,
                                 speed: 1.0,

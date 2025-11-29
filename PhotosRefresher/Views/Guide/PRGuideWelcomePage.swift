@@ -57,7 +57,7 @@ struct PRGuideWelcomePage: View {
                                             .padding(.top, 8)
                                             .multilineTextAlignment(.center)
                                        
-                                        MALottieView(
+                                        PRLottieView(
                                             animationName: model.imageName,
                                             loopMode: .loop,
                                             speed: 1.0,

@@ -121,15 +121,15 @@
 		E2242C112ECF10B800C867D4 /* PRSettingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242C092ECF10B800C867D4 /* PRSettingPage.swift */; };
 		E2242C122ECF10B800C867D4 /* PRAlbumPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BFC2ECF10B800C867D4 /* PRAlbumPermissionView.swift */; };
 		E2242C132ECF10B800C867D4 /* PRSettingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242C0A2ECF10B800C867D4 /* PRSettingSection.swift */; };
-		E2242C172ECF10B800C867D4 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BF32ECF10B800C867D4 /* Modal.swift */; };
+		E2242C172ECF10B800C867D4 /* PRModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BF32ECF10B800C867D4 /* PRModalView.swift */; };
 		E2242C182ECF10B800C867D4 /* PRAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BFA2ECF10B800C867D4 /* PRAlertView.swift */; };
 		E2242C192ECF10B800C867D4 /* PRGuideWelcomePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BFF2ECF10B800C867D4 /* PRGuideWelcomePage.swift */; };
 		E2242C1B2ECF10B800C867D4 /* PRHomeHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242C002ECF10B800C867D4 /* PRHomeHUDView.swift */; };
-		E2242C1E2ECF10B800C867D4 /* MALottieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BF22ECF10B800C867D4 /* MALottieView.swift */; };
+		E2242C1E2ECF10B800C867D4 /* PRLottieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BF22ECF10B800C867D4 /* PRLottieView.swift */; };
 		E2242C1F2ECF10B800C867D4 /* PRGuideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BFE2ECF10B800C867D4 /* PRGuideViewModel.swift */; };
 		E2242C212ECF10B800C867D4 /* PRIDFAPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242C012ECF10B800C867D4 /* PRIDFAPageView.swift */; };
 		E2242C232ECF10B800C867D4 /* PRGuidePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BFD2ECF10B800C867D4 /* PRGuidePage.swift */; };
-		E2242C272ECF10B800C867D4 /* CustomNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BEB2ECF10B800C867D4 /* CustomNavigationView.swift */; };
+		E2242C272ECF10B800C867D4 /* PRCustomNavigationBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BEB2ECF10B800C867D4 /* PRCustomNavigationBarView.swift */; };
 		E2242C2C2ECF111600C867D4 /* PRCategoryHomePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242C2B2ECF111600C867D4 /* PRCategoryHomePage.swift */; };
 		E2242C2E2ECF113200C867D4 /* PRCategoryHomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242C2D2ECF113200C867D4 /* PRCategoryHomeViewModel.swift */; };
 		E2242C302ECF115300C867D4 /* PRDeleteFinishPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242C2F2ECF115300C867D4 /* PRDeleteFinishPage.swift */; };
@@ -267,9 +267,9 @@
 		E2242B002ECF106300C867D4 /* ATTrackingManager+Limit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ATTrackingManager+Limit.h"; sourceTree = "<group>"; };
 		E2242B012ECF106300C867D4 /* ATTrackingManager+Limit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ATTrackingManager+Limit.m"; sourceTree = "<group>"; };
 		E2242BEA2ECF10B800C867D4 /* PRBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRBottomSheet.swift; sourceTree = "<group>"; };
-		E2242BEB2ECF10B800C867D4 /* CustomNavigationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationView.swift; sourceTree = "<group>"; };
-		E2242BF22ECF10B800C867D4 /* MALottieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MALottieView.swift; sourceTree = "<group>"; };
-		E2242BF32ECF10B800C867D4 /* Modal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modal.swift; sourceTree = "<group>"; };
+		E2242BEB2ECF10B800C867D4 /* PRCustomNavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRCustomNavigationBarView.swift; sourceTree = "<group>"; };
+		E2242BF22ECF10B800C867D4 /* PRLottieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRLottieView.swift; sourceTree = "<group>"; };
+		E2242BF32ECF10B800C867D4 /* PRModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRModalView.swift; sourceTree = "<group>"; };
 		E2242BFA2ECF10B800C867D4 /* PRAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAlertView.swift; sourceTree = "<group>"; };
 		E2242BFC2ECF10B800C867D4 /* PRAlbumPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAlbumPermissionView.swift; sourceTree = "<group>"; };
 		E2242BFD2ECF10B800C867D4 /* PRGuidePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRGuidePage.swift; sourceTree = "<group>"; };
@@ -623,7 +623,7 @@
 				E202D6B22EDACC8100B1F55F /* PRAssetManage */,
 				E202D6BF2EDACC8100B1F55F /* Subs */,
 				E2242C602ED5E1B300C867D4 /* PhotosRefresher.entitlements */,
-				E2242B0B2ECF106300C867D4 /* Business */,
+				E2242B0B2ECF106300C867D4 /* Biz */,
 				E2242B482ECF106300C867D4 /* Modify */,
 				E2242B7E2ECF106300C867D4 /* Utils */,
 				E2242C0C2ECF10B800C867D4 /* Views */,
@@ -755,7 +755,7 @@
 			path = User;
 			sourceTree = "<group>";
 		};
-		E2242B0B2ECF106300C867D4 /* Business */ = {
+		E2242B0B2ECF106300C867D4 /* Biz */ = {
 			isa = PBXGroup;
 			children = (
 				E2242AEC2ECF106300C867D4 /* AppRegistry */,
@@ -769,7 +769,7 @@
 				E2242B082ECF106300C867D4 /* Tool */,
 				E2242B0A2ECF106300C867D4 /* User */,
 			);
-			path = Business;
+			path = Biz;
 			sourceTree = "<group>";
 		};
 		E2242B482ECF106300C867D4 /* Modify */ = {
@@ -806,20 +806,20 @@
 				1EE8CCA32EDAC97F0064F683 /* PRProgressBarView.swift */,
 				1EE8CCA42EDAC97F0064F683 /* PRShareImageActivityView.swift */,
 				E2242BEA2ECF10B800C867D4 /* PRBottomSheet.swift */,
-				E2242BEB2ECF10B800C867D4 /* CustomNavigationView.swift */,
-				E2242BF22ECF10B800C867D4 /* MALottieView.swift */,
-				E2242BF32ECF10B800C867D4 /* Modal.swift */,
+				E2242BEB2ECF10B800C867D4 /* PRCustomNavigationBarView.swift */,
+				E2242BF22ECF10B800C867D4 /* PRLottieView.swift */,
+				E2242BF32ECF10B800C867D4 /* PRModalView.swift */,
 				E202D6D52EDACD1100B1F55F /* PRThemeButton.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
 		};
-		E2242BFB2ECF10B800C867D4 /* Dialog */ = {
+		E2242BFB2ECF10B800C867D4 /* Alert */ = {
 			isa = PBXGroup;
 			children = (
 				E2242BFA2ECF10B800C867D4 /* PRAlertView.swift */,
 			);
-			path = Dialog;
+			path = Alert;
 			sourceTree = "<group>";
 		};
 		E2242C022ECF10B800C867D4 /* Guide */ = {
@@ -844,13 +844,13 @@
 			path = Launch;
 			sourceTree = "<group>";
 		};
-		E2242C082ECF10B800C867D4 /* MainTab */ = {
+		E2242C082ECF10B800C867D4 /* Tab */ = {
 			isa = PBXGroup;
 			children = (
 				1EE8CC562EDAC7C50064F683 /* PRMainTabView.swift */,
 				1EE8CC572EDAC7C50064F683 /* PRMainTabViewModel.swift */,
 			);
-			path = MainTab;
+			path = Tab;
 			sourceTree = "<group>";
 		};
 		E2242C0B2ECF10B800C867D4 /* Setting */ = {
@@ -868,10 +868,10 @@
 				E2242C3E2ECF12BD00C867D4 /* Slide */,
 				E2242C2A2ECF10E200C867D4 /* Clean */,
 				E2242BF92ECF10B800C867D4 /* Common */,
-				E2242BFB2ECF10B800C867D4 /* Dialog */,
+				E2242BFB2ECF10B800C867D4 /* Alert */,
 				E2242C022ECF10B800C867D4 /* Guide */,
 				E2242C052ECF10B800C867D4 /* Launch */,
-				E2242C082ECF10B800C867D4 /* MainTab */,
+				E2242C082ECF10B800C867D4 /* Tab */,
 				E2242C0B2ECF10B800C867D4 /* Setting */,
 			);
 			path = Views;
@@ -1067,7 +1067,7 @@
 				E2242C132ECF10B800C867D4 /* PRSettingSection.swift in Sources */,
 				E2242C2C2ECF111600C867D4 /* PRCategoryHomePage.swift in Sources */,
 				1EE8CC872EDAC8E20064F683 /* PRLocalizableManager.swift in Sources */,
-				E2242C172ECF10B800C867D4 /* Modal.swift in Sources */,
+				E2242C172ECF10B800C867D4 /* PRModalView.swift in Sources */,
 				1EE8CC582EDAC7C50064F683 /* PRMainTabViewModel.swift in Sources */,
 				1EE8CC592EDAC7C50064F683 /* PRMainTabView.swift in Sources */,
 				E2242C182ECF10B800C867D4 /* PRAlertView.swift in Sources */,
@@ -1076,7 +1076,7 @@
 				E2242C422ECF130900C867D4 /* PRSlidePage.swift in Sources */,
 				E2242C402ECF12EB00C867D4 /* PRSlideDetailPage.swift in Sources */,
 				E2242C1B2ECF10B800C867D4 /* PRHomeHUDView.swift in Sources */,
-				E2242C1E2ECF10B800C867D4 /* MALottieView.swift in Sources */,
+				E2242C1E2ECF10B800C867D4 /* PRLottieView.swift in Sources */,
 				1EE8CC6C2EDAC8810064F683 /* PRDialogRegistry.swift in Sources */,
 				1EE8CC6D2EDAC8810064F683 /* PRDialogDestination.swift in Sources */,
 				E2242C1F2ECF10B800C867D4 /* PRGuideViewModel.swift in Sources */,
@@ -1085,7 +1085,7 @@
 				E2242C232ECF10B800C867D4 /* PRGuidePage.swift in Sources */,
 				E2242C322ECF116B00C867D4 /* PRDoubleFeedPage.swift in Sources */,
 				E2242C462ECF134B00C867D4 /* PRSlideCacheManager.swift in Sources */,
-				E2242C272ECF10B800C867D4 /* CustomNavigationView.swift in Sources */,
+				E2242C272ECF10B800C867D4 /* PRCustomNavigationBarView.swift in Sources */,
 				1EE8CC542EDAC7AE0064F683 /* PRAppViewModel.swift in Sources */,
 				1EE8CC552EDAC7AE0064F683 /* PRAppView.swift in Sources */,
 				1EE8CC802EDAC8CC0064F683 /* PRMailHelper.swift in Sources */,
