@@ -1,8 +1,11 @@
 //
-//  EnvManager.swift
+//  PREnvironmentManager.swift
+//  PhotosRefresher
+//
+//  Created by tom on 2025/11/28.
 //
 
-//
+import Foundation
 
 public enum Environment2: Identifiable, Equatable {
  

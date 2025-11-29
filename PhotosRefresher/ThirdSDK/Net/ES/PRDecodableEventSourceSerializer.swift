@@ -1,8 +1,8 @@
 //
-//  DecodableEventSourceSerializer.swift
-//  Alamofire
+//  PRDecodableEventSourceSerializer.swift
+//  PhotosRefresher
 //
-//  Created by Daniel Clelland on 8/08/20.
+//  Created by tom on 2025/11/28.
 //
 
 import Foundation

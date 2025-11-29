@@ -1,10 +1,11 @@
 //
-//  NetworkResponseModel.swift
-//  LangLearn
+//  PRRequestHandlerResponseModel.swift
+//  PhotosRefresher
+//
+//  Created by tom on 2025/11/28.
 //
 
-//
-
+import Foundation
 public protocol DefaultInitializable {
     static var defaultValue: Self { get }
 }

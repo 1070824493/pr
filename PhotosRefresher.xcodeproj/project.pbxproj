@@ -8,49 +8,30 @@
 
 /* Begin PBXBuildFile section */
 		1EB3197F2ED1978300884DD1 /* CustomPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB3197E2ED1978300884DD1 /* CustomPageView.swift */; };
-		1EE8CC192EDA9AD50064F683 /* PROrderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC142EDA9AD40064F683 /* PROrderManager.swift */; };
-		1EE8CC1A2EDA9AD50064F683 /* PREnvironmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC072EDA9AD40064F683 /* PREnvironmentManager.swift */; };
 		1EE8CC1B2EDA9AD50064F683 /* DismissingKeyboardOnSwipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBEF2EDA9AD40064F683 /* DismissingKeyboardOnSwipe.swift */; };
 		1EE8CC1D2EDA9AD50064F683 /* OnReceiveChangeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF02EDA9AD40064F683 /* OnReceiveChangeModifier.swift */; };
-		1EE8CC1E2EDA9AD50064F683 /* PRRequestHandlerResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC0D2EDA9AD40064F683 /* PRRequestHandlerResponseModel.swift */; };
-		1EE8CC1F2EDA9AD50064F683 /* PRRequestHandlerSignUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC0E2EDA9AD40064F683 /* PRRequestHandlerSignUtils.swift */; };
-		1EE8CC202EDA9AD50064F683 /* PRQuerySubscriptionOrderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC112EDA9AD40064F683 /* PRQuerySubscriptionOrderModel.swift */; };
 		1EE8CC212EDA9AD50064F683 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF72EDA9AD40064F683 /* Date+Extension.swift */; };
-		1EE8CC222EDA9AD50064F683 /* PRRequestHandlerInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC082EDA9AD40064F683 /* PRRequestHandlerInterceptor.swift */; };
 		1EE8CC232EDA9AD50064F683 /* Array+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBE82EDA9AD40064F683 /* Array+Extension.swift */; };
 		1EE8CC242EDA9AD50064F683 /* Data+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF62EDA9AD40064F683 /* Data+Extension.swift */; };
 		1EE8CC252EDA9AD50064F683 /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBFD2EDA9AD40064F683 /* View+Extension.swift */; };
-		1EE8CC262EDA9AD50064F683 /* PREventSourceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC022EDA9AD40064F683 /* PREventSourceMessage.swift */; };
-		1EE8CC272EDA9AD50064F683 /* PRDecodableEventSourceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC002EDA9AD40064F683 /* PRDecodableEventSourceMessage.swift */; };
-		1EE8CC282EDA9AD50064F683 /* PREventSourceSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC032EDA9AD40064F683 /* PREventSourceSerializer.swift */; };
-		1EE8CC292EDA9AD50064F683 /* PRRequestHandlerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC092EDA9AD40064F683 /* PRRequestHandlerManager.swift */; };
-		1EE8CC2A2EDA9AD50064F683 /* PRNotifySubscriptionOrderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC102EDA9AD40064F683 /* PRNotifySubscriptionOrderModel.swift */; };
-		1EE8CC2B2EDA9AD50064F683 /* PRRequestHandlerObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC0C2EDA9AD40064F683 /* PRRequestHandlerObserver.swift */; };
 		1EE8CC2C2EDA9AD50064F683 /* SSKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBDE2EDA9AD40064F683 /* SSKeychain.m */; };
 		1EE8CC2D2EDA9AD50064F683 /* CommonAICuidUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBE52EDA9AD40064F683 /* CommonAICuidUtils.m */; };
-		1EE8CC2E2EDA9AD50064F683 /* PRRequestHandlerNetworkManager+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC0A2EDA9AD40064F683 /* PRRequestHandlerNetworkManager+File.swift */; };
 		1EE8CC2F2EDA9AD50064F683 /* Animation+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBE72EDA9AD40064F683 /* Animation+Extension.swift */; };
 		1EE8CC302EDA9AD50064F683 /* Bundle+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBE92EDA9AD40064F683 /* Bundle+Extension.swift */; };
 		1EE8CC312EDA9AD50064F683 /* RotationPublihsers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBED2EDA9AD40064F683 /* RotationPublihsers.swift */; };
 		1EE8CC322EDA9AD50064F683 /* StrokeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF12EDA9AD40064F683 /* StrokeModifier.swift */; };
-		1EE8CC332EDA9AD50064F683 /* PRRequestHandlerNetworkManager+Stream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC0B2EDA9AD40064F683 /* PRRequestHandlerNetworkManager+Stream.swift */; };
 		1EE8CC342EDA9AD50064F683 /* Font+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBEA2EDA9AD40064F683 /* Font+Extension.swift */; };
 		1EE8CC352EDA9AD50064F683 /* CommonAICuid.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBE32EDA9AD40064F683 /* CommonAICuid.mm */; };
 		1EE8CC362EDA9AD50064F683 /* Color+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF52EDA9AD40064F683 /* Color+Extension.swift */; };
 		1EE8CC382EDA9AD50064F683 /* SSKeychainQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBE02EDA9AD40064F683 /* SSKeychainQuery.m */; };
-		1EE8CC392EDA9AD50064F683 /* PRDecodableEventSourceSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC012EDA9AD40064F683 /* PRDecodableEventSourceSerializer.swift */; };
 		1EE8CC3A2EDA9AD50064F683 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF92EDA9AD40064F683 /* String+Extension.swift */; };
 		1EE8CC3B2EDA9AD50064F683 /* UIApplication+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBFA2EDA9AD40064F683 /* UIApplication+Extension.swift */; };
 		1EE8CC3C2EDA9AD50064F683 /* URL+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBFC2EDA9AD40064F683 /* URL+Extension.swift */; };
 		1EE8CC3D2EDA9AD50064F683 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBFB2EDA9AD40064F683 /* UIImage+Extension.swift */; };
 		1EE8CC3E2EDA9AD50064F683 /* Codable+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF42EDA9AD40064F683 /* Codable+Extension.swift */; };
 		1EE8CC3F2EDA9AD50064F683 /* KeyboardPublishers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBEC2EDA9AD40064F683 /* KeyboardPublishers.swift */; };
-		1EE8CC402EDA9AD50064F683 /* PRSubscriptionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC162EDA9AD40064F683 /* PRSubscriptionHelper.swift */; };
 		1EE8CC412EDA9AD50064F683 /* Number+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF82EDA9AD40064F683 /* Number+Extension.swift */; };
-		1EE8CC422EDA9AD50064F683 /* PRSubmitSubscriptionOrderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC122EDA9AD40064F683 /* PRSubmitSubscriptionOrderModel.swift */; };
-		1EE8CC432EDA9AD50064F683 /* Alamofire+EventSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBFF2EDA9AD40064F683 /* Alamofire+EventSource.swift */; };
 		1EE8CC442EDA9AD50064F683 /* ViewDurationTrackerModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF22EDA9AD40064F683 /* ViewDurationTrackerModifier.swift */; };
-		1EE8CC452EDA9AD50064F683 /* PRPaymentProcessManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC152EDA9AD40064F683 /* PRPaymentProcessManager.swift */; };
 		1EE8CC542EDAC7AE0064F683 /* PRAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC532EDAC7AE0064F683 /* PRAppViewModel.swift */; };
 		1EE8CC552EDAC7AE0064F683 /* PRAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC522EDAC7AE0064F683 /* PRAppView.swift */; };
 		1EE8CC582EDAC7C50064F683 /* PRMainTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC572EDAC7C50064F683 /* PRMainTabViewModel.swift */; };
@@ -116,6 +97,23 @@
 		E202D6D62EDACD1100B1F55F /* PRThemeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6D52EDACD1100B1F55F /* PRThemeButton.swift */; };
 		E202D6D82EDACED900B1F55F /* PRSubscribeEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6D72EDACED900B1F55F /* PRSubscribeEntryView.swift */; };
 		E202D6DA2EDACF1500B1F55F /* PRSubscribeResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6D92EDACF1500B1F55F /* PRSubscribeResponseModel.swift */; };
+		E202D6E02EDAD11E00B1F55F /* PROrderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6DF2EDAD11E00B1F55F /* PROrderManager.swift */; };
+		E202D6E22EDAD13700B1F55F /* PRPaymentProcessManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6E12EDAD13700B1F55F /* PRPaymentProcessManager.swift */; };
+		E202D6E42EDAD14600B1F55F /* PRSubscriptionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6E32EDAD14600B1F55F /* PRSubscriptionHelper.swift */; };
+		E202D6E72EDAD17500B1F55F /* PROrderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6E62EDAD17500B1F55F /* PROrderModel.swift */; };
+		E202D6EB2EDAD1C500B1F55F /* Alamofire+EventSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6EA2EDAD1C500B1F55F /* Alamofire+EventSource.swift */; };
+		E202D6ED2EDAD1E800B1F55F /* PRDecodableEventSourceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6EC2EDAD1E800B1F55F /* PRDecodableEventSourceMessage.swift */; };
+		E202D6EF2EDAD1FF00B1F55F /* PRDecodableEventSourceSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6EE2EDAD1FF00B1F55F /* PRDecodableEventSourceSerializer.swift */; };
+		E202D6F12EDAD21400B1F55F /* PREventSourceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6F02EDAD21400B1F55F /* PREventSourceMessage.swift */; };
+		E202D6F32EDAD22600B1F55F /* PREventSourceSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6F22EDAD22600B1F55F /* PREventSourceSerializer.swift */; };
+		E202D6F52EDAD23A00B1F55F /* PREnvironmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6F42EDAD23A00B1F55F /* PREnvironmentManager.swift */; };
+		E202D6F72EDAD24C00B1F55F /* PRRequestHandlerInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6F62EDAD24C00B1F55F /* PRRequestHandlerInterceptor.swift */; };
+		E202D6F92EDAD25C00B1F55F /* PRRequestHandlerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6F82EDAD25C00B1F55F /* PRRequestHandlerManager.swift */; };
+		E202D6FB2EDAD27200B1F55F /* PRRequestHandlerNetworkManager+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6FA2EDAD27200B1F55F /* PRRequestHandlerNetworkManager+File.swift */; };
+		E202D6FD2EDAD28B00B1F55F /* PRRequestHandlerNetworkManager+Stream.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6FC2EDAD28B00B1F55F /* PRRequestHandlerNetworkManager+Stream.swift */; };
+		E202D6FF2EDAD2A200B1F55F /* PRRequestHandlerObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6FE2EDAD2A200B1F55F /* PRRequestHandlerObserver.swift */; };
+		E202D7012EDAD2C800B1F55F /* PRRequestHandlerResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D7002EDAD2C800B1F55F /* PRRequestHandlerResponseModel.swift */; };
+		E202D7032EDAD2DA00B1F55F /* PRRequestHandlerSignUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D7022EDAD2DA00B1F55F /* PRRequestHandlerSignUtils.swift */; };
 		E2242A882ECEEE8400C867D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2242A832ECEEE8400C867D4 /* Assets.xcassets */; };
 		E2242A982ECEEE8400C867D4 /* PhotosRefresherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242A862ECEEE8400C867D4 /* PhotosRefresherApp.swift */; };
 		E2242BCA2ECF106300C867D4 /* ATTrackingManager+Limit.m in Sources */ = {isa = PBXBuildFile; fileRef = E2242B012ECF106300C867D4 /* ATTrackingManager+Limit.m */; };
@@ -179,25 +177,6 @@
 		1EE8CBFB2EDA9AD40064F683 /* UIImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
 		1EE8CBFC2EDA9AD40064F683 /* URL+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Extension.swift"; sourceTree = "<group>"; };
 		1EE8CBFD2EDA9AD40064F683 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
-		1EE8CBFF2EDA9AD40064F683 /* Alamofire+EventSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Alamofire+EventSource.swift"; sourceTree = "<group>"; };
-		1EE8CC002EDA9AD40064F683 /* PRDecodableEventSourceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDecodableEventSourceMessage.swift; sourceTree = "<group>"; };
-		1EE8CC012EDA9AD40064F683 /* PRDecodableEventSourceSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDecodableEventSourceSerializer.swift; sourceTree = "<group>"; };
-		1EE8CC022EDA9AD40064F683 /* PREventSourceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PREventSourceMessage.swift; sourceTree = "<group>"; };
-		1EE8CC032EDA9AD40064F683 /* PREventSourceSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PREventSourceSerializer.swift; sourceTree = "<group>"; };
-		1EE8CC072EDA9AD40064F683 /* PREnvironmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PREnvironmentManager.swift; sourceTree = "<group>"; };
-		1EE8CC082EDA9AD40064F683 /* PRRequestHandlerInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerInterceptor.swift; sourceTree = "<group>"; };
-		1EE8CC092EDA9AD40064F683 /* PRRequestHandlerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerManager.swift; sourceTree = "<group>"; };
-		1EE8CC0A2EDA9AD40064F683 /* PRRequestHandlerNetworkManager+File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PRRequestHandlerNetworkManager+File.swift"; sourceTree = "<group>"; };
-		1EE8CC0B2EDA9AD40064F683 /* PRRequestHandlerNetworkManager+Stream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PRRequestHandlerNetworkManager+Stream.swift"; sourceTree = "<group>"; };
-		1EE8CC0C2EDA9AD40064F683 /* PRRequestHandlerObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerObserver.swift; sourceTree = "<group>"; };
-		1EE8CC0D2EDA9AD40064F683 /* PRRequestHandlerResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerResponseModel.swift; sourceTree = "<group>"; };
-		1EE8CC0E2EDA9AD40064F683 /* PRRequestHandlerSignUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerSignUtils.swift; sourceTree = "<group>"; };
-		1EE8CC102EDA9AD40064F683 /* PRNotifySubscriptionOrderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRNotifySubscriptionOrderModel.swift; sourceTree = "<group>"; };
-		1EE8CC112EDA9AD40064F683 /* PRQuerySubscriptionOrderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRQuerySubscriptionOrderModel.swift; sourceTree = "<group>"; };
-		1EE8CC122EDA9AD40064F683 /* PRSubmitSubscriptionOrderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSubmitSubscriptionOrderModel.swift; sourceTree = "<group>"; };
-		1EE8CC142EDA9AD40064F683 /* PROrderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PROrderManager.swift; sourceTree = "<group>"; };
-		1EE8CC152EDA9AD40064F683 /* PRPaymentProcessManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRPaymentProcessManager.swift; sourceTree = "<group>"; };
-		1EE8CC162EDA9AD40064F683 /* PRSubscriptionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSubscriptionHelper.swift; sourceTree = "<group>"; };
 		1EE8CC522EDAC7AE0064F683 /* PRAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAppView.swift; sourceTree = "<group>"; };
 		1EE8CC532EDAC7AE0064F683 /* PRAppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAppViewModel.swift; sourceTree = "<group>"; };
 		1EE8CC562EDAC7C50064F683 /* PRMainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRMainTabView.swift; sourceTree = "<group>"; };
@@ -265,6 +244,23 @@
 		E202D6D52EDACD1100B1F55F /* PRThemeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRThemeButton.swift; sourceTree = "<group>"; };
 		E202D6D72EDACED900B1F55F /* PRSubscribeEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSubscribeEntryView.swift; sourceTree = "<group>"; };
 		E202D6D92EDACF1500B1F55F /* PRSubscribeResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSubscribeResponseModel.swift; sourceTree = "<group>"; };
+		E202D6DF2EDAD11E00B1F55F /* PROrderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PROrderManager.swift; sourceTree = "<group>"; };
+		E202D6E12EDAD13700B1F55F /* PRPaymentProcessManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRPaymentProcessManager.swift; sourceTree = "<group>"; };
+		E202D6E32EDAD14600B1F55F /* PRSubscriptionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSubscriptionHelper.swift; sourceTree = "<group>"; };
+		E202D6E62EDAD17500B1F55F /* PROrderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PROrderModel.swift; sourceTree = "<group>"; };
+		E202D6EA2EDAD1C500B1F55F /* Alamofire+EventSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Alamofire+EventSource.swift"; sourceTree = "<group>"; };
+		E202D6EC2EDAD1E800B1F55F /* PRDecodableEventSourceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDecodableEventSourceMessage.swift; sourceTree = "<group>"; };
+		E202D6EE2EDAD1FF00B1F55F /* PRDecodableEventSourceSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDecodableEventSourceSerializer.swift; sourceTree = "<group>"; };
+		E202D6F02EDAD21400B1F55F /* PREventSourceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PREventSourceMessage.swift; sourceTree = "<group>"; };
+		E202D6F22EDAD22600B1F55F /* PREventSourceSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PREventSourceSerializer.swift; sourceTree = "<group>"; };
+		E202D6F42EDAD23A00B1F55F /* PREnvironmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PREnvironmentManager.swift; sourceTree = "<group>"; };
+		E202D6F62EDAD24C00B1F55F /* PRRequestHandlerInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerInterceptor.swift; sourceTree = "<group>"; };
+		E202D6F82EDAD25C00B1F55F /* PRRequestHandlerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerManager.swift; sourceTree = "<group>"; };
+		E202D6FA2EDAD27200B1F55F /* PRRequestHandlerNetworkManager+File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PRRequestHandlerNetworkManager+File.swift"; sourceTree = "<group>"; };
+		E202D6FC2EDAD28B00B1F55F /* PRRequestHandlerNetworkManager+Stream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PRRequestHandlerNetworkManager+Stream.swift"; sourceTree = "<group>"; };
+		E202D6FE2EDAD2A200B1F55F /* PRRequestHandlerObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerObserver.swift; sourceTree = "<group>"; };
+		E202D7002EDAD2C800B1F55F /* PRRequestHandlerResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerResponseModel.swift; sourceTree = "<group>"; };
+		E202D7022EDAD2DA00B1F55F /* PRRequestHandlerSignUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerSignUtils.swift; sourceTree = "<group>"; };
 		E22428542ECEEB7E00C867D4 /* PhotosRefresher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotosRefresher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2242A832ECEEE8400C867D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E2242A862ECEEE8400C867D4 /* PhotosRefresherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosRefresherApp.swift; sourceTree = "<group>"; };
@@ -395,66 +391,6 @@
 				1EE8CBFD2EDA9AD40064F683 /* View+Extension.swift */,
 			);
 			path = Extensions;
-			sourceTree = "<group>";
-		};
-		1EE8CC042EDA9AD40064F683 /* EventSource */ = {
-			isa = PBXGroup;
-			children = (
-				1EE8CBFF2EDA9AD40064F683 /* Alamofire+EventSource.swift */,
-				1EE8CC002EDA9AD40064F683 /* PRDecodableEventSourceMessage.swift */,
-				1EE8CC012EDA9AD40064F683 /* PRDecodableEventSourceSerializer.swift */,
-				1EE8CC022EDA9AD40064F683 /* PREventSourceMessage.swift */,
-				1EE8CC032EDA9AD40064F683 /* PREventSourceSerializer.swift */,
-			);
-			path = EventSource;
-			sourceTree = "<group>";
-		};
-		1EE8CC0F2EDA9AD40064F683 /* NetworkManager */ = {
-			isa = PBXGroup;
-			children = (
-				1EE8CC042EDA9AD40064F683 /* EventSource */,
-				1EE8CC072EDA9AD40064F683 /* PREnvironmentManager.swift */,
-				1EE8CC082EDA9AD40064F683 /* PRRequestHandlerInterceptor.swift */,
-				1EE8CC092EDA9AD40064F683 /* PRRequestHandlerManager.swift */,
-				1EE8CC0A2EDA9AD40064F683 /* PRRequestHandlerNetworkManager+File.swift */,
-				1EE8CC0B2EDA9AD40064F683 /* PRRequestHandlerNetworkManager+Stream.swift */,
-				1EE8CC0C2EDA9AD40064F683 /* PRRequestHandlerObserver.swift */,
-				1EE8CC0D2EDA9AD40064F683 /* PRRequestHandlerResponseModel.swift */,
-				1EE8CC0E2EDA9AD40064F683 /* PRRequestHandlerSignUtils.swift */,
-			);
-			path = NetworkManager;
-			sourceTree = "<group>";
-		};
-		1EE8CC132EDA9AD40064F683 /* PRSubscriptionModels */ = {
-			isa = PBXGroup;
-			children = (
-				1EE8CC102EDA9AD40064F683 /* PRNotifySubscriptionOrderModel.swift */,
-				1EE8CC112EDA9AD40064F683 /* PRQuerySubscriptionOrderModel.swift */,
-				1EE8CC122EDA9AD40064F683 /* PRSubmitSubscriptionOrderModel.swift */,
-			);
-			path = PRSubscriptionModels;
-			sourceTree = "<group>";
-		};
-		1EE8CC172EDA9AD40064F683 /* PRPay */ = {
-			isa = PBXGroup;
-			children = (
-				1EE8CC132EDA9AD40064F683 /* PRSubscriptionModels */,
-				1EE8CC142EDA9AD40064F683 /* PROrderManager.swift */,
-				1EE8CC152EDA9AD40064F683 /* PRPaymentProcessManager.swift */,
-				1EE8CC162EDA9AD40064F683 /* PRSubscriptionHelper.swift */,
-			);
-			path = PRPay;
-			sourceTree = "<group>";
-		};
-		1EE8CC182EDA9AD40064F683 /* CoreSDK */ = {
-			isa = PBXGroup;
-			children = (
-				1EE8CBE62EDA9AD40064F683 /* Device */,
-				1EE8CBFE2EDA9AD40064F683 /* Extensions */,
-				1EE8CC0F2EDA9AD40064F683 /* NetworkManager */,
-				1EE8CC172EDA9AD40064F683 /* PRPay */,
-			);
-			path = CoreSDK;
 			sourceTree = "<group>";
 		};
 		76339BC64290C80C44CC8E03 /* Frameworks */ = {
@@ -604,6 +540,64 @@
 			path = Subs;
 			sourceTree = "<group>";
 		};
+		E202D6DD2EDAD0EB00B1F55F /* ThirdSDK */ = {
+			isa = PBXGroup;
+			children = (
+				E202D6E82EDAD1AF00B1F55F /* Net */,
+				E202D6DE2EDAD10D00B1F55F /* PRPay */,
+				1EE8CBFE2EDA9AD40064F683 /* Extensions */,
+				1EE8CBE62EDA9AD40064F683 /* Device */,
+			);
+			path = ThirdSDK;
+			sourceTree = "<group>";
+		};
+		E202D6DE2EDAD10D00B1F55F /* PRPay */ = {
+			isa = PBXGroup;
+			children = (
+				E202D6E52EDAD15E00B1F55F /* Model */,
+				E202D6DF2EDAD11E00B1F55F /* PROrderManager.swift */,
+				E202D6E12EDAD13700B1F55F /* PRPaymentProcessManager.swift */,
+				E202D6E32EDAD14600B1F55F /* PRSubscriptionHelper.swift */,
+			);
+			path = PRPay;
+			sourceTree = "<group>";
+		};
+		E202D6E52EDAD15E00B1F55F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				E202D6E62EDAD17500B1F55F /* PROrderModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		E202D6E82EDAD1AF00B1F55F /* Net */ = {
+			isa = PBXGroup;
+			children = (
+				E202D6E92EDAD1BA00B1F55F /* ES */,
+				E202D6F42EDAD23A00B1F55F /* PREnvironmentManager.swift */,
+				E202D6F62EDAD24C00B1F55F /* PRRequestHandlerInterceptor.swift */,
+				E202D6F82EDAD25C00B1F55F /* PRRequestHandlerManager.swift */,
+				E202D6FA2EDAD27200B1F55F /* PRRequestHandlerNetworkManager+File.swift */,
+				E202D6FC2EDAD28B00B1F55F /* PRRequestHandlerNetworkManager+Stream.swift */,
+				E202D6FE2EDAD2A200B1F55F /* PRRequestHandlerObserver.swift */,
+				E202D7002EDAD2C800B1F55F /* PRRequestHandlerResponseModel.swift */,
+				E202D7022EDAD2DA00B1F55F /* PRRequestHandlerSignUtils.swift */,
+			);
+			path = Net;
+			sourceTree = "<group>";
+		};
+		E202D6E92EDAD1BA00B1F55F /* ES */ = {
+			isa = PBXGroup;
+			children = (
+				E202D6EA2EDAD1C500B1F55F /* Alamofire+EventSource.swift */,
+				E202D6EC2EDAD1E800B1F55F /* PRDecodableEventSourceMessage.swift */,
+				E202D6EE2EDAD1FF00B1F55F /* PRDecodableEventSourceSerializer.swift */,
+				E202D6F02EDAD21400B1F55F /* PREventSourceMessage.swift */,
+				E202D6F22EDAD22600B1F55F /* PREventSourceSerializer.swift */,
+			);
+			path = ES;
+			sourceTree = "<group>";
+		};
 		E224284B2ECEEB7E00C867D4 = {
 			isa = PBXGroup;
 			children = (
@@ -625,9 +619,9 @@
 		E2242A872ECEEE8400C867D4 /* PhotosRefresher */ = {
 			isa = PBXGroup;
 			children = (
+				E202D6DD2EDAD0EB00B1F55F /* ThirdSDK */,
 				E202D6B22EDACC8100B1F55F /* PRAssetManage */,
 				E202D6BF2EDACC8100B1F55F /* Subs */,
-				1EE8CC182EDA9AD40064F683 /* CoreSDK */,
 				E2242C602ED5E1B300C867D4 /* PhotosRefresher.entitlements */,
 				E2242B0B2ECF106300C867D4 /* Business */,
 				E2242B482ECF106300C867D4 /* Modify */,
@@ -1060,8 +1054,11 @@
 				E2242C112ECF10B800C867D4 /* PRSettingPage.swift in Sources */,
 				E2242C122ECF10B800C867D4 /* PRAlbumPermissionView.swift in Sources */,
 				1EE8CC712EDAC8960064F683 /* PRRouterPath.swift in Sources */,
+				E202D6E42EDAD14600B1F55F /* PRSubscriptionHelper.swift in Sources */,
+				E202D6E02EDAD11E00B1F55F /* PROrderManager.swift in Sources */,
 				1EE8CC982EDAC9600064F683 /* PRIdfaUtils.swift in Sources */,
 				1EE8CC992EDAC9600064F683 /* PRToast.swift in Sources */,
+				E202D6E22EDAD13700B1F55F /* PRPaymentProcessManager.swift in Sources */,
 				1EE8CC9A2EDAC9600064F683 /* PRFunctions.swift in Sources */,
 				1EE8CC9B2EDAC9600064F683 /* PRDeviceUtils.swift in Sources */,
 				1EE8CC722EDAC8960064F683 /* PRRouterDestination.swift in Sources */,
@@ -1075,6 +1072,7 @@
 				1EE8CC592EDAC7C50064F683 /* PRMainTabView.swift in Sources */,
 				E2242C182ECF10B800C867D4 /* PRAlertView.swift in Sources */,
 				E2242C192ECF10B800C867D4 /* PRGuideWelcomePage.swift in Sources */,
+				E202D6FF2EDAD2A200B1F55F /* PRRequestHandlerObserver.swift in Sources */,
 				E2242C422ECF130900C867D4 /* PRSlidePage.swift in Sources */,
 				E2242C402ECF12EB00C867D4 /* PRSlideDetailPage.swift in Sources */,
 				E2242C1B2ECF10B800C867D4 /* PRHomeHUDView.swift in Sources */,
@@ -1083,6 +1081,7 @@
 				1EE8CC6D2EDAC8810064F683 /* PRDialogDestination.swift in Sources */,
 				E2242C1F2ECF10B800C867D4 /* PRGuideViewModel.swift in Sources */,
 				E2242C212ECF10B800C867D4 /* PRIDFAPageView.swift in Sources */,
+				E202D6FD2EDAD28B00B1F55F /* PRRequestHandlerNetworkManager+Stream.swift in Sources */,
 				E2242C232ECF10B800C867D4 /* PRGuidePage.swift in Sources */,
 				E2242C322ECF116B00C867D4 /* PRDoubleFeedPage.swift in Sources */,
 				E2242C462ECF134B00C867D4 /* PRSlideCacheManager.swift in Sources */,
@@ -1091,40 +1090,35 @@
 				1EE8CC552EDAC7AE0064F683 /* PRAppView.swift in Sources */,
 				1EE8CC802EDAC8CC0064F683 /* PRMailHelper.swift in Sources */,
 				1EE8CC812EDAC8CC0064F683 /* PRConstants.swift in Sources */,
+				E202D6F52EDAD23A00B1F55F /* PREnvironmentManager.swift in Sources */,
+				E202D6EB2EDAD1C500B1F55F /* Alamofire+EventSource.swift in Sources */,
 				1EE8CC822EDAC8CC0064F683 /* PRAppInfo.swift in Sources */,
 				1EE8CC832EDAC8CC0064F683 /* PRDeviceHelper.swift in Sources */,
+				E202D6F32EDAD22600B1F55F /* PREventSourceSerializer.swift in Sources */,
+				E202D6E72EDAD17500B1F55F /* PROrderModel.swift in Sources */,
 				1EE8CC842EDAC8CC0064F683 /* PRReviewManager.swift in Sources */,
 				1EE8CC852EDAC8CC0064F683 /* PRUIState.swift in Sources */,
 				E2242C442ECF131B00C867D4 /* PRSlideViewModel.swift in Sources */,
 				E2242C3D2ECF124800C867D4 /* PRHomeTopBar.swift in Sources */,
 				1EB3197F2ED1978300884DD1 /* CustomPageView.swift in Sources */,
 				E2242C392ECF120700C867D4 /* PRHomeAuthorizationView.swift in Sources */,
-				1EE8CC192EDA9AD50064F683 /* PROrderManager.swift in Sources */,
 				1EE8CC692EDAC8730064F683 /* PRAlertModal.swift in Sources */,
 				1EE8CC8D2EDAC9020064F683 /* PRPermissonsManager.swift in Sources */,
-				1EE8CC1A2EDA9AD50064F683 /* PREnvironmentManager.swift in Sources */,
 				1EE8CC1B2EDA9AD50064F683 /* DismissingKeyboardOnSwipe.swift in Sources */,
 				1EE8CC1D2EDA9AD50064F683 /* OnReceiveChangeModifier.swift in Sources */,
-				1EE8CC1E2EDA9AD50064F683 /* PRRequestHandlerResponseModel.swift in Sources */,
-				1EE8CC1F2EDA9AD50064F683 /* PRRequestHandlerSignUtils.swift in Sources */,
+				E202D6F72EDAD24C00B1F55F /* PRRequestHandlerInterceptor.swift in Sources */,
+				E202D6FB2EDAD27200B1F55F /* PRRequestHandlerNetworkManager+File.swift in Sources */,
 				1EE8CC8A2EDAC8F30064F683 /* PRUserInfo.swift in Sources */,
 				1EE8CC8B2EDAC8F30064F683 /* PRConfigModel.swift in Sources */,
-				1EE8CC202EDA9AD50064F683 /* PRQuerySubscriptionOrderModel.swift in Sources */,
 				1EE8CC212EDA9AD50064F683 /* Date+Extension.swift in Sources */,
-				1EE8CC222EDA9AD50064F683 /* PRRequestHandlerInterceptor.swift in Sources */,
 				1EE8CC232EDA9AD50064F683 /* Array+Extension.swift in Sources */,
 				1EE8CC242EDA9AD50064F683 /* Data+Extension.swift in Sources */,
 				1EE8CC252EDA9AD50064F683 /* View+Extension.swift in Sources */,
-				1EE8CC262EDA9AD50064F683 /* PREventSourceMessage.swift in Sources */,
-				1EE8CC272EDA9AD50064F683 /* PRDecodableEventSourceMessage.swift in Sources */,
-				1EE8CC282EDA9AD50064F683 /* PREventSourceSerializer.swift in Sources */,
-				1EE8CC292EDA9AD50064F683 /* PRRequestHandlerManager.swift in Sources */,
-				1EE8CC2A2EDA9AD50064F683 /* PRNotifySubscriptionOrderModel.swift in Sources */,
-				1EE8CC2B2EDA9AD50064F683 /* PRRequestHandlerObserver.swift in Sources */,
+				E202D7012EDAD2C800B1F55F /* PRRequestHandlerResponseModel.swift in Sources */,
+				E202D6ED2EDAD1E800B1F55F /* PRDecodableEventSourceMessage.swift in Sources */,
 				E202D6D82EDACED900B1F55F /* PRSubscribeEntryView.swift in Sources */,
 				1EE8CC2C2EDA9AD50064F683 /* SSKeychain.m in Sources */,
 				1EE8CC2D2EDA9AD50064F683 /* CommonAICuidUtils.m in Sources */,
-				1EE8CC2E2EDA9AD50064F683 /* PRRequestHandlerNetworkManager+File.swift in Sources */,
 				1EE8CC2F2EDA9AD50064F683 /* Animation+Extension.swift in Sources */,
 				1EE8CC302EDA9AD50064F683 /* Bundle+Extension.swift in Sources */,
 				1EE8CC652EDAC8580064F683 /* PRCommonLoadingModify.swift in Sources */,
@@ -1142,9 +1136,11 @@
 				E202D6C82EDACC8100B1F55F /* PRSubscribeNormalCellView.swift in Sources */,
 				E202D6C92EDACC8100B1F55F /* PRSubscribeListRequestModel.swift in Sources */,
 				E202D6CA2EDACC8100B1F55F /* PRPhotoTypes.swift in Sources */,
+				E202D7032EDAD2DA00B1F55F /* PRRequestHandlerSignUtils.swift in Sources */,
 				E202D6CC2EDACC8100B1F55F /* PRLargeVideoAnalyzer.swift in Sources */,
 				E202D6CD2EDACC8100B1F55F /* PRSubscribeSwitchPage.swift in Sources */,
 				E202D6CE2EDACC8100B1F55F /* PRAssetThumbnailProvider.swift in Sources */,
+				E202D6EF2EDAD1FF00B1F55F /* PRDecodableEventSourceSerializer.swift in Sources */,
 				E202D6CF2EDACC8100B1F55F /* PRDuplicateAnalyzer.swift in Sources */,
 				E202D6D02EDACC8100B1F55F /* PRBlurryAnalyzer.swift in Sources */,
 				E202D6D12EDACC8100B1F55F /* PRSubscribeRandomBubble.swift in Sources */,
@@ -1161,12 +1157,10 @@
 				1EE8CCAD2EDAC97F0064F683 /* PRHomeBottomGestureModifier.swift in Sources */,
 				1EE8CCAE2EDAC97F0064F683 /* PRLaunchView.swift in Sources */,
 				1EE8CCAF2EDAC97F0064F683 /* PRProgressBarView.swift in Sources */,
-				1EE8CC332EDA9AD50064F683 /* PRRequestHandlerNetworkManager+Stream.swift in Sources */,
 				1EE8CC342EDA9AD50064F683 /* Font+Extension.swift in Sources */,
 				1EE8CC352EDA9AD50064F683 /* CommonAICuid.mm in Sources */,
 				1EE8CC362EDA9AD50064F683 /* Color+Extension.swift in Sources */,
 				1EE8CC382EDA9AD50064F683 /* SSKeychainQuery.m in Sources */,
-				1EE8CC392EDA9AD50064F683 /* PRDecodableEventSourceSerializer.swift in Sources */,
 				1EE8CC3A2EDA9AD50064F683 /* String+Extension.swift in Sources */,
 				1EE8CC3B2EDA9AD50064F683 /* UIApplication+Extension.swift in Sources */,
 				1EE8CC3C2EDA9AD50064F683 /* URL+Extension.swift in Sources */,
@@ -1174,15 +1168,13 @@
 				1EE8CC772EDAC8A80064F683 /* PRLLCachePath.swift in Sources */,
 				1EE8CC3D2EDA9AD50064F683 /* UIImage+Extension.swift in Sources */,
 				1EE8CC3E2EDA9AD50064F683 /* Codable+Extension.swift in Sources */,
+				E202D6F92EDAD25C00B1F55F /* PRRequestHandlerManager.swift in Sources */,
 				1EE8CC3F2EDA9AD50064F683 /* KeyboardPublishers.swift in Sources */,
-				1EE8CC402EDA9AD50064F683 /* PRSubscriptionHelper.swift in Sources */,
 				1EE8CC412EDA9AD50064F683 /* Number+Extension.swift in Sources */,
 				1EE8CC792EDAC8BA0064F683 /* PRConfigManager.swift in Sources */,
-				1EE8CC422EDA9AD50064F683 /* PRSubmitSubscriptionOrderModel.swift in Sources */,
 				1EE8CC912EDAC91C0064F683 /* PRGlobalOverlay.swift in Sources */,
-				1EE8CC432EDA9AD50064F683 /* Alamofire+EventSource.swift in Sources */,
+				E202D6F12EDAD21400B1F55F /* PREventSourceMessage.swift in Sources */,
 				1EE8CC442EDA9AD50064F683 /* ViewDurationTrackerModifier.swift in Sources */,
-				1EE8CC452EDA9AD50064F683 /* PRPaymentProcessManager.swift in Sources */,
 				1EE8CC932EDAC9280064F683 /* PRUserManager.swift in Sources */,
 				E2242C302ECF115300C867D4 /* PRDeleteFinishPage.swift in Sources */,
 				E2242C362ECF11AA00C867D4 /* PRDuplicatePage.swift in Sources */,
@@ -1319,7 +1311,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 5;
-				DEVELOPMENT_TEAM = J6ZYUK5HQ4;
+				DEVELOPMENT_TEAM = VLTYVPB38Q;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1345,7 +1337,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.test.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aiorganizer.photo.swipeclean;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
@@ -1370,7 +1362,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 5;
-				DEVELOPMENT_TEAM = J6ZYUK5HQ4;
+				DEVELOPMENT_TEAM = VLTYVPB38Q;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1396,7 +1388,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.test.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aiorganizer.photo.swipeclean;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;

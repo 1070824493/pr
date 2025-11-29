@@ -1,7 +1,8 @@
 //
-//  NetworkManager+Stream.swift
+//  PRRequestHandlerNetworkManager+Stream.swift
+//  PhotosRefresher
 //
-
+//  Created by tom on 2025/11/28.
 //
 
 import Foundation
@@ -88,3 +89,4 @@ public extension PRRequestHandlerManager {
     }
 
 }
+

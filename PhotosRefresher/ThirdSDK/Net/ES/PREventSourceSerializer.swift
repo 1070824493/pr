@@ -1,8 +1,8 @@
 //
-//  EventSourceSerializer.swift
-//  AlamofireEventSource
+//  PREventSourceSerializer.swift
+//  PhotosRefresher
 //
-//  Created by Daniel Clelland on 7/08/20.
+//  Created by tom on 2025/11/28.
 //
 
 import Foundation
@@ -45,3 +45,4 @@ public class PREventSourceSerializer: DataStreamSerializer {
     }
     
 }
+

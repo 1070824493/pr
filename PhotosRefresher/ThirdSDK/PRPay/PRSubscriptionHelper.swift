@@ -1,8 +1,9 @@
 //
-//  PayManager.swift
+//  PRSubscriptionHelper.swift
+//  PhotosRefresher
 //
+//  Created by tom on 2025/11/28.
 //
-
 
 import StoreKit
 
@@ -85,3 +86,4 @@ public struct PRTransactionIntentCallback {
         set { storage = newValue }
     }
 }
+

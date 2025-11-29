@@ -1,8 +1,8 @@
 //
 //  Alamofire+EventSource.swift
-//  AlamofireEventSource
+//  PhotosRefresher
 //
-//  Created by Daniel Clelland on 7/08/20.
+//  Created by tom on 2025/11/28.
 //
 
 import Foundation

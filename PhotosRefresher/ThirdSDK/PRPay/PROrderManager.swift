@@ -1,10 +1,11 @@
 //
-//  PurchaseManager.swift
+//  PROrderManager.swift
+//  PhotosRefresher
+//
+//  Created by tom on 2025/11/28.
 //
 
 import StoreKit
-
-
 
 public enum PRSubscriptionType {
     case subscription
@@ -432,3 +433,4 @@ public class PROrderManager {
     }
     
 }
+
