@@ -36,8 +36,6 @@
 		1EE8CC552EDAC7AE0064F683 /* PRAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC522EDAC7AE0064F683 /* PRAppView.swift */; };
 		1EE8CC582EDAC7C50064F683 /* PRMainTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC572EDAC7C50064F683 /* PRMainTabViewModel.swift */; };
 		1EE8CC592EDAC7C50064F683 /* PRMainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC562EDAC7C50064F683 /* PRMainTabView.swift */; };
-		1EE8CC652EDAC8580064F683 /* PRCommonLoadingModify.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC632EDAC8580064F683 /* PRCommonLoadingModify.swift */; };
-		1EE8CC662EDAC8580064F683 /* PRScanAnimationModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC642EDAC8580064F683 /* PRScanAnimationModifier.swift */; };
 		1EE8CC672EDAC8580064F683 /* PRBreathingModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC622EDAC8580064F683 /* PRBreathingModifier.swift */; };
 		1EE8CC692EDAC8730064F683 /* PRAlertModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC682EDAC8730064F683 /* PRAlertModal.swift */; };
 		1EE8CC6C2EDAC8810064F683 /* PRDialogRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC6B2EDAC8810064F683 /* PRDialogRegistry.swift */; };
@@ -182,8 +180,6 @@
 		1EE8CC562EDAC7C50064F683 /* PRMainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRMainTabView.swift; sourceTree = "<group>"; };
 		1EE8CC572EDAC7C50064F683 /* PRMainTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRMainTabViewModel.swift; sourceTree = "<group>"; };
 		1EE8CC622EDAC8580064F683 /* PRBreathingModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRBreathingModifier.swift; sourceTree = "<group>"; };
-		1EE8CC632EDAC8580064F683 /* PRCommonLoadingModify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRCommonLoadingModify.swift; sourceTree = "<group>"; };
-		1EE8CC642EDAC8580064F683 /* PRScanAnimationModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRScanAnimationModifier.swift; sourceTree = "<group>"; };
 		1EE8CC682EDAC8730064F683 /* PRAlertModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAlertModal.swift; sourceTree = "<group>"; };
 		1EE8CC6A2EDAC8810064F683 /* PRDialogDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDialogDestination.swift; sourceTree = "<group>"; };
 		1EE8CC6B2EDAC8810064F683 /* PRDialogRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDialogRegistry.swift; sourceTree = "<group>"; };
@@ -776,8 +772,6 @@
 			isa = PBXGroup;
 			children = (
 				1EE8CC622EDAC8580064F683 /* PRBreathingModifier.swift */,
-				1EE8CC632EDAC8580064F683 /* PRCommonLoadingModify.swift */,
-				1EE8CC642EDAC8580064F683 /* PRScanAnimationModifier.swift */,
 			);
 			path = Modify;
 			sourceTree = "<group>";
@@ -1121,8 +1115,6 @@
 				1EE8CC2D2EDA9AD50064F683 /* CommonAICuidUtils.m in Sources */,
 				1EE8CC2F2EDA9AD50064F683 /* Animation+Extension.swift in Sources */,
 				1EE8CC302EDA9AD50064F683 /* Bundle+Extension.swift in Sources */,
-				1EE8CC652EDAC8580064F683 /* PRCommonLoadingModify.swift in Sources */,
-				1EE8CC662EDAC8580064F683 /* PRScanAnimationModifier.swift in Sources */,
 				1EE8CC672EDAC8580064F683 /* PRBreathingModifier.swift in Sources */,
 				1EE8CC312EDA9AD50064F683 /* RotationPublihsers.swift in Sources */,
 				1EE8CC322EDA9AD50064F683 /* StrokeModifier.swift in Sources */,
