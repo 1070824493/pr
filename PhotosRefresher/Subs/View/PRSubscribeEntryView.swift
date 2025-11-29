@@ -23,13 +23,21 @@ struct PRSubscribeEntryView: View {
     }
 
     var body: some View {
-        if subscribeVM.isAudit {
-            PRSubscribeNormalPage()
-                .environmentObject(subscribeVM)
-        }else{
-            PRSubscribeSwitchPage()
-                .environmentObject(subscribeVM)
+        Group {
+            if subscribeVM.isAudit {
+                PRSubscribeNormalPage()
+                    .environmentObject(subscribeVM)
+            }else{
+                PRSubscribeSwitchPage()
+                    .environmentObject(subscribeVM)
+            }
         }
+        .onAppear {
+            Task {
+                await subscribeVM.initPackageList(paySource: paySource, payScene: .normal)
+            }
+        }
+        
     }
 }
 

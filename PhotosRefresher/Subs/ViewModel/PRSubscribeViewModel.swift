@@ -68,8 +68,19 @@ class PRSubscribeViewModel: ObservableObject {
         _ = await PRProductManager.shared.refreshPackageList(PRSubscribeListRequestModel(source: paySource.rawValue, scene: payScene.rawValue)
         )
 
+        await autoSelectRecommendProduct()
     }
 
+    @MainActor
+    func autoSelectRecommendProduct() {
+        let keepIfStillExists = packageList.contains(where: { $0.skuId == selectedPackageId })
+        if keepIfStillExists { return }
+        if let rec = packageList.first(where: { $0.recommendSku }) {
+            selectedPackageId = rec.skuId
+        } else {
+            selectedPackageId = packageList.first?.skuId ?? -1
+        }
+    }
 
     
 }
@@ -134,6 +145,7 @@ extension PRSubscribeViewModel {
                 } else {
                     PRToast.show(message: "Payment successful. Your benefits will be delivered shortly, please wait", duration: 3.0)
                 }
+                back(true)
             }
             return true
 
