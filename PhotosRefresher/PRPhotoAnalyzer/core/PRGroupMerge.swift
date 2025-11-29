@@ -7,8 +7,8 @@
 
 import Foundation
 
-enum GroupMerge {
-    static func merge(existing: [[String]], adding: [[String]]) -> [[String]] {
+enum PRGroupMerge {
+    static func mergeAssetGroups(existing: [[String]], adding: [[String]]) -> [[String]] {
         var groups = existing.map { Set($0) }
         for raw in adding where raw.count >= 2 {
             var s = Set(raw)

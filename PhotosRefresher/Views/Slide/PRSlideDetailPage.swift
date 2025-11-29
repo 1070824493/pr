@@ -17,7 +17,7 @@ extension PHAsset: @retroactive Identifiable {
 }
 
 struct PRSlideDetailPage: View {
-    @State var category: PhotoCategory {
+    @State var category: PRPhotoCategory {
         didSet{
             AppUserPreferences.shared.currentSlideCategory = category
         }
@@ -193,14 +193,14 @@ struct PRSlideDetailPage: View {
         .padding(.top, getStatusBarHeight())
     }
     
-    private func loadAssets(for cat: PhotoCategory) {
+    private func loadAssets(for cat: PRPhotoCategory) {
         let ids = mapFor(cat).assetIDs
         let unviewed = PRSlideCacheManager.shared.unviewedFirst(limit: 15, category: cat, sourceIDs: ids)
-        assets = getPHAssets(by: unviewed)
+        assets = retrievePHAssets(by: unviewed)
         index = 0
     }
     
-    private func switchCategory(_ cat: PhotoCategory) {
+    private func switchCategory(_ cat: PRPhotoCategory) {
         loadAssets(for: cat)
         category = cat
         if assets.isEmpty {
@@ -208,7 +208,7 @@ struct PRSlideDetailPage: View {
         }
     }
     
-    private func mapFor(_ cat: PhotoCategory) -> PhotoAssetsMap {
+    private func mapFor(_ cat: PRPhotoCategory) -> PRPhotoAssetsMap {
         let m = PRPhotoMapManager.shared
         switch cat {
         case .screenshot: return m.screenshotPhotosMap
@@ -257,7 +257,7 @@ struct PRSlideDetailPage: View {
             }
         }
     }
-    private func menuTitle(_ c: PhotoCategory) -> String {
+    private func menuTitle(_ c: PRPhotoCategory) -> String {
         switch c {
         case .backphoto: return "Photos"
         case .screenshot: return "Screenshots"
@@ -270,7 +270,7 @@ struct PRSlideDetailPage: View {
     
     private func openTrashReview() {
         let m = TrashReviewViewModel(assets: sessionTrash, onConfirm: { selected in
-            AssetsHelper.shared.deleteAssetsRequiringVip(
+            PRAssetsHelper.shared.removeAssetsWithVipCheck(
                 selected,
                 assetIDs: selected.map { $0.localIdentifier },
                 uiState: uiState,
@@ -298,13 +298,13 @@ struct PRSlideDetailPage: View {
     }
     
     /// 获取下一轮图片
-    func getNextUnviewedSource(limit: Int, category: PhotoCategory) {
+    func getNextUnviewedSource(limit: Int, category: PRPhotoCategory) {
         let sourceIDs = mapFor(category).assetIDs
         //先标记已读,
         PRSlideCacheManager.shared.markViewed(category: category, ids: assets.map({$0.localIdentifier}))
         //再重新获取
         let nextIDs = PRSlideCacheManager.shared.unviewedFirst(limit: limit, category: category, sourceIDs: sourceIDs)
-        self.assets = getPHAssets(by: nextIDs)
+        self.assets = retrievePHAssets(by: nextIDs)
         NotificationCenter.default.post(name: .slideSessionDidAdvance, object: nil, userInfo: ["category": category.rawValue, "nextIDs": nextIDs])
         index = 0
         uiState.modalDestination = nil
@@ -314,7 +314,7 @@ struct PRSlideDetailPage: View {
     }
 }
 
-extension PhotoCategory {
+extension PRPhotoCategory {
     var slideImageName: String {
         switch self {
         case .screenshot:
@@ -347,21 +347,21 @@ extension PhotoCategory {
 }
 
 private struct CategoryAnchoredMenu: View {
-    let current: PhotoCategory
-    var onSelect: (PhotoCategory) -> Void
+    let current: PRPhotoCategory
+    var onSelect: (PRPhotoCategory) -> Void
     var onDismiss: () -> Void
     private let width: CGFloat = 240
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color.black.opacity(0.001).ignoresSafeArea().onTapGesture { onDismiss() }
             VStack(spacing: 0) {
-                Button(action: { onSelect(.backphoto) }) { MenuRow(title: PhotoCategory.backphoto.slideTitle, iconName: PhotoCategory.backphoto.slideImageName, selected: current == .backphoto) }
+                Button(action: { onSelect(.backphoto) }) { MenuRow(title: PRPhotoCategory.backphoto.slideTitle, iconName: PRPhotoCategory.backphoto.slideImageName, selected: current == .backphoto) }
                 Divider().overlay(Color.white.opacity(0.15))
-                Button(action: { onSelect(.screenshot) }) { MenuRow(title: PhotoCategory.screenshot.slideTitle, iconName: PhotoCategory.screenshot.slideImageName, selected: current == .screenshot) }
+                Button(action: { onSelect(.screenshot) }) { MenuRow(title: PRPhotoCategory.screenshot.slideTitle, iconName: PRPhotoCategory.screenshot.slideImageName, selected: current == .screenshot) }
                 Divider().overlay(Color.white.opacity(0.15))
-                Button(action: { onSelect(.selfiephoto) }) { MenuRow(title: PhotoCategory.selfiephoto.slideTitle, iconName: PhotoCategory.selfiephoto.slideImageName, selected: current == .selfiephoto) }
+                Button(action: { onSelect(.selfiephoto) }) { MenuRow(title: PRPhotoCategory.selfiephoto.slideTitle, iconName: PRPhotoCategory.selfiephoto.slideImageName, selected: current == .selfiephoto) }
                 Divider().overlay(Color.white.opacity(0.15))
-                Button(action: { onSelect(.livePhoto) }) { MenuRow(title: PhotoCategory.livePhoto.slideTitle, iconName: PhotoCategory.livePhoto.slideImageName, selected: current == .livePhoto) }
+                Button(action: { onSelect(.livePhoto) }) { MenuRow(title: PRPhotoCategory.livePhoto.slideTitle, iconName: PRPhotoCategory.livePhoto.slideImageName, selected: current == .livePhoto) }
             }
             .frame(width: width)
             .background(Color.black.opacity(0.65))
@@ -474,7 +474,7 @@ struct ZoomInteractiveCard: View {
                 }
             
             ZStack(alignment: .top) {
-                provider.thumbnailView(for: asset, targetSize: size)
+                provider.createThumbnailView(for: asset, targetSize: size)
                     .frame(width: size.width, height: size.height)
                     .cornerRadius(24)
                     .offset(x: 0,

@@ -105,7 +105,7 @@ struct TrashReviewAlertView: View {
                             let w = (kScreenWidth - fitScale(15)*2 - gridSpacing * 2 - 12.0 * 2) / 3.0
                             ZStack(alignment: .topTrailing) {
                                 Button(action: { model.toggle(a) }) {
-                                    provider.thumbnailView(for: a, targetSize: CGSize(width: w, height: w))
+                                    provider.createThumbnailView(for: a, targetSize: CGSize(width: w, height: w))
                                         .frame(width: w, height: w)
                                         .overlay(alignment: .bottomTrailing) {
                                             Image(model.selectedIDs.contains(a.localIdentifier) ? "icon_photo_selected" : "icon_photo_normal")

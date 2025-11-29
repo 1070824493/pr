@@ -6,21 +6,21 @@ import CoreImage
 /// 模糊图片检测
 /// - 策略: 亮度方差排除纯色/低对比 → 轻量“拉普拉斯近似”方差与自适应阈值
 /// - 输出: 模糊图片 `localIdentifier` 列表
-enum BlurryAnalyzer {
+enum PRBlurryAnalyzer {
     struct Params {
         var blurThresholdBase: Double = 2.0
         var flatVarYThreshold: Double = 90.0
         var targetSize: CGSize = .init(width: 256, height: 256)
     }
 
-    static func analyzeIDs(in assets: [PHAsset], params: Params = .init()) async -> [String] {
+    static func detectBlurryAssetIdentifiers(in assets: [PHAsset], params: Params = .init()) async -> [String] {
         var ids: [String] = []
         ids.reserveCapacity(assets.count / 4)
         let manager = PHImageManager.default()
         let opt = PHImageRequestOptions(); opt.isSynchronous = true; opt.deliveryMode = .fastFormat; opt.resizeMode = .fast; opt.isNetworkAccessAllowed = true
         for a in assets where a.mediaType == .image {
             autoreleasepool {
-                if isBlurry(a, manager: manager, options: opt, target: params.targetSize, base: params.blurThresholdBase, flatThr: params.flatVarYThreshold) {
+                if checkIfAssetIsBlurry(a, manager: manager, options: opt, target: params.targetSize, base: params.blurThresholdBase, flatThr: params.flatVarYThreshold) {
                     ids.append(a.localIdentifier)
                 }
             }
@@ -28,15 +28,15 @@ enum BlurryAnalyzer {
         return ids
     }
 
-    private static func isBlurry(_ asset: PHAsset, manager: PHImageManager, options: PHImageRequestOptions, target: CGSize, base: Double, flatThr: Double) -> Bool {
-        guard let cg = thumbnail(for: asset, manager: manager, options: options, target: target)?.cgImage else { return false }
-        if yVar(cg) < flatThr { return false }
-        let lv = edgeVarLite(cg)
-        let thr = adaptiveBlurGate(cg, base: base)
+    private static func checkIfAssetIsBlurry(_ asset: PHAsset, manager: PHImageManager, options: PHImageRequestOptions, target: CGSize, base: Double, flatThr: Double) -> Bool {
+        guard let cg = generateThumbnail(for: asset, manager: manager, options: options, target: target)?.cgImage else { return false }
+        if calculateLumaVariance(cg) < flatThr { return false }
+        let lv = calculateLightweightEdgeVariance(cg)
+        let thr = computeAdaptiveBlurThreshold(cg, base: base)
         return lv < thr
     }
 
-    private static func edgeVarLite(_ cg: CGImage) -> Double {
+    private static func calculateLightweightEdgeVariance(_ cg: CGImage) -> Double {
         guard let data = cg.dataProvider?.data as Data? else { return 0 }
         var acc: Double = 0
         var cnt = 0
@@ -50,13 +50,13 @@ enum BlurryAnalyzer {
         return acc / Double(max(1, cnt))
     }
 
-    private static func adaptiveBlurGate(_ cg: CGImage, base: Double) -> Double {
-        let varY = yVar(cg)
+    private static func computeAdaptiveBlurThreshold(_ cg: CGImage, base: Double) -> Double {
+        let varY = calculateLumaVariance(cg)
         let k = min(1.0, max(0.0, varY / 60.0))
         return base * (0.9 + 0.2 * k)
     }
 
-    private static func yVar(_ cg: CGImage) -> Double {
+    private static func calculateLumaVariance(_ cg: CGImage) -> Double {
         guard let data = cg.dataProvider?.data as Data? else { return 0 }
         let step = max(1, (cg.width * cg.height) / 4096)
         var mean: Double = 0, m2: Double = 0, n: Double = 0

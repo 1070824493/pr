@@ -22,18 +22,18 @@ actor PRChunkScheduler {
         self.files = files
     }
 
-    func configureSnapshot(with assetsDesc: [PHAsset]) {
+    func setupSnapshotConfiguration(with assetsDesc: [PHAsset]) {
         allIds = assetsDesc.map(\.localIdentifier)
         snapshotHash = "\(allIds.hashValue)_\(allIds.count)"
     }
 
-    func chunkCount() -> Int {
+    func retrieveTotalChunkCount() -> Int {
         guard !allIds.isEmpty else { return 0 }
         return (allIds.count + chunkSize - 1) / chunkSize
     }
 
-    func materializeChunk(index: Int) -> PRChunkSnapshot? {
-        guard index >= 0, index < chunkCount() else { return nil }
+    func processAndRetrieveChunk(index: Int) -> PRChunkSnapshot? {
+        guard index >= 0, index < retrieveTotalChunkCount() else { return nil }
         let u = files.chunk(index)
 
         if let data = try? Data(contentsOf: u),
@@ -53,10 +53,10 @@ actor PRChunkScheduler {
 
         for a in assets {
             dateMap[a.localIdentifier] = Int64((a.creationDate ?? .distantPast).timeIntervalSince1970)
-            sizeMap[a.localIdentifier] = assetSizeBytes(a)
+            sizeMap[a.localIdentifier] = calculateAssetSizeBytes(a)
         }
 
-        var entries = [PhotoAssetModel](); entries.reserveCapacity(ids.count)
+        var entries = [PRPhotoAssetModel](); entries.reserveCapacity(ids.count)
         for id in ids {
             entries.append(.init(id: id, bytes: sizeMap[id] ?? 0, date: dateMap[id] ?? 0))
         }

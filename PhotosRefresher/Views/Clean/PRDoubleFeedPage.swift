@@ -35,7 +35,7 @@ private struct PRExploreCellView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             thumbProvider
-                .thumbnailView(for: asset, targetSize: size, preferFastFirst: true)
+                .createThumbnailView(for: asset, targetSize: size, preferFastFirst: true)
                 .frame(width: size.width, height: size.height)
                 .clipped()
                 .cornerRadius(12)
@@ -130,7 +130,7 @@ private struct PRBottomBar: View {
 struct PRDoubleFeedPage: View {
     @EnvironmentObject var appRouterPath: AppRouterPath
     @EnvironmentObject private var uiState: UIState
-    let cardID: PhotoCategory
+    let cardID: PRPhotoCategory
     var isVideo: Bool = false
     @StateObject private var vm = PRDoubleFeedViewModel()
     @State private var scrollY: CGFloat = 0
@@ -138,7 +138,7 @@ struct PRDoubleFeedPage: View {
     /// 页面级缩略图 Provider（非单例，便于测试与注入）
     private let thumbProvider = PRAssetThumbnailProvider()
 
-    init(_ cardID: PhotoCategory, isVideo: Bool = false) {
+    init(_ cardID: PRPhotoCategory, isVideo: Bool = false) {
         self.cardID = cardID
         self.isVideo = isVideo
     }
@@ -152,7 +152,7 @@ struct PRDoubleFeedPage: View {
     private var headerTitle: String { texts(for: cardID).headerTitle }
     private var headerSubtitle: String { texts(for: cardID).headerSubtitle }
 
-    private func texts(for id: PhotoCategory) -> (navTitle: String, headerTitle: String, headerSubtitle: String) {
+    private func texts(for id: PRPhotoCategory) -> (navTitle: String, headerTitle: String, headerSubtitle: String) {
         switch id {
         case .screenshot: return ("Screenshots", "Screenshots", "Disorderly content: \(vm.assets.count)")
         case .livePhoto:    return ("Live Photos", "Live Photos", "Disorderly content: \(vm.assets.count)")
@@ -194,7 +194,7 @@ struct PRDoubleFeedPage: View {
                                     let scale = UIScreen.main.scale
                                     let px = CGSize(width: min(cellW * scale, 256 * scale),
                                                     height: min(cellH * scale, 256 * scale))
-                                    thumbProvider.preheat(assets: next, pixelSize: px)
+                                    thumbProvider.startPreheatingAssets(assets: next, pixelSize: px)
                                 }
                             }
                         }

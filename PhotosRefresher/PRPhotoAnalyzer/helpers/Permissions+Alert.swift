@@ -14,7 +14,7 @@ import UIKit
 
 extension PRPhotoMapManager {
     /// 权限受限提示弹窗（引导前往设置）
-    func presentSettingsAlert(for status: PHAuthorizationStatus) {
+    func showSettingsRedirectAlert(for status: PHAuthorizationStatus) {
         let (title, message): (String, String) = {
             switch status {
             case .denied:
@@ -31,7 +31,7 @@ extension PRPhotoMapManager {
                         "Enable photo access in Settings to scan your library, remove clutter, and instantly free up valuable space.")
             }
         }()
-
+        
         permissionAlert = AlertModalModel(
             imgName: "", title: title, desc: message,
             firstBtnTitle: "Not Now", secondBtnTitle: "Open Settings",

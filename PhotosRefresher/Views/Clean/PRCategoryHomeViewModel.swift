@@ -13,10 +13,10 @@ import Combine
 final class PRCategoryHomeViewModel: ObservableObject {
     @Published private(set) var totalCleanable: Int64 = 0
     @Published private(set) var isLoading: Bool = false
-    @Published private(set) var snapshots: [PhotoCategory: CategoryItemVM] = [:]
-    @Published var disk: DiskSpace? = nil
+    @Published private(set) var snapshots: [PRPhotoCategory: CategoryItemVM] = [:]
+    @Published var disk: PRDiskSpace? = nil
 
-    let order: [PhotoCategory] = [
+    let order: [PRPhotoCategory] = [
         .allvideo,
         .screenshot,
         .livePhoto,
@@ -35,7 +35,7 @@ final class PRCategoryHomeViewModel: ObservableObject {
         self.manager = manager
         bind()
         Task.detached(priority: .utility) { [weak self] in
-            let d = fetchDiskSpace()
+            let d = retrieveDiskSpaceInfo()
             await MainActor.run { self?.disk = d }
         }
     }
@@ -47,7 +47,7 @@ final class PRCategoryHomeViewModel: ObservableObject {
                 guard let self, let dash = dash else { return }
 
                 self.totalCleanable = dash.totalSize
-                var out: [PhotoCategory: CategoryItemVM] = [:]
+                var out: [PRPhotoCategory: CategoryItemVM] = [:]
                 
                 let validIDs = dash.cells
                     .compactMap({$0.repID}).reduce(into: []) { partialResult, ids in
@@ -63,7 +63,7 @@ final class PRCategoryHomeViewModel: ObservableObject {
                     let assets = cell.repID.compactMap { id in
                         if let cached = self.assetCache[id] {
                             return cached
-                        } else if let newA = self.manager.resolvePHAsset(for: id) {
+                        } else if let newA = self.manager.fetchOrResolvePHAsset(for: id) {
                             self.assetCache[id] = newA
                             return newA
                         }
@@ -91,6 +91,6 @@ final class PRCategoryHomeViewModel: ObservableObject {
     }
 
     func ensureStartedIfAllowed() {
-        manager.reloadAll()
+        manager.reloadAllAssetsAndRestartPipeline()
     }
 }

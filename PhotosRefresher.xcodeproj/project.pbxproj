@@ -14,6 +14,22 @@
 		1EB31A082ED9BBA600884DD1 /* SubscribeNormalCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A072ED9BBA600884DD1 /* SubscribeNormalCellView.swift */; };
 		1EB31A0A2ED9C7F900884DD1 /* SubscribeListRequestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A092ED9C7F900884DD1 /* SubscribeListRequestModel.swift */; };
 		1EB31A0C2ED9D48F00884DD1 /* SubscribeRandomBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A0B2ED9D48F00884DD1 /* SubscribeRandomBubble.swift */; };
+		1EB31A312EDAA3F700884DD1 /* PRAssetThumbnailProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A2E2EDAA3F700884DD1 /* PRAssetThumbnailProvider.swift */; };
+		1EB31A322EDAA3F700884DD1 /* PRGroupMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A232EDAA3F700884DD1 /* PRGroupMerge.swift */; };
+		1EB31A332EDAA3F700884DD1 /* PRSimilarAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A192EDAA3F700884DD1 /* PRSimilarAnalyzer.swift */; };
+		1EB31A342EDAA3F700884DD1 /* PRChunkScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A222EDAA3F700884DD1 /* PRChunkScheduler.swift */; };
+		1EB31A352EDAA3F700884DD1 /* PRCacheSnapshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A202EDAA3F700884DD1 /* PRCacheSnapshots.swift */; };
+		1EB31A362EDAA3F700884DD1 /* PRTextAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A1B2EDAA3F700884DD1 /* PRTextAnalyzer.swift */; };
+		1EB31A372EDAA3F700884DD1 /* PRDiskSpaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A282EDAA3F700884DD1 /* PRDiskSpaceManager.swift */; };
+		1EB31A382EDAA3F700884DD1 /* PRPhotoTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A262EDAA3F700884DD1 /* PRPhotoTypes.swift */; };
+		1EB31A392EDAA3F700884DD1 /* PRAssetsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A2C2EDAA3F700884DD1 /* PRAssetsHelper.swift */; };
+		1EB31A3A2EDAA3F700884DD1 /* PRPhotoMapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A252EDAA3F700884DD1 /* PRPhotoMapManager.swift */; };
+		1EB31A3B2EDAA3F700884DD1 /* PhotoMapHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A2B2EDAA3F700884DD1 /* PhotoMapHelpers.swift */; };
+		1EB31A3C2EDAA3F700884DD1 /* PRLargeVideoAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A1D2EDAA3F700884DD1 /* PRLargeVideoAnalyzer.swift */; };
+		1EB31A3D2EDAA3F700884DD1 /* PRDuplicateAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A172EDAA3F700884DD1 /* PRDuplicateAnalyzer.swift */; };
+		1EB31A3E2EDAA3F700884DD1 /* PRPHAsset+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A242EDAA3F700884DD1 /* PRPHAsset+Utils.swift */; };
+		1EB31A3F2EDAA3F700884DD1 /* PRBlurryAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A152EDAA3F700884DD1 /* PRBlurryAnalyzer.swift */; };
+		1EB31A402EDAA3F700884DD1 /* Permissions+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB31A2A2EDAA3F700884DD1 /* Permissions+Alert.swift */; };
 		1EE8CC192EDA9AD50064F683 /* PROrderManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC142EDA9AD40064F683 /* PROrderManager.swift */; };
 		1EE8CC1A2EDA9AD50064F683 /* PREnvironmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC072EDA9AD40064F683 /* PREnvironmentManager.swift */; };
 		1EE8CC1B2EDA9AD50064F683 /* DismissingKeyboardOnSwipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBEF2EDA9AD40064F683 /* DismissingKeyboardOnSwipe.swift */; };
@@ -57,57 +73,41 @@
 		1EE8CC432EDA9AD50064F683 /* Alamofire+EventSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBFF2EDA9AD40064F683 /* Alamofire+EventSource.swift */; };
 		1EE8CC442EDA9AD50064F683 /* ViewDurationTrackerModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF22EDA9AD40064F683 /* ViewDurationTrackerModifier.swift */; };
 		1EE8CC452EDA9AD50064F683 /* PRPaymentProcessManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC152EDA9AD40064F683 /* PRPaymentProcessManager.swift */; };
-		1EE8CC472EDA9BDF0064F683 /* DuplicateAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC462EDA9BDF0064F683 /* DuplicateAnalyzer.swift */; };
-		1EE8CC492EDA9C030064F683 /* BlurryAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC482EDA9C030064F683 /* BlurryAnalyzer.swift */; };
-		1EE8CC4B2EDA9CDE0064F683 /* PRCacheSnapshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC4A2EDA9CDE0064F683 /* PRCacheSnapshots.swift */; };
 		99AD6478D10F5531774B1F4A /* libPods-PhotosRefresher.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BBAD029657EF5CC0B4D9A22E /* libPods-PhotosRefresher.a */; };
 		E2242A882ECEEE8400C867D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2242A832ECEEE8400C867D4 /* Assets.xcassets */; };
 		E2242A982ECEEE8400C867D4 /* PhotosRefresherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242A862ECEEE8400C867D4 /* PhotosRefresherApp.swift */; };
 		E2242B822ECF106300C867D4 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B7D2ECF106300C867D4 /* Toast.swift */; };
-		E2242B842ECF106300C867D4 /* AssetsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B5E2ECF106300C867D4 /* AssetsHelper.swift */; };
 		E2242B862ECF106300C867D4 /* AlertModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AE32ECF106300C867D4 /* AlertModal.swift */; };
 		E2242B8A2ECF106300C867D4 /* RouterRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AEA2ECF106300C867D4 /* RouterRegistry.swift */; };
 		E2242B8B2ECF106300C867D4 /* UIState.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AF72ECF106300C867D4 /* UIState.swift */; };
-		E2242B8F2ECF106300C867D4 /* Permissions+Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B5F2ECF106300C867D4 /* Permissions+Alert.swift */; };
 		E2242B902ECF106300C867D4 /* PermissonsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B022ECF106300C867D4 /* PermissonsManager.swift */; };
 		E2242B922ECF106300C867D4 /* SubscribeEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B6F2ECF106300C867D4 /* SubscribeEntryView.swift */; };
-		E2242B932ECF106300C867D4 /* TextAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B4F2ECF106300C867D4 /* TextAnalyzer.swift */; };
 		E2242B942ECF106300C867D4 /* GlobalOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B072ECF106300C867D4 /* GlobalOverlay.swift */; };
 		E2242B9A2ECF106300C867D4 /* LocalizableManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AF92ECF106300C867D4 /* LocalizableManager.swift */; };
 		E2242B9D2ECF106300C867D4 /* AppUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AED2ECF106300C867D4 /* AppUserDefaults.swift */; };
 		E2242BA12ECF106300C867D4 /* RouterDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AE82ECF106300C867D4 /* RouterDestination.swift */; };
 		E2242BA32ECF106300C867D4 /* CommonLoadingModify.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B462ECF106300C867D4 /* CommonLoadingModify.swift */; };
-		E2242BA42ECF106300C867D4 /* PhotoMapHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B602ECF106300C867D4 /* PhotoMapHelpers.swift */; };
-		E2242BA72ECF106300C867D4 /* PRDiskSpaceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B5C2ECF106300C867D4 /* PRDiskSpaceManager.swift */; };
-		E2242BA92ECF106300C867D4 /* SimilarAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B4D2ECF106300C867D4 /* SimilarAnalyzer.swift */; };
 		E2242BAA2ECF106300C867D4 /* DialogDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AE52ECF106300C867D4 /* DialogDestination.swift */; };
-		E2242BAB2ECF106300C867D4 /* PRAssetThumbnailProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B622ECF106300C867D4 /* PRAssetThumbnailProvider.swift */; };
 		E2242BAE2ECF106300C867D4 /* DeviceUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B782ECF106300C867D4 /* DeviceUtils.swift */; };
 		E2242BB02ECF106300C867D4 /* DeviceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AF42ECF106300C867D4 /* DeviceHelper.swift */; };
 		E2242BB12ECF106300C867D4 /* ProductManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B712ECF106300C867D4 /* ProductManager.swift */; };
-		E2242BB32ECF106300C867D4 /* PRPHAsset+Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B582ECF106300C867D4 /* PRPHAsset+Utils.swift */; };
 		E2242BB82ECF106300C867D4 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B792ECF106300C867D4 /* Functions.swift */; };
 		E2242BB92ECF106300C867D4 /* SubscribeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B6D2ECF106300C867D4 /* SubscribeViewModel.swift */; };
 		E2242BBB2ECF106300C867D4 /* IdfaUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B7A2ECF106300C867D4 /* IdfaUtils.swift */; };
 		E2242BBC2ECF106300C867D4 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B092ECF106300C867D4 /* UserManager.swift */; };
 		E2242BBD2ECF106300C867D4 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AF22ECF106300C867D4 /* AppInfo.swift */; };
-		E2242BC02ECF106300C867D4 /* PRChunkScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B562ECF106300C867D4 /* PRChunkScheduler.swift */; };
 		E2242BC32ECF106300C867D4 /* MailHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AF52ECF106300C867D4 /* MailHelper.swift */; };
 		E2242BC52ECF106300C867D4 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AFE2ECF106300C867D4 /* UserInfo.swift */; };
 		E2242BC82ECF106300C867D4 /* DialogRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AE62ECF106300C867D4 /* DialogRegistry.swift */; };
 		E2242BCA2ECF106300C867D4 /* ATTrackingManager+Limit.m in Sources */ = {isa = PBXBuildFile; fileRef = E2242B012ECF106300C867D4 /* ATTrackingManager+Limit.m */; };
-		E2242BCD2ECF106300C867D4 /* PRPhotoMapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B592ECF106300C867D4 /* PRPhotoMapManager.swift */; };
 		E2242BCF2ECF106300C867D4 /* RouterPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AE92ECF106300C867D4 /* RouterPath.swift */; };
 		E2242BD22ECF106300C867D4 /* LLCachePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AEE2ECF106300C867D4 /* LLCachePath.swift */; };
 		E2242BD72ECF106300C867D4 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AF32ECF106300C867D4 /* Constants.swift */; };
 		E2242BD82ECF106300C867D4 /* ConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AF02ECF106300C867D4 /* ConfigManager.swift */; };
-		E2242BDA2ECF106300C867D4 /* PRGroupMerge.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B572ECF106300C867D4 /* PRGroupMerge.swift */; };
 		E2242BDB2ECF106300C867D4 /* ScanAnimationModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B472ECF106300C867D4 /* ScanAnimationModifier.swift */; };
-		E2242BDD2ECF106300C867D4 /* PRPhotoTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B5A2ECF106300C867D4 /* PRPhotoTypes.swift */; };
 		E2242BDF2ECF106300C867D4 /* SubscribeResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AFD2ECF106300C867D4 /* SubscribeResponseModel.swift */; };
 		E2242BE22ECF106300C867D4 /* MarketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B052ECF106300C867D4 /* MarketManager.swift */; };
 		E2242BE32ECF106300C867D4 /* ReviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AF62ECF106300C867D4 /* ReviewManager.swift */; };
-		E2242BE42ECF106300C867D4 /* LargeVideoAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242B512ECF106300C867D4 /* LargeVideoAnalyzer.swift */; };
 		E2242BE72ECF106300C867D4 /* ConfigModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242AFB2ECF106300C867D4 /* ConfigModel.swift */; };
 		E2242C0D2ECF10B800C867D4 /* GradientCircularProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BEE2ECF10B800C867D4 /* GradientCircularProgressView.swift */; };
 		E2242C0E2ECF10B800C867D4 /* BottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BEA2ECF10B800C867D4 /* BottomSheet.swift */; };
@@ -161,6 +161,22 @@
 		1EB31A072ED9BBA600884DD1 /* SubscribeNormalCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeNormalCellView.swift; sourceTree = "<group>"; };
 		1EB31A092ED9C7F900884DD1 /* SubscribeListRequestModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeListRequestModel.swift; sourceTree = "<group>"; };
 		1EB31A0B2ED9D48F00884DD1 /* SubscribeRandomBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeRandomBubble.swift; sourceTree = "<group>"; };
+		1EB31A152EDAA3F700884DD1 /* PRBlurryAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRBlurryAnalyzer.swift; sourceTree = "<group>"; };
+		1EB31A172EDAA3F700884DD1 /* PRDuplicateAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDuplicateAnalyzer.swift; sourceTree = "<group>"; };
+		1EB31A192EDAA3F700884DD1 /* PRSimilarAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSimilarAnalyzer.swift; sourceTree = "<group>"; };
+		1EB31A1B2EDAA3F700884DD1 /* PRTextAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRTextAnalyzer.swift; sourceTree = "<group>"; };
+		1EB31A1D2EDAA3F700884DD1 /* PRLargeVideoAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRLargeVideoAnalyzer.swift; sourceTree = "<group>"; };
+		1EB31A202EDAA3F700884DD1 /* PRCacheSnapshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRCacheSnapshots.swift; sourceTree = "<group>"; };
+		1EB31A222EDAA3F700884DD1 /* PRChunkScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRChunkScheduler.swift; sourceTree = "<group>"; };
+		1EB31A232EDAA3F700884DD1 /* PRGroupMerge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRGroupMerge.swift; sourceTree = "<group>"; };
+		1EB31A242EDAA3F700884DD1 /* PRPHAsset+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PRPHAsset+Utils.swift"; sourceTree = "<group>"; };
+		1EB31A252EDAA3F700884DD1 /* PRPhotoMapManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRPhotoMapManager.swift; sourceTree = "<group>"; };
+		1EB31A262EDAA3F700884DD1 /* PRPhotoTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRPhotoTypes.swift; sourceTree = "<group>"; };
+		1EB31A282EDAA3F700884DD1 /* PRDiskSpaceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDiskSpaceManager.swift; sourceTree = "<group>"; };
+		1EB31A2A2EDAA3F700884DD1 /* Permissions+Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Permissions+Alert.swift"; sourceTree = "<group>"; };
+		1EB31A2B2EDAA3F700884DD1 /* PhotoMapHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoMapHelpers.swift; sourceTree = "<group>"; };
+		1EB31A2C2EDAA3F700884DD1 /* PRAssetsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAssetsHelper.swift; sourceTree = "<group>"; };
+		1EB31A2E2EDAA3F700884DD1 /* PRAssetThumbnailProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAssetThumbnailProvider.swift; sourceTree = "<group>"; };
 		1EE8CBDD2EDA9AD40064F683 /* SSKeychain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
 		1EE8CBDE2EDA9AD40064F683 /* SSKeychain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSKeychain.m; sourceTree = "<group>"; };
 		1EE8CBDF2EDA9AD40064F683 /* SSKeychainQuery.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSKeychainQuery.h; sourceTree = "<group>"; };
@@ -208,9 +224,6 @@
 		1EE8CC142EDA9AD40064F683 /* PROrderManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PROrderManager.swift; sourceTree = "<group>"; };
 		1EE8CC152EDA9AD40064F683 /* PRPaymentProcessManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRPaymentProcessManager.swift; sourceTree = "<group>"; };
 		1EE8CC162EDA9AD40064F683 /* PRSubscriptionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSubscriptionHelper.swift; sourceTree = "<group>"; };
-		1EE8CC462EDA9BDF0064F683 /* DuplicateAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuplicateAnalyzer.swift; sourceTree = "<group>"; };
-		1EE8CC482EDA9C030064F683 /* BlurryAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurryAnalyzer.swift; sourceTree = "<group>"; };
-		1EE8CC4A2EDA9CDE0064F683 /* PRCacheSnapshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRCacheSnapshots.swift; sourceTree = "<group>"; };
 		54B11EDAB26DA07061FDB46F /* Pods-PhotosRefresher.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotosRefresher.release.xcconfig"; path = "Target Support Files/Pods-PhotosRefresher/Pods-PhotosRefresher.release.xcconfig"; sourceTree = "<group>"; };
 		82706355394F1BC1947124E7 /* Pods-PhotosRefresher.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotosRefresher.debug.xcconfig"; path = "Target Support Files/Pods-PhotosRefresher/Pods-PhotosRefresher.debug.xcconfig"; sourceTree = "<group>"; };
 		BBAD029657EF5CC0B4D9A22E /* libPods-PhotosRefresher.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PhotosRefresher.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -244,19 +257,6 @@
 		E2242B092ECF106300C867D4 /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
 		E2242B462ECF106300C867D4 /* CommonLoadingModify.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonLoadingModify.swift; sourceTree = "<group>"; };
 		E2242B472ECF106300C867D4 /* ScanAnimationModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanAnimationModifier.swift; sourceTree = "<group>"; };
-		E2242B4D2ECF106300C867D4 /* SimilarAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimilarAnalyzer.swift; sourceTree = "<group>"; };
-		E2242B4F2ECF106300C867D4 /* TextAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAnalyzer.swift; sourceTree = "<group>"; };
-		E2242B512ECF106300C867D4 /* LargeVideoAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeVideoAnalyzer.swift; sourceTree = "<group>"; };
-		E2242B562ECF106300C867D4 /* PRChunkScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRChunkScheduler.swift; sourceTree = "<group>"; };
-		E2242B572ECF106300C867D4 /* PRGroupMerge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRGroupMerge.swift; sourceTree = "<group>"; };
-		E2242B582ECF106300C867D4 /* PRPHAsset+Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PRPHAsset+Utils.swift"; sourceTree = "<group>"; };
-		E2242B592ECF106300C867D4 /* PRPhotoMapManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRPhotoMapManager.swift; sourceTree = "<group>"; };
-		E2242B5A2ECF106300C867D4 /* PRPhotoTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRPhotoTypes.swift; sourceTree = "<group>"; };
-		E2242B5C2ECF106300C867D4 /* PRDiskSpaceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDiskSpaceManager.swift; sourceTree = "<group>"; };
-		E2242B5E2ECF106300C867D4 /* AssetsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsHelper.swift; sourceTree = "<group>"; };
-		E2242B5F2ECF106300C867D4 /* Permissions+Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Permissions+Alert.swift"; sourceTree = "<group>"; };
-		E2242B602ECF106300C867D4 /* PhotoMapHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoMapHelpers.swift; sourceTree = "<group>"; };
-		E2242B622ECF106300C867D4 /* PRAssetThumbnailProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAssetThumbnailProvider.swift; sourceTree = "<group>"; };
 		E2242B6D2ECF106300C867D4 /* SubscribeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeViewModel.swift; sourceTree = "<group>"; };
 		E2242B6F2ECF106300C867D4 /* SubscribeEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscribeEntryView.swift; sourceTree = "<group>"; };
 		E2242B712ECF106300C867D4 /* ProductManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductManager.swift; sourceTree = "<group>"; };
@@ -359,6 +359,117 @@
 				1EB31A092ED9C7F900884DD1 /* SubscribeListRequestModel.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		1EB31A162EDAA3F700884DD1 /* blurry */ = {
+			isa = PBXGroup;
+			children = (
+				1EB31A152EDAA3F700884DD1 /* PRBlurryAnalyzer.swift */,
+			);
+			path = blurry;
+			sourceTree = "<group>";
+		};
+		1EB31A182EDAA3F700884DD1 /* duplicate */ = {
+			isa = PBXGroup;
+			children = (
+				1EB31A172EDAA3F700884DD1 /* PRDuplicateAnalyzer.swift */,
+			);
+			path = duplicate;
+			sourceTree = "<group>";
+		};
+		1EB31A1A2EDAA3F700884DD1 /* similarity */ = {
+			isa = PBXGroup;
+			children = (
+				1EB31A192EDAA3F700884DD1 /* PRSimilarAnalyzer.swift */,
+			);
+			path = similarity;
+			sourceTree = "<group>";
+		};
+		1EB31A1C2EDAA3F700884DD1 /* text */ = {
+			isa = PBXGroup;
+			children = (
+				1EB31A1B2EDAA3F700884DD1 /* PRTextAnalyzer.swift */,
+			);
+			path = text;
+			sourceTree = "<group>";
+		};
+		1EB31A1E2EDAA3F700884DD1 /* video */ = {
+			isa = PBXGroup;
+			children = (
+				1EB31A1D2EDAA3F700884DD1 /* PRLargeVideoAnalyzer.swift */,
+			);
+			path = video;
+			sourceTree = "<group>";
+		};
+		1EB31A1F2EDAA3F700884DD1 /* analyzers */ = {
+			isa = PBXGroup;
+			children = (
+				1EB31A162EDAA3F700884DD1 /* blurry */,
+				1EB31A182EDAA3F700884DD1 /* duplicate */,
+				1EB31A1A2EDAA3F700884DD1 /* similarity */,
+				1EB31A1C2EDAA3F700884DD1 /* text */,
+				1EB31A1E2EDAA3F700884DD1 /* video */,
+			);
+			path = analyzers;
+			sourceTree = "<group>";
+		};
+		1EB31A212EDAA3F700884DD1 /* cache */ = {
+			isa = PBXGroup;
+			children = (
+				1EB31A202EDAA3F700884DD1 /* PRCacheSnapshots.swift */,
+			);
+			path = cache;
+			sourceTree = "<group>";
+		};
+		1EB31A272EDAA3F700884DD1 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				1EB31A222EDAA3F700884DD1 /* PRChunkScheduler.swift */,
+				1EB31A232EDAA3F700884DD1 /* PRGroupMerge.swift */,
+				1EB31A242EDAA3F700884DD1 /* PRPHAsset+Utils.swift */,
+				1EB31A252EDAA3F700884DD1 /* PRPhotoMapManager.swift */,
+				1EB31A262EDAA3F700884DD1 /* PRPhotoTypes.swift */,
+			);
+			path = core;
+			sourceTree = "<group>";
+		};
+		1EB31A292EDAA3F700884DD1 /* system */ = {
+			isa = PBXGroup;
+			children = (
+				1EB31A282EDAA3F700884DD1 /* PRDiskSpaceManager.swift */,
+			);
+			path = system;
+			sourceTree = "<group>";
+		};
+		1EB31A2D2EDAA3F700884DD1 /* helpers */ = {
+			isa = PBXGroup;
+			children = (
+				1EB31A292EDAA3F700884DD1 /* system */,
+				1EB31A2A2EDAA3F700884DD1 /* Permissions+Alert.swift */,
+				1EB31A2B2EDAA3F700884DD1 /* PhotoMapHelpers.swift */,
+				1EB31A2C2EDAA3F700884DD1 /* PRAssetsHelper.swift */,
+			);
+			path = helpers;
+			sourceTree = "<group>";
+		};
+		1EB31A2F2EDAA3F700884DD1 /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				1EB31A2E2EDAA3F700884DD1 /* PRAssetThumbnailProvider.swift */,
+			);
+			path = ui;
+			sourceTree = "<group>";
+		};
+		1EB31A302EDAA3F700884DD1 /* PRPhotoAnalyzer */ = {
+			isa = PBXGroup;
+			children = (
+				1EB31A1F2EDAA3F700884DD1 /* analyzers */,
+				1EB31A212EDAA3F700884DD1 /* cache */,
+				1EB31A272EDAA3F700884DD1 /* core */,
+				1EB31A2D2EDAA3F700884DD1 /* helpers */,
+				1EB31A2F2EDAA3F700884DD1 /* ui */,
+			);
+			path = PRPhotoAnalyzer;
 			sourceTree = "<group>";
 		};
 		1EE8CBE12EDA9AD40064F683 /* Keychain */ = {
@@ -524,11 +635,11 @@
 		E2242A872ECEEE8400C867D4 /* PhotosRefresher */ = {
 			isa = PBXGroup;
 			children = (
+				1EB31A302EDAA3F700884DD1 /* PRPhotoAnalyzer */,
 				1EE8CC182EDA9AD40064F683 /* CoreSDK */,
 				E2242C602ED5E1B300C867D4 /* PhotosRefresher.entitlements */,
 				E2242B0B2ECF106300C867D4 /* Business */,
 				E2242B482ECF106300C867D4 /* Modify */,
-				E2242B642ECF106300C867D4 /* PhotoAnalyzer */,
 				E2242B772ECF106300C867D4 /* Subs */,
 				E2242B7E2ECF106300C867D4 /* Utils */,
 				E2242C0C2ECF10B800C867D4 /* Views */,
@@ -685,117 +796,6 @@
 				1EB319802ED1A34200884DD1 /* BreathingModifier.swift */,
 			);
 			path = Modify;
-			sourceTree = "<group>";
-		};
-		E2242B4A2ECF106300C867D4 /* blurry */ = {
-			isa = PBXGroup;
-			children = (
-				1EE8CC482EDA9C030064F683 /* BlurryAnalyzer.swift */,
-			);
-			path = blurry;
-			sourceTree = "<group>";
-		};
-		E2242B4C2ECF106300C867D4 /* duplicate */ = {
-			isa = PBXGroup;
-			children = (
-				1EE8CC462EDA9BDF0064F683 /* DuplicateAnalyzer.swift */,
-			);
-			path = duplicate;
-			sourceTree = "<group>";
-		};
-		E2242B4E2ECF106300C867D4 /* similarity */ = {
-			isa = PBXGroup;
-			children = (
-				E2242B4D2ECF106300C867D4 /* SimilarAnalyzer.swift */,
-			);
-			path = similarity;
-			sourceTree = "<group>";
-		};
-		E2242B502ECF106300C867D4 /* text */ = {
-			isa = PBXGroup;
-			children = (
-				E2242B4F2ECF106300C867D4 /* TextAnalyzer.swift */,
-			);
-			path = text;
-			sourceTree = "<group>";
-		};
-		E2242B522ECF106300C867D4 /* video */ = {
-			isa = PBXGroup;
-			children = (
-				E2242B512ECF106300C867D4 /* LargeVideoAnalyzer.swift */,
-			);
-			path = video;
-			sourceTree = "<group>";
-		};
-		E2242B532ECF106300C867D4 /* analyzers */ = {
-			isa = PBXGroup;
-			children = (
-				E2242B4A2ECF106300C867D4 /* blurry */,
-				E2242B4C2ECF106300C867D4 /* duplicate */,
-				E2242B4E2ECF106300C867D4 /* similarity */,
-				E2242B502ECF106300C867D4 /* text */,
-				E2242B522ECF106300C867D4 /* video */,
-			);
-			path = analyzers;
-			sourceTree = "<group>";
-		};
-		E2242B552ECF106300C867D4 /* cache */ = {
-			isa = PBXGroup;
-			children = (
-				1EE8CC4A2EDA9CDE0064F683 /* PRCacheSnapshots.swift */,
-			);
-			path = cache;
-			sourceTree = "<group>";
-		};
-		E2242B5B2ECF106300C867D4 /* core */ = {
-			isa = PBXGroup;
-			children = (
-				E2242B562ECF106300C867D4 /* PRChunkScheduler.swift */,
-				E2242B572ECF106300C867D4 /* PRGroupMerge.swift */,
-				E2242B582ECF106300C867D4 /* PRPHAsset+Utils.swift */,
-				E2242B592ECF106300C867D4 /* PRPhotoMapManager.swift */,
-				E2242B5A2ECF106300C867D4 /* PRPhotoTypes.swift */,
-			);
-			path = core;
-			sourceTree = "<group>";
-		};
-		E2242B5D2ECF106300C867D4 /* system */ = {
-			isa = PBXGroup;
-			children = (
-				E2242B5C2ECF106300C867D4 /* PRDiskSpaceManager.swift */,
-			);
-			path = system;
-			sourceTree = "<group>";
-		};
-		E2242B612ECF106300C867D4 /* helpers */ = {
-			isa = PBXGroup;
-			children = (
-				E2242B5D2ECF106300C867D4 /* system */,
-				E2242B5E2ECF106300C867D4 /* AssetsHelper.swift */,
-				E2242B5F2ECF106300C867D4 /* Permissions+Alert.swift */,
-				E2242B602ECF106300C867D4 /* PhotoMapHelpers.swift */,
-			);
-			path = helpers;
-			sourceTree = "<group>";
-		};
-		E2242B632ECF106300C867D4 /* ui */ = {
-			isa = PBXGroup;
-			children = (
-				E2242B622ECF106300C867D4 /* PRAssetThumbnailProvider.swift */,
-			);
-			path = ui;
-			sourceTree = "<group>";
-		};
-		E2242B642ECF106300C867D4 /* PhotoAnalyzer */ = {
-			isa = PBXGroup;
-			children = (
-				E2242B532ECF106300C867D4 /* analyzers */,
-				E2242B552ECF106300C867D4 /* cache */,
-				E2242B5B2ECF106300C867D4 /* core */,
-				E2242B612ECF106300C867D4 /* helpers */,
-				E2242B632ECF106300C867D4 /* ui */,
-			);
-			path = PhotoAnalyzer;
 			sourceTree = "<group>";
 		};
 		E2242B772ECF106300C867D4 /* Subs */ = {
@@ -1075,7 +1075,6 @@
 				E2242A982ECEEE8400C867D4 /* PhotosRefresherApp.swift in Sources */,
 				1EB31A062ED9B91900884DD1 /* SubscribeNormalPage.swift in Sources */,
 				E2242B822ECF106300C867D4 /* Toast.swift in Sources */,
-				E2242B842ECF106300C867D4 /* AssetsHelper.swift in Sources */,
 				E2242C3B2ECF122A00C867D4 /* PRHomeHeaderView.swift in Sources */,
 				E2242B862ECF106300C867D4 /* AlertModal.swift in Sources */,
 				E2242C342ECF117F00C867D4 /* PRDoubleFeedViewModel.swift in Sources */,
@@ -1090,6 +1089,22 @@
 				E2242C162ECF10B800C867D4 /* MultiProgressBarView.swift in Sources */,
 				E2242C2C2ECF111600C867D4 /* PRCategoryHomePage.swift in Sources */,
 				E2242C172ECF10B800C867D4 /* Modal.swift in Sources */,
+				1EB31A312EDAA3F700884DD1 /* PRAssetThumbnailProvider.swift in Sources */,
+				1EB31A322EDAA3F700884DD1 /* PRGroupMerge.swift in Sources */,
+				1EB31A332EDAA3F700884DD1 /* PRSimilarAnalyzer.swift in Sources */,
+				1EB31A342EDAA3F700884DD1 /* PRChunkScheduler.swift in Sources */,
+				1EB31A352EDAA3F700884DD1 /* PRCacheSnapshots.swift in Sources */,
+				1EB31A362EDAA3F700884DD1 /* PRTextAnalyzer.swift in Sources */,
+				1EB31A372EDAA3F700884DD1 /* PRDiskSpaceManager.swift in Sources */,
+				1EB31A382EDAA3F700884DD1 /* PRPhotoTypes.swift in Sources */,
+				1EB31A392EDAA3F700884DD1 /* PRAssetsHelper.swift in Sources */,
+				1EB31A3A2EDAA3F700884DD1 /* PRPhotoMapManager.swift in Sources */,
+				1EB31A3B2EDAA3F700884DD1 /* PhotoMapHelpers.swift in Sources */,
+				1EB31A3C2EDAA3F700884DD1 /* PRLargeVideoAnalyzer.swift in Sources */,
+				1EB31A3D2EDAA3F700884DD1 /* PRDuplicateAnalyzer.swift in Sources */,
+				1EB31A3E2EDAA3F700884DD1 /* PRPHAsset+Utils.swift in Sources */,
+				1EB31A3F2EDAA3F700884DD1 /* PRBlurryAnalyzer.swift in Sources */,
+				1EB31A402EDAA3F700884DD1 /* Permissions+Alert.swift in Sources */,
 				E2242C182ECF10B800C867D4 /* PRAlertView.swift in Sources */,
 				E2242C192ECF10B800C867D4 /* PRGuideWelcomePage.swift in Sources */,
 				E2242C1A2ECF10B800C867D4 /* AppViewModel.swift in Sources */,
@@ -1107,7 +1122,6 @@
 				E2242C232ECF10B800C867D4 /* PRGuidePage.swift in Sources */,
 				E2242C252ECF10B800C867D4 /* LoadingView.swift in Sources */,
 				E2242C322ECF116B00C867D4 /* PRDoubleFeedPage.swift in Sources */,
-				1EE8CC472EDA9BDF0064F683 /* DuplicateAnalyzer.swift in Sources */,
 				E2242C462ECF134B00C867D4 /* PRSlideCacheManager.swift in Sources */,
 				E2242C262ECF10B800C867D4 /* ThemeButton.swift in Sources */,
 				E2242C272ECF10B800C867D4 /* CustomNavigationView.swift in Sources */,
@@ -1116,26 +1130,19 @@
 				E2242B8A2ECF106300C867D4 /* RouterRegistry.swift in Sources */,
 				E2242B8B2ECF106300C867D4 /* UIState.swift in Sources */,
 				1EB31A0A2ED9C7F900884DD1 /* SubscribeListRequestModel.swift in Sources */,
-				E2242B8F2ECF106300C867D4 /* Permissions+Alert.swift in Sources */,
 				E2242B902ECF106300C867D4 /* PermissonsManager.swift in Sources */,
 				E2242B922ECF106300C867D4 /* SubscribeEntryView.swift in Sources */,
-				E2242B932ECF106300C867D4 /* TextAnalyzer.swift in Sources */,
 				E2242B942ECF106300C867D4 /* GlobalOverlay.swift in Sources */,
 				E2242B9A2ECF106300C867D4 /* LocalizableManager.swift in Sources */,
 				E2242C442ECF131B00C867D4 /* PRSlideViewModel.swift in Sources */,
 				E2242B9D2ECF106300C867D4 /* AppUserDefaults.swift in Sources */,
 				E2242BA12ECF106300C867D4 /* RouterDestination.swift in Sources */,
 				E2242BA32ECF106300C867D4 /* CommonLoadingModify.swift in Sources */,
-				E2242BA42ECF106300C867D4 /* PhotoMapHelpers.swift in Sources */,
-				E2242BA72ECF106300C867D4 /* PRDiskSpaceManager.swift in Sources */,
-				E2242BA92ECF106300C867D4 /* SimilarAnalyzer.swift in Sources */,
 				E2242BAA2ECF106300C867D4 /* DialogDestination.swift in Sources */,
 				E2242C3D2ECF124800C867D4 /* PRHomeTopBar.swift in Sources */,
-				E2242BAB2ECF106300C867D4 /* PRAssetThumbnailProvider.swift in Sources */,
 				E2242BAE2ECF106300C867D4 /* DeviceUtils.swift in Sources */,
 				E2242BB02ECF106300C867D4 /* DeviceHelper.swift in Sources */,
 				E2242BB12ECF106300C867D4 /* ProductManager.swift in Sources */,
-				E2242BB32ECF106300C867D4 /* PRPHAsset+Utils.swift in Sources */,
 				1EB3197F2ED1978300884DD1 /* CustomPageView.swift in Sources */,
 				E2242BB82ECF106300C867D4 /* Functions.swift in Sources */,
 				E2242BB92ECF106300C867D4 /* SubscribeViewModel.swift in Sources */,
@@ -1144,13 +1151,11 @@
 				E2242BBC2ECF106300C867D4 /* UserManager.swift in Sources */,
 				E2242C392ECF120700C867D4 /* PRHomeAuthorizationView.swift in Sources */,
 				E2242BBD2ECF106300C867D4 /* AppInfo.swift in Sources */,
-				E2242BC02ECF106300C867D4 /* PRChunkScheduler.swift in Sources */,
 				1EE8CC192EDA9AD50064F683 /* PROrderManager.swift in Sources */,
 				1EE8CC1A2EDA9AD50064F683 /* PREnvironmentManager.swift in Sources */,
 				1EE8CC1B2EDA9AD50064F683 /* DismissingKeyboardOnSwipe.swift in Sources */,
 				1EE8CC1D2EDA9AD50064F683 /* OnReceiveChangeModifier.swift in Sources */,
 				1EE8CC1E2EDA9AD50064F683 /* PRRequestHandlerResponseModel.swift in Sources */,
-				1EE8CC492EDA9C030064F683 /* BlurryAnalyzer.swift in Sources */,
 				1EE8CC1F2EDA9AD50064F683 /* PRRequestHandlerSignUtils.swift in Sources */,
 				1EE8CC202EDA9AD50064F683 /* PRQuerySubscriptionOrderModel.swift in Sources */,
 				1EE8CC212EDA9AD50064F683 /* Date+Extension.swift in Sources */,
@@ -1190,26 +1195,21 @@
 				1EE8CC442EDA9AD50064F683 /* ViewDurationTrackerModifier.swift in Sources */,
 				1EE8CC452EDA9AD50064F683 /* PRPaymentProcessManager.swift in Sources */,
 				E2242C302ECF115300C867D4 /* PRDeleteFinishPage.swift in Sources */,
-				1EE8CC4B2EDA9CDE0064F683 /* PRCacheSnapshots.swift in Sources */,
 				E2242C362ECF11AA00C867D4 /* PRDuplicatePage.swift in Sources */,
 				E2242BC32ECF106300C867D4 /* MailHelper.swift in Sources */,
 				1EB31A0C2ED9D48F00884DD1 /* SubscribeRandomBubble.swift in Sources */,
 				E2242BC52ECF106300C867D4 /* UserInfo.swift in Sources */,
 				E2242BC82ECF106300C867D4 /* DialogRegistry.swift in Sources */,
 				E2242BCA2ECF106300C867D4 /* ATTrackingManager+Limit.m in Sources */,
-				E2242BCD2ECF106300C867D4 /* PRPhotoMapManager.swift in Sources */,
 				E2242BCF2ECF106300C867D4 /* RouterPath.swift in Sources */,
 				E2242BD22ECF106300C867D4 /* LLCachePath.swift in Sources */,
 				E2242BD72ECF106300C867D4 /* Constants.swift in Sources */,
 				E2242BD82ECF106300C867D4 /* ConfigManager.swift in Sources */,
-				E2242BDA2ECF106300C867D4 /* PRGroupMerge.swift in Sources */,
 				E2242BDB2ECF106300C867D4 /* ScanAnimationModifier.swift in Sources */,
-				E2242BDD2ECF106300C867D4 /* PRPhotoTypes.swift in Sources */,
 				E2242BDF2ECF106300C867D4 /* SubscribeResponseModel.swift in Sources */,
 				1EB31A022ED99DFD00884DD1 /* SubscribeSwitchPage.swift in Sources */,
 				E2242BE22ECF106300C867D4 /* MarketManager.swift in Sources */,
 				E2242BE32ECF106300C867D4 /* ReviewManager.swift in Sources */,
-				E2242BE42ECF106300C867D4 /* LargeVideoAnalyzer.swift in Sources */,
 				E2242C2E2ECF113200C867D4 /* PRCategoryHomeViewModel.swift in Sources */,
 				E2242BE72ECF106300C867D4 /* ConfigModel.swift in Sources */,
 				E2242C482ECF138100C867D4 /* TrashReviewAlertView.swift in Sources */,

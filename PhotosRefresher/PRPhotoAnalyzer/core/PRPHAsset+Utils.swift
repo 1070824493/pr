@@ -12,7 +12,7 @@ import UIKit
 /// 计算资源字节大小（聚合多个资源项）
 /// - 参数: `PHAsset`
 /// - 返回: 字节数（`Int64`）
-func assetSizeBytes(_ asset: PHAsset) -> Int64 {
+func calculateAssetSizeBytes(_ asset: PHAsset) -> Int64 {
 
     let resources = PHAssetResource.assetResources(for: asset)
         var sum: Int64 = 0
@@ -34,13 +34,13 @@ extension PHFetchResult where ObjectType == PHAsset {
 }
 
 /// 通过 `localIdentifier` 获取单个 `PHAsset`
-func getPHAsset(by identifier: String) -> PHAsset? {
-    let assets = getPHAssets(by: [identifier])
+func retrievePHAsset(by identifier: String) -> PHAsset? {
+    let assets = retrievePHAssets(by: [identifier])
     return assets.first
 }
 
 /// 通过一组 `localIdentifier` 获取 `PHAsset` 列表（自动过滤空串与去重）
-func getPHAssets(by identifiers: [String]) -> [PHAsset] {
+func retrievePHAssets(by identifiers: [String]) -> [PHAsset] {
     guard !identifiers.isEmpty else {
         print("❌ Identifiers array is empty")
         return []

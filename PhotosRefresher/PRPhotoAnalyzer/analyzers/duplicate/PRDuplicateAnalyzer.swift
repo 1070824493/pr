@@ -4,13 +4,13 @@ import CoreGraphics
 
 /// 重复图片分组（严格重复）
 /// - 输出: 重复分组的 `localIdentifier` 列表集合
-enum DuplicateAnalyzer {
+enum PRDuplicateAnalyzer {
     private static let hdDup = 7
     private static let hdSimUpper = 14
     private static let maxBucket = 120
     private static let aspectTol: CGFloat = 0.15
 
-    static func analyzeGroupIDs(in assets: [PHAsset]) async -> [[String]] {
+    static func identifyDuplicateGroups(in assets: [PHAsset]) async -> [[String]] {
         struct FP: Hashable { let w: Int32; let h: Int32; let ts: Int32 }
         var fpBuckets: [FP: [String]] = [:]
         fpBuckets.reserveCapacity(assets.count / 2)
@@ -45,9 +45,9 @@ enum DuplicateAnalyzer {
             for id in ids {
                 autoreleasepool {
                     guard let a = PHAsset.fetchAssets(withLocalIdentifiers: [id], options: nil).toArray().first,
-                          let ui = thumbnail(for: a, manager: manager, options: opts, target: target) else { return }
-                    if let ph = pHash64(from: ui) { pMap[id] = ph }
-                    if let dh = dHash64(from: ui) { dMap[id] = dh }
+                          let ui = generateThumbnail(for: a, manager: manager, options: opts, target: target) else { return }
+                    if let ph = calculatePHash64(from: ui) { pMap[id] = ph }
+                    if let dh = calculateDHash64(from: ui) { dMap[id] = dh }
                     if dMap[id] == nil { dMap[id] = pMap[id] }
                 }
             }
@@ -69,7 +69,7 @@ enum DuplicateAnalyzer {
                     for j in (i+1)..<bid.count {
                         let id2 = bid[j]
                         guard let p2 = pMap[id2], let d2 = dMap[id2] else { continue }
-                        if !aspectClose(wh1, dims[id2], tol: aspectTol) { continue }
+                        if !isAspectRatioSimilar(wh1, dims[id2], tol: aspectTol) { continue }
                         let hdp = (p1 ^ p2).nonzeroBitCount
                         if hdp > hdSimUpper { continue }
                         let hdd = (d1 ^ d2).nonzeroBitCount
@@ -79,17 +79,17 @@ enum DuplicateAnalyzer {
             }
         }
 
-        return unifyPairs(pairLinks)
+        return mergeDuplicatePairs(pairLinks)
     }
 
-    private static func aspectClose(_ a: (Int, Int)?, _ b: (Int, Int)?, tol: CGFloat) -> Bool {
+    private static func isAspectRatioSimilar(_ a: (Int, Int)?, _ b: (Int, Int)?, tol: CGFloat) -> Bool {
         guard let a, let b else { return false }
         let ra = CGFloat(a.0) / max(1, CGFloat(a.1))
         let rb = CGFloat(b.0) / max(1, CGFloat(b.1))
         return abs(ra - rb) / max(ra, rb) <= tol
     }
 
-    private static func unifyPairs(_ links: [(String, String)]) -> [[String]] {
+    private static func mergeDuplicatePairs(_ links: [(String, String)]) -> [[String]] {
         if links.isEmpty { return [] }
         var id2idx: [String: Int] = [:]
         func idx(_ id: String) -> Int { if let i = id2idx[id] { return i }; let i = id2idx.count; id2idx[id] = i; return i }

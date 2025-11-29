@@ -7,8 +7,8 @@ import CoreImage
 /// 文字图片识别
 /// - 策略: 先 160px 粗检 (VNDetectTextRectangles) 命中后再 512px 精检 (VNRecognizeText)
 /// - 输出: 含文字的图片 `localIdentifier` 列表
-enum TextAnalyzer {
-    static func analyzeIDs(in assets: [PHAsset]) async -> [String] {
+enum PRTextAnalyzer {
+    static func scanForTextContainingAssets(in assets: [PHAsset]) async -> [String] {
         var hits: [String] = []
         hits.reserveCapacity(assets.count / 4)
 
@@ -18,16 +18,16 @@ enum TextAnalyzer {
 
         for a in assets where a.mediaType == .image {
             autoreleasepool {
-                guard let low = thumbnail(for: a, manager: manager, options: optLow, target: .init(width: 160, height: 160))?.cgImage else { return }
-                if !coarseHit(low) { return }
-                guard let hi = thumbnail(for: a, manager: manager, options: optHi, target: .init(width: 512, height: 512))?.cgImage else { return }
-                if refineHit(hi) { hits.append(a.localIdentifier) }
+                guard let low = generateThumbnail(for: a, manager: manager, options: optLow, target: .init(width: 160, height: 160))?.cgImage else { return }
+                if !performCoarseTextDetection(low) { return }
+                guard let hi = generateThumbnail(for: a, manager: manager, options: optHi, target: .init(width: 512, height: 512))?.cgImage else { return }
+                if performFineTextRecognition(hi) { hits.append(a.localIdentifier) }
             }
         }
         return hits
     }
 
-    private static func coarseHit(_ cg: CGImage) -> Bool {
+    private static func performCoarseTextDetection(_ cg: CGImage) -> Bool {
         let req = VNDetectTextRectanglesRequest(); req.reportCharacterBoxes = false
         let h = VNImageRequestHandler(cgImage: cg, options: [:])
         try? h.perform([req])
@@ -35,7 +35,7 @@ enum TextAnalyzer {
         return rects.count >= 1
     }
 
-    private static func refineHit(_ cg: CGImage) -> Bool {
+    private static func performFineTextRecognition(_ cg: CGImage) -> Bool {
         let req = VNRecognizeTextRequest(); req.recognitionLevel = .accurate; req.usesLanguageCorrection = false
         let h = VNImageRequestHandler(cgImage: cg, options: [:])
         try? h.perform([req])

@@ -11,7 +11,7 @@ import Photos
 
 class PRSlideViewModel: ObservableObject {
     
-    @Published var currentCategory: PhotoCategory = AppUserPreferences.shared.currentSlideCategory {
+    @Published var currentCategory: PRPhotoCategory = AppUserPreferences.shared.currentSlideCategory {
         didSet {
             previewFive = []
             prepareSet()
@@ -42,11 +42,11 @@ class PRSlideViewModel: ObservableObject {
             .sink { [weak self] note in
                 guard let self = self else { return }
                 if let raw = note.userInfo?["category"] as? String,
-                   let cat = PhotoCategory(rawValue: raw),
+                   let cat = PRPhotoCategory(rawValue: raw),
                    cat == self.currentCategory,
                    let nextIDs = note.userInfo?["nextIDs"] as? [String] {
                     let first5IDs = Array(nextIDs.prefix(5))
-                    let first5 = getPHAssets(by: first5IDs)
+                    let first5 = retrievePHAssets(by: first5IDs)
                     self.previewFive = first5
                 }
             }
@@ -62,7 +62,7 @@ class PRSlideViewModel: ObservableObject {
         }
     }
 
-    func loadCategory(_ cat: PhotoCategory) {
+    func loadCategory(_ cat: PRPhotoCategory) {
         currentCategory = cat
         AppUserPreferences.shared.currentSlideCategory = cat
     }
@@ -76,7 +76,7 @@ class PRSlideViewModel: ObservableObject {
         }
         
         let first5IDs = cache.unviewedFirst(limit: 5, category: currentCategory, sourceIDs: ids)
-        let first5 = getPHAssets(by: first5IDs)
+        let first5 = retrievePHAssets(by: first5IDs)
         previewFive = first5
     }
 
@@ -93,7 +93,7 @@ class PRSlideViewModel: ObservableObject {
     }
 
     
-    func mapFor(_ cat: PhotoCategory) -> PhotoAssetsMap {
+    func mapFor(_ cat: PRPhotoCategory) -> PRPhotoAssetsMap {
         switch cat {
         case .screenshot: return manager.screenshotPhotosMap
         case .livePhoto: return manager.livePhotosMap
@@ -103,8 +103,8 @@ class PRSlideViewModel: ObservableObject {
         }
     }
 
-    var alternativeCategories: [PhotoCategory] {
-        let all: [PhotoCategory] = [.screenshot, .selfiephoto, .livePhoto, .backphoto]
+    var alternativeCategories: [PRPhotoCategory] {
+        let all: [PRPhotoCategory] = [.screenshot, .selfiephoto, .livePhoto, .backphoto]
         return all.filter { $0 != currentCategory }
     }
 }

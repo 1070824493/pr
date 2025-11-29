@@ -95,7 +95,7 @@ struct FiveCardsPreview: View {
         }
         .overlay(alignment: .topLeading) {
             if assets.indices.contains(1) {
-                provider.thumbnailView(for: assets[1], targetSize: CGSize(width: 194, height: 134))
+                provider.createThumbnailView(for: assets[1], targetSize: CGSize(width: 194, height: 134))
                     .frame(width: 194, height: 134)
                     .cornerRadius(16)
                     .overlay(
@@ -108,7 +108,7 @@ struct FiveCardsPreview: View {
         
         .overlay(alignment: .bottomLeading) {
             if assets.indices.contains(2) {
-                provider.thumbnailView(for: assets[2], targetSize: CGSize(width: 230, height: 141))
+                provider.createThumbnailView(for: assets[2], targetSize: CGSize(width: 230, height: 141))
                     .frame(width: 230, height: 141)
                     .cornerRadius(16)
                     .overlay(
@@ -120,7 +120,7 @@ struct FiveCardsPreview: View {
         }
         .overlay(alignment: .topTrailing) {
             if assets.indices.contains(3) {
-                provider.thumbnailView(for: assets[3], targetSize: CGSize(width: 128, height: 181))
+                provider.createThumbnailView(for: assets[3], targetSize: CGSize(width: 128, height: 181))
                     .frame(width: 128, height: 181)
                     .cornerRadius(16)
                     .overlay(
@@ -133,7 +133,7 @@ struct FiveCardsPreview: View {
         .overlay(alignment: .bottomTrailing) {
             ZStack {
                 if assets.indices.contains(4) {
-                    provider.thumbnailView(for: assets[4], targetSize: CGSize(width: 155, height: 181))
+                    provider.createThumbnailView(for: assets[4], targetSize: CGSize(width: 155, height: 181))
                         .scaledToFill()
                         .frame(width: 155, height: 181)
                         .cornerRadius(16)
@@ -146,7 +146,7 @@ struct FiveCardsPreview: View {
         }
         .overlay(alignment: .center) {
             if let a = assets.first {
-                provider.thumbnailView(for: a, targetSize: CGSize(width: 200, height: 269))
+                provider.createThumbnailView(for: a, targetSize: CGSize(width: 200, height: 269))
                     .frame(width: 200, height: 269)
                     .cornerRadius(24)
                     .shadow(color: Color.black.opacity(0.25), radius: 12, x: 0, y: 8)
@@ -163,14 +163,14 @@ struct FiveCardsPreview: View {
     }
 }
 
-private func menuTitle(_ c: PhotoCategory) -> String {
+private func menuTitle(_ c: PRPhotoCategory) -> String {
     switch c { case .backphoto: return "Photos"; case .screenshot: return "Screenshots"; case .selfiephoto: return "Selfies"; case .livePhoto: return "Live"; default: return c.rawValue }
 }
 
 struct NoPhotosView: View {
-    let current: PhotoCategory
-    let alternatives: [PhotoCategory]
-    var onSelect: (PhotoCategory) -> Void
+    let current: PRPhotoCategory
+    let alternatives: [PRPhotoCategory]
+    var onSelect: (PRPhotoCategory) -> Void
     var body: some View {
         VStack(spacing: 0) {
             Image("cleaning_home_noPermission")

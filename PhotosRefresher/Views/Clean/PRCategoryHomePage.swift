@@ -30,7 +30,7 @@ struct PRCategoryHomePage: View {
         _vm = StateObject(wrappedValue: .init(manager: .shared))
     }
     
-    let allCategory: [PhotoCategory] = [
+    let allCategory: [PRPhotoCategory] = [
         .blurryphoto,
         .duplicatephoto,
         .similarphoto,
@@ -177,7 +177,7 @@ struct PRCategoryHomePage: View {
             .ignoresSafeArea()
     }
     
-    private func clickCellAction(category: PhotoCategory) {
+    private func clickCellAction(category: PRPhotoCategory) {
         switch category {
         
         case .similarphoto, .similarvideo, .duplicatephoto:
@@ -251,8 +251,8 @@ struct PRCategoryHomePage: View {
 }
 
 struct PRHomePagingView: View {
-    let items: [PhotoCategory]
-    var onTapClean: (_ tappedCategory: PhotoCategory) -> Void
+    let items: [PRPhotoCategory]
+    var onTapClean: (_ tappedCategory: PRPhotoCategory) -> Void
     @EnvironmentObject var vm: PRCategoryHomeViewModel
     @State private var selection: Int = 0
     private let thumbProvider = PRAssetThumbnailProvider()
@@ -286,7 +286,7 @@ struct PRCategoryPageCard: View {
             ZStack(alignment: .bottomLeading) {
                 Group {
                     if let a = asset {
-                        thumbProvider.thumbnailView(for: a, targetSize: CGSize(width: cardW, height: cardH), preferFastFirst: true)
+                        thumbProvider.createThumbnailView(for: a, targetSize: CGSize(width: cardW, height: cardH), preferFastFirst: true)
                             .frame(width: cardW, height: cardH)
                             .clipped()
                     } else {
@@ -376,7 +376,7 @@ extension Int64 {
     }
 }
 
-extension PhotoCategory {
+extension PRPhotoCategory {
     var title: String {
         switch self {
         case .blurryphoto:   return "Blurry Photos"
@@ -398,7 +398,7 @@ extension Notification.Name {
 }
 
 struct CategoryItemVM: Equatable, Hashable {
-    let category: PhotoCategory
+    let category: PRPhotoCategory
     let bytes: Int64
     let repID: [String]?
     let repAsset: [PHAsset]?

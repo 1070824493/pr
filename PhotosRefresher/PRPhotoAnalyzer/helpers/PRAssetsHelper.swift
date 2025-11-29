@@ -7,10 +7,10 @@
 import Photos
 import UIKit
 
-extension AssetsHelper {
+extension PRAssetsHelper {
 
     /// 删除资产（需要 VIP 权限），支持传入现有 `PHAsset` 或 `localIdentifier` 数组
-    public func deleteAssetsRequiringVip(
+    public func removeAssetsWithVipCheck(
         _ assets: [PHAsset],
         assetIDs: [String]? = nil,
         uiState: UIState,
@@ -20,7 +20,7 @@ extension AssetsHelper {
     ) {
         let finalAssets: [PHAsset] = {
             if !assets.isEmpty { return assets }
-            if let ids = assetIDs, !ids.isEmpty { return getPHAssets(by: ids) }
+            if let ids = assetIDs, !ids.isEmpty { return retrievePHAssets(by: ids) }
             return []
         }()
 
@@ -38,26 +38,26 @@ extension AssetsHelper {
                     onDismiss: { isSuccess in
                         uiState.fullScreenCoverDestination = nil
                         if isSuccess {
-                            self.deleteAssets(finalAssets, from: from, completion: completion)
+                            self.performAssetDeletion(finalAssets, from: from, completion: completion)
                         } else {
-                            completion(.failure(AssetsExecError.requestCancelled))
+                            completion(.failure(PRAssetsExecError.requestCancelled))
                         }
                     }
                 )
             }
         } else {
-            deleteAssets(finalAssets, from: from, completion: completion)
+            performAssetDeletion(finalAssets, from: from, completion: completion)
         }
     }
 }
 
 /// 资产工具集合：缩略图加载与批量删除
-class AssetsHelper {
+class PRAssetsHelper {
     
-    public static let shared = AssetsHelper()
+    public static let shared = PRAssetsHelper()
     
     /// 加载高清缩略图（允许 iCloud 下载，屏蔽降质结果）
-    func requestThumbnail(
+    func fetchHighQualityThumbnail(
         for asset: PHAsset,
         targetSize: CGSize = CGSize(width: 200, height: 200),
         deliveryMode: PHImageRequestOptionsDeliveryMode = .opportunistic
@@ -85,7 +85,7 @@ class AssetsHelper {
                 }
                 
                 guard let image = image else {
-                    continuation.resume(throwing: AssetsExecError.imageNotFound)
+                    continuation.resume(throwing: PRAssetsExecError.imageNotFound)
                     return
                 }
                 
@@ -95,7 +95,7 @@ class AssetsHelper {
     }
     
     /// 加载快速缩略图（不走网络，首帧快）
-    func requestFastThumbnail(
+    func fetchFastThumbnail(
         for asset: PHAsset,
         targetSize: CGSize = CGSize(width: 200, height: 200)
     ) async throws -> UIImage {
@@ -117,7 +117,7 @@ class AssetsHelper {
                 }
                 
                 guard let image = image else {
-                    continuation.resume(throwing: AssetsExecError.imageNotFound)
+                    continuation.resume(throwing: PRAssetsExecError.imageNotFound)
                     return
                 }
                 
@@ -127,7 +127,7 @@ class AssetsHelper {
     }
     
     /// 并发加载缩略图（自动聚合结果）
-    func requestThumbnails(
+    func fetchMultipleThumbnails(
         for assets: [PHAsset],
         targetSize: CGSize = CGSize(width: 200, height: 200),
         useFaseter: Bool = false,
@@ -139,9 +139,9 @@ class AssetsHelper {
                 group.addTask {
                     var image: UIImage
                     if faster {
-                        image = try await self.requestFastThumbnail(for: asset, targetSize: targetSize)
+                        image = try await self.fetchFastThumbnail(for: asset, targetSize: targetSize)
                     } else {
-                        image = try await self.requestThumbnail(for: asset, targetSize: targetSize)
+                        image = try await self.fetchHighQualityThumbnail(for: asset, targetSize: targetSize)
                     }
                     return (asset.localIdentifier, image)
                 }
@@ -156,7 +156,7 @@ class AssetsHelper {
     }
     
     /// 限并发批量加载缩略图（分块）
-    func requestThumbnailsWithConcurrencyLimit(
+    func fetchThumbnailsWithLimit(
         for assets: [PHAsset],
         targetSize: CGSize = CGSize(width: 200, height: 200),
         maxConcurrentTasks: Int = 4,
@@ -171,9 +171,9 @@ class AssetsHelper {
                     group.addTask {
                         var image: UIImage
                         if faster {
-                            image = try await self.requestFastThumbnail(for: asset, targetSize: targetSize)
+                            image = try await self.fetchFastThumbnail(for: asset, targetSize: targetSize)
                         } else {
-                            image = try await self.requestThumbnail(for: asset, targetSize: targetSize)
+                            image = try await self.fetchHighQualityThumbnail(for: asset, targetSize: targetSize)
                         }
                         return (asset.localIdentifier, image)
                     }
@@ -189,7 +189,7 @@ class AssetsHelper {
     }
     
     /// 执行删除（已授权）
-    private func deleteAssets(_ assets: [PHAsset], from: String, completion: @escaping (Result<Void, Error>) -> Void) {
+    private func performAssetDeletion(_ assets: [PHAsset], from: String, completion: @escaping (Result<Void, Error>) -> Void) {
         
         guard !assets.isEmpty else {
             completion(.success(()))
@@ -198,7 +198,7 @@ class AssetsHelper {
         
         let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         guard status == .authorized || status == .limited else {
-            completion(.failure(AssetsExecError.authorizationDenied))
+            completion(.failure(PRAssetsExecError.authorizationDenied))
             return
         }
         
@@ -211,14 +211,14 @@ class AssetsHelper {
                     PRPhotoMapManager.shared.lastDeleteAssets = assets
                     completion(.success(()))
                 } else {
-                    completion(.failure(error ?? AssetsExecError.unknown))
+                    completion(.failure(error ?? PRAssetsExecError.unknown))
                 }
             }
         }
     }
 }
 
-enum AssetsExecError: Error, LocalizedError {
+enum PRAssetsExecError: Error, LocalizedError {
     case imageNotFound
     case authorizationDenied
     case requestCancelled

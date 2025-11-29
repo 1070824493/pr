@@ -18,8 +18,8 @@ public class AppUserPreferences: ObservableObject {
     
     @AppStorage("albumPermissionStatus") var albumPermissionStatus: PHAuthorizationStatus = .notDetermined
     
-    @UserDefaultEnum("currentSlideCategory", defaultValue: PhotoCategory.backphoto)
-    public var currentSlideCategory: PhotoCategory {
+    @UserDefaultEnum("currentSlideCategory", defaultValue: PRPhotoCategory.backphoto)
+    public var currentSlideCategory: PRPhotoCategory {
         willSet {
             objectWillChange.send()
         }

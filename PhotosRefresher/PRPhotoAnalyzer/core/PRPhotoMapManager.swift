@@ -21,18 +21,18 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
     @Published public private(set) var allAssets: [PHAsset] = []
 
     // 单资产类目
-    @Published public private(set) var screenshotPhotosMap = PhotoAssetsMap(.screenshot)
-    @Published public private(set) var livePhotosMap = PhotoAssetsMap(.livePhoto)
-    @Published public private(set) var selfiePhotosMap = PhotoAssetsMap(.selfiephoto)
-    @Published public private(set) var backPhotosMap = PhotoAssetsMap(.backphoto)
-    @Published public private(set) var allVideosMap = PhotoAssetsMap(.allvideo)
+    @Published public private(set) var screenshotPhotosMap = PRPhotoAssetsMap(.screenshot)
+    @Published public private(set) var livePhotosMap = PRPhotoAssetsMap(.livePhoto)
+    @Published public private(set) var selfiePhotosMap = PRPhotoAssetsMap(.selfiephoto)
+    @Published public private(set) var backPhotosMap = PRPhotoAssetsMap(.backphoto)
+    @Published public private(set) var allVideosMap = PRPhotoAssetsMap(.allvideo)
     // 分组/重型类目
-    @Published public private(set) var similarPhotosMap = PhotoAssetsMap(.similarphoto)
-    @Published public private(set) var blurryPhotosMap = PhotoAssetsMap(.blurryphoto)
-    @Published public private(set) var duplicatePhotosMap = PhotoAssetsMap(.duplicatephoto)
-    @Published public private(set) var textPhotosMap = PhotoAssetsMap(.textphoto)
-    @Published public private(set) var largeVideosMap = PhotoAssetsMap(.largevideo)
-    @Published public private(set) var similarVideosMap = PhotoAssetsMap(.similarvideo) // 预留
+    @Published public private(set) var similarPhotosMap = PRPhotoAssetsMap(.similarphoto)
+    @Published public private(set) var blurryPhotosMap = PRPhotoAssetsMap(.blurryphoto)
+    @Published public private(set) var duplicatePhotosMap = PRPhotoAssetsMap(.duplicatephoto)
+    @Published public private(set) var textPhotosMap = PRPhotoAssetsMap(.textphoto)
+    @Published public private(set) var largeVideosMap = PRPhotoAssetsMap(.largevideo)
+    @Published public private(set) var similarVideosMap = PRPhotoAssetsMap(.similarvideo) // 预留
     
     @Published public private(set) var dashboard: PRDashboardSnapshot?
 
@@ -41,7 +41,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         didSet {
             let d = lastDeleteAssets
             guard !d.isEmpty else { return }
-            Task { @MainActor in self.applyRemovedAssetsToMaps(d) }
+            Task { @MainActor in self.removeAssetsFromMaps(d) }
         }
     }
 
@@ -73,8 +73,8 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
 
     // MARK: - 对外入口
     /// 重新加载全库并启动分析管线（含缓存秒显）
-    public func reloadAll() {
-        requestPermission { [weak self] ok in
+    public func reloadAllAssetsAndRestartPipeline() {
+        requestPhotoLibraryAccess { [weak self] ok in
             guard let self else { return }
             guard ok else {
                 self.state = .noPermission
@@ -82,16 +82,16 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
             }
             PHPhotoLibrary.shared().register(self)
             Task(priority: .userInitiated) {
-                await self.bootFromCacheIfAny() // 秒显缓存
-                let all = self.fetchAllAssetsSortedDesc()
-                await self.scheduler.configureSnapshot(with: all)
-                await self.startOrResumeBlockPipeline()
+                await self.initializeFromCache() // 秒显缓存
+                let all = self.fetchAssetsInDescendingOrder()
+                await self.scheduler.setupSnapshotConfiguration(with: all)
+                await self.initiateOrResumeAnalysisPipeline()
             }
         }
     }
 
     /// 申请相册读写权限，失败时弹出前往设置提示
-    public func requestPermission(completion: @escaping (Bool) -> Void) {
+    public func requestPhotoLibraryAccess(completion: @escaping (Bool) -> Void) {
         PHPhotoLibrary.requestAuthorization(for: .readWrite) { [weak self] s in
             DispatchQueue.main.async {
                 guard let self else { return }
@@ -99,14 +99,14 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
                     completion(true)
                 } else {
                     self.state = .noPermission
-                    self.presentSettingsAlert(for: s)
+                    self.showSettingsRedirectAlert(for: s)
                     completion(false)
                 }
             }
         }
     }
     
-    @MainActor private func repIdFor(_ map: PhotoAssetsMap) -> [String] {
+    @MainActor private func representativeIdentifiersForMap(_ map: PRPhotoAssetsMap) -> [String] {
         let ids = map.assets.prefix(2).map({$0.photoIdentifier})
         if !ids.isEmpty {
             return ids
@@ -125,29 +125,29 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         return []
     }
 
-    @MainActor private func buildDashboard() -> PRDashboardSnapshot {
+    @MainActor private func constructDashboardSnapshot() -> PRDashboardSnapshot {
         let cells: [PRDashboardCell] = [
-            PRDashboardCell(category: .screenshot,   bytes: screenshotPhotosMap.totalBytes,   repID: repIdFor(screenshotPhotosMap), count: screenshotPhotosMap.assets.count),
-            PRDashboardCell(category: .livePhoto,    bytes: livePhotosMap.totalBytes,         repID: repIdFor(livePhotosMap), count: livePhotosMap.assets.count),
-            PRDashboardCell(category: .selfiephoto,  bytes: selfiePhotosMap.totalBytes,       repID: repIdFor(selfiePhotosMap), count: selfiePhotosMap.assets.count),
-            PRDashboardCell(category: .backphoto,    bytes: backPhotosMap.totalBytes,         repID: repIdFor(backPhotosMap), count: backPhotosMap.assets.count),
-            PRDashboardCell(category: .allvideo,     bytes: allVideosMap.totalBytes,          repID: repIdFor(allVideosMap), count: allVideosMap.assets.count),
-            PRDashboardCell(category: .largevideo,   bytes: largeVideosMap.totalBytes,        repID: repIdFor(largeVideosMap), count: largeVideosMap.assets.count),
-            PRDashboardCell(category: .blurryphoto,  bytes: blurryPhotosMap.totalBytes,       repID: repIdFor(blurryPhotosMap), count: blurryPhotosMap.assets.count),
-            PRDashboardCell(category: .textphoto,    bytes: textPhotosMap.totalBytes,         repID: repIdFor(textPhotosMap), count: textPhotosMap.assets.count),
-            PRDashboardCell(category: .similarphoto, bytes: similarPhotosMap.totalBytes,      repID: repIdFor(similarPhotosMap), count: similarPhotosMap.assets.count),
-            PRDashboardCell(category: .duplicatephoto, bytes: duplicatePhotosMap.totalBytes,  repID: repIdFor(duplicatePhotosMap), count: duplicatePhotosMap.assets.count)
+            PRDashboardCell(category: .screenshot,   bytes: screenshotPhotosMap.totalBytes,   repID: representativeIdentifiersForMap(screenshotPhotosMap), count: screenshotPhotosMap.assets.count),
+            PRDashboardCell(category: .livePhoto,    bytes: livePhotosMap.totalBytes,         repID: representativeIdentifiersForMap(livePhotosMap), count: livePhotosMap.assets.count),
+            PRDashboardCell(category: .selfiephoto,  bytes: selfiePhotosMap.totalBytes,       repID: representativeIdentifiersForMap(selfiePhotosMap), count: selfiePhotosMap.assets.count),
+            PRDashboardCell(category: .backphoto,    bytes: backPhotosMap.totalBytes,         repID: representativeIdentifiersForMap(backPhotosMap), count: backPhotosMap.assets.count),
+            PRDashboardCell(category: .allvideo,     bytes: allVideosMap.totalBytes,          repID: representativeIdentifiersForMap(allVideosMap), count: allVideosMap.assets.count),
+            PRDashboardCell(category: .largevideo,   bytes: largeVideosMap.totalBytes,        repID: representativeIdentifiersForMap(largeVideosMap), count: largeVideosMap.assets.count),
+            PRDashboardCell(category: .blurryphoto,  bytes: blurryPhotosMap.totalBytes,       repID: representativeIdentifiersForMap(blurryPhotosMap), count: blurryPhotosMap.assets.count),
+            PRDashboardCell(category: .textphoto,    bytes: textPhotosMap.totalBytes,         repID: representativeIdentifiersForMap(textPhotosMap), count: textPhotosMap.assets.count),
+            PRDashboardCell(category: .similarphoto, bytes: similarPhotosMap.totalBytes,      repID: representativeIdentifiersForMap(similarPhotosMap), count: similarPhotosMap.assets.count),
+            PRDashboardCell(category: .duplicatephoto, bytes: duplicatePhotosMap.totalBytes,  repID: representativeIdentifiersForMap(duplicatePhotosMap), count: duplicatePhotosMap.assets.count)
         ]
         return PRDashboardSnapshot(cells: cells, totalSize: totalSize, updatedAt: Date())
     }
 
-    @MainActor private func saveDashboard(_ snap: PRDashboardSnapshot) {
+    @MainActor private func persistDashboardSnapshot(_ snap: PRDashboardSnapshot) {
         if let data = try? JSONEncoder().encode(snap) {
             try? data.write(to: files.dashboard, options: .atomic)
         }
     }
 
-    @MainActor private func loadDashboardIfAny() -> PRDashboardSnapshot? {
+    @MainActor private func loadPersistedDashboard() -> PRDashboardSnapshot? {
         if let data = try? Data(contentsOf: files.dashboard),
            let d = try? JSONDecoder().decode(PRDashboardSnapshot.self, from: data) {
             return d
@@ -155,20 +155,20 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         return nil
     }
 
-    private func updateDashboard() {
+    private func refreshDashboardData() {
         Task { @MainActor in
-            let d = buildDashboard()
+            let d = constructDashboardSnapshot()
             dashboard = d
-            saveDashboard(d)
+            persistDashboardSnapshot(d)
         }
     }
 
     // MARK: - 秒显缓存
-    private func bootFromCacheIfAny() async {
+    private func initializeFromCache() async {
         await MainActor.run { self.state = .loading }
 
         // Dashboard 优先秒显
-        if let dash = await MainActor.run(body: { loadDashboardIfAny() }) {
+        if let dash = await MainActor.run(body: { loadPersistedDashboard() }) {
             await MainActor.run { self.dashboard = dash }
         }
 
@@ -204,7 +204,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
                 duplicatePhotosMap.doubleAssetIDs = maps.duplicateGroupIds
                 duplicatePhotosMap.doubleAssets = maps.duplicateGroupModels
                 duplicatePhotosMap.totalBytes = maps.duplicateBytes
-                recomputeTotalSize()
+                recalculateTotalStorageSize()
             }
         }
 
@@ -218,16 +218,16 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
     }
 
     // MARK: - 重算 totalSize 时同步更新 Dashboard
-    private func recomputeTotalSize() {
+    private func recalculateTotalStorageSize() {
         let s = screenshotPhotosMap.totalBytes + livePhotosMap.totalBytes + allVideosMap.totalBytes + selfiePhotosMap.totalBytes + backPhotosMap.totalBytes +
                 similarPhotosMap.totalBytes + blurryPhotosMap.totalBytes + duplicatePhotosMap.totalBytes +
                 textPhotosMap.totalBytes + largeVideosMap.totalBytes + similarVideosMap.totalBytes
         if s != totalSize { totalSize = s }
-        updateDashboard()
+        refreshDashboardData()
     }
 
     // MARK: - 拉全库（倒序）
-    private func fetchAllAssetsSortedDesc() -> [PHAsset] {
+    private func fetchAssetsInDescendingOrder() -> [PHAsset] {
         let opts = PHFetchOptions()
         opts.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         let res = PHAsset.fetchAssets(with: opts)
@@ -240,47 +240,47 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
     }
 
     // MARK: - 主流程：Phase A → B1 并发 → B2 并发 → idle
-    private func startOrResumeBlockPipeline() async {
+    private func initiateOrResumeAnalysisPipeline() async {
         await MainActor.run { self.state = .loading }
 
-        let count = await scheduler.chunkCount()
+        let count = await scheduler.retrieveTotalChunkCount()
         guard count > 0 else {
             await MainActor.run { self.state = .idle }
             return
         }
 
         // Phase A：轻量（串行；每块回调 + 节流持久化）
-        await runPhaseA(totalChunks: count)
+        await executePhaseA(totalChunks: count)
 
         // Phase B1：相似/重复/大视频（并发；每块回调 + 节流持久化）
         await withTaskGroup(of: Void.self) { g in
-            g.addTask { await self.runPhaseB1_Similar(totalChunks: count) }
-            g.addTask { await self.runPhaseB1_Duplicate(totalChunks: count) }
-            g.addTask { await self.runPhaseB1_Large(totalChunks: count) }
+            g.addTask { await self.executePhaseB1Similar(totalChunks: count) }
+            g.addTask { await self.executePhaseB1Duplicate(totalChunks: count) }
+            g.addTask { await self.executePhaseB1Large(totalChunks: count) }
             await g.waitForAll()
         }
 
         // Phase B2：模糊/文字（并发；每块回调 + 节流持久化）
         await withTaskGroup(of: Void.self) { g in
-            g.addTask { await self.runPhaseB2_Blurry(totalChunks: count) }
-            g.addTask { await self.runPhaseB2_Text(totalChunks: count) }
+            g.addTask { await self.executePhaseB2Blurry(totalChunks: count) }
+            g.addTask { await self.executePhaseB2Text(totalChunks: count) }
             await g.waitForAll()
         }
 
         await MainActor.run {
-            self.saveMapsAndProgress(forceAll: true)
+            self.persistMapsAndProgressState(forceAll: true)
             self.state = .idle
         }
     }
 
     // MARK: - Phase A：轻量三类
-    private func runPhaseA(totalChunks: Int) async {
+    private func executePhaseA(totalChunks: Int) async {
         let start = (progress?.lastA ?? -1) + 1
         guard start < totalChunks else { return }
         var persistN = 0
 
         for i in start..<totalChunks {
-            guard let chunk = await scheduler.materializeChunk(index: i) else { continue }
+            guard let chunk = await scheduler.processAndRetrieveChunk(index: i) else { continue }
 
             let ids = chunk.entries.map(\.photoIdentifier)
             let entryMap = Dictionary(uniqueKeysWithValues: chunk.entries.map { ($0.photoIdentifier, $0) })
@@ -292,233 +292,233 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
             let imgs = assets.filter { $0.mediaType == .image }
 
             @inline(__always)
-            func toModels(_ arr: [PHAsset]) -> [PhotoAssetModel] {
+            func toModels(_ arr: [PHAsset]) -> [PRPhotoAssetModel] {
                 arr.map {
                     let e = entryMap[$0.localIdentifier]
-                    return PhotoAssetModel(id: $0.localIdentifier, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
+                    return PRPhotoAssetModel(id: $0.localIdentifier, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
                 }
             }
 
-            let split = await self.splitFrontBackIDs(in: imgs)
-            let selfieModels: [PhotoAssetModel] = split.front.map {
+            let split = await self.categorizeFrontBackCameraAssets(in: imgs)
+            let selfieModels: [PRPhotoAssetModel] = split.front.map {
                 let e = entryMap[$0]
-                return PhotoAssetModel(id: $0, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
+                return PRPhotoAssetModel(id: $0, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
             }
-            let backModels: [PhotoAssetModel] = split.back.map {
+            let backModels: [PRPhotoAssetModel] = split.back.map {
                 let e = entryMap[$0]
-                return PhotoAssetModel(id: $0, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
+                return PRPhotoAssetModel(id: $0, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
             }
 
             await MainActor.run {
-                self.applyAddSingle(.screenshot, add: toModels(shots))
-                self.applyAddSingle(.livePhoto, add: toModels(lives))
-                self.applyAddSingle(.allvideo, add: toModels(vids))
-                self.applyAddSingle(.selfiephoto, add: selfieModels)
-                self.applyAddSingle(.backphoto, add: backModels)
-                self.recomputeTotalSize()
+                self.integrateSingleCategoryAssets(.screenshot, add: toModels(shots))
+                self.integrateSingleCategoryAssets(.livePhoto, add: toModels(lives))
+                self.integrateSingleCategoryAssets(.allvideo, add: toModels(vids))
+                self.integrateSingleCategoryAssets(.selfiephoto, add: selfieModels)
+                self.integrateSingleCategoryAssets(.backphoto, add: backModels)
+                self.recalculateTotalStorageSize()
             }
 
-            progress = ensureProgress()
+            progress = guaranteeProgressState()
             progress?.lastA = i
             persistN += 1
             if persistN >= kPersistEveryN {
                 persistN = 0
-                await MainActor.run { self.saveMapsAndProgress() }
+                await MainActor.run { self.persistMapsAndProgressState() }
             }
         }
 
-        await MainActor.run { self.saveMapsAndProgress() }
+        await MainActor.run { self.persistMapsAndProgressState() }
     }
 
     // MARK: - Phase B1：相似
-    private func runPhaseB1_Similar(totalChunks: Int) async {
+    private func executePhaseB1Similar(totalChunks: Int) async {
         let start = (progress?.lastSimilar ?? -1) + 1
         guard start < totalChunks else { return }
         var persistN = 0
 
         for i in start..<totalChunks {
-            guard let chunk = await scheduler.materializeChunk(index: i) else { continue }
+            guard let chunk = await scheduler.processAndRetrieveChunk(index: i) else { continue }
             let ids = chunk.entries.map(\.photoIdentifier)
             let assets = PHAsset.fetchAssets(withLocalIdentifiers: ids, options: nil).toArray()
 
-            let groups = await SimilarAnalyzer.analyzeGroupIDs(in: assets)
+            let groups = await PRSimilarAnalyzer.findSimilarAssetGroups(in: assets)
 
             let entryMap = Dictionary(uniqueKeysWithValues: chunk.entries.map { ($0.photoIdentifier, $0) })
-            let groupModels: [[PhotoAssetModel]] = groups.compactMap { gid in
-                let arr = gid.map { id -> PhotoAssetModel in
+            let groupModels: [[PRPhotoAssetModel]] = groups.compactMap { gid in
+                let arr = gid.map { id -> PRPhotoAssetModel in
                     let e = entryMap[id]
-                    return PhotoAssetModel(id: id, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
+                    return PRPhotoAssetModel(id: id, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
                 }
                 return arr.count >= 2 ? arr : nil
             }
 
             await MainActor.run {
-                self.applyAddGrouped(.similarphoto, addGroupIDs: groups, addGroupModels: groupModels)
-                self.recomputeTotalSize()
+                self.integrateGroupedCategoryAssets(.similarphoto, addGroupIDs: groups, addGroupModels: groupModels)
+                self.recalculateTotalStorageSize()
             }
 
-            progress = ensureProgress()
+            progress = guaranteeProgressState()
             progress?.lastSimilar = i
             persistN += 1
             if persistN >= kPersistEveryN {
                 persistN = 0
-                await MainActor.run { self.saveMapsAndProgress() }
+                await MainActor.run { self.persistMapsAndProgressState() }
             }
         }
 
-        await MainActor.run { self.saveMapsAndProgress() }
+        await MainActor.run { self.persistMapsAndProgressState() }
     }
 
     // MARK: - Phase B1：重复
-    private func runPhaseB1_Duplicate(totalChunks: Int) async {
+    private func executePhaseB1Duplicate(totalChunks: Int) async {
         let start = (progress?.lastDuplicate ?? -1) + 1
         guard start < totalChunks else { return }
         var persistN = 0
 
         for i in start..<totalChunks {
-            guard let chunk = await scheduler.materializeChunk(index: i) else { continue }
+            guard let chunk = await scheduler.processAndRetrieveChunk(index: i) else { continue }
             let ids = chunk.entries.map(\.photoIdentifier)
             let assets = PHAsset.fetchAssets(withLocalIdentifiers: ids, options: nil).toArray()
 
-            let groups = await DuplicateAnalyzer.analyzeGroupIDs(in: assets)
+            let groups = await PRDuplicateAnalyzer.identifyDuplicateGroups(in: assets)
 
             let entryMap = Dictionary(uniqueKeysWithValues: chunk.entries.map { ($0.photoIdentifier, $0) })
-            let groupModels: [[PhotoAssetModel]] = groups.compactMap { gid in
-                let arr = gid.map { id -> PhotoAssetModel in
+            let groupModels: [[PRPhotoAssetModel]] = groups.compactMap { gid in
+                let arr = gid.map { id -> PRPhotoAssetModel in
                     let e = entryMap[id]
-                    return PhotoAssetModel(id: id, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
+                    return PRPhotoAssetModel(id: id, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
                 }
                 return arr.count >= 2 ? arr : nil
             }
 
             await MainActor.run {
-                self.applyAddGrouped(.duplicatephoto, addGroupIDs: groups, addGroupModels: groupModels)
-                self.recomputeTotalSize()
+                self.integrateGroupedCategoryAssets(.duplicatephoto, addGroupIDs: groups, addGroupModels: groupModels)
+                self.recalculateTotalStorageSize()
             }
 
-            progress = ensureProgress()
+            progress = guaranteeProgressState()
             progress?.lastDuplicate = i
             persistN += 1
             if persistN >= kPersistEveryN {
                 persistN = 0
-                await MainActor.run { self.saveMapsAndProgress() }
+                await MainActor.run { self.persistMapsAndProgressState() }
             }
         }
 
-        await MainActor.run { self.saveMapsAndProgress() }
+        await MainActor.run { self.persistMapsAndProgressState() }
     }
 
     // MARK: - Phase B1：大视频
-    private func runPhaseB1_Large(totalChunks: Int) async {
+    private func executePhaseB1Large(totalChunks: Int) async {
         let start = (progress?.lastLarge ?? -1) + 1
         guard start < totalChunks else { return }
         var persistN = 0
 
         for i in start..<totalChunks {
-            guard let chunk = await scheduler.materializeChunk(index: i) else { continue }
+            guard let chunk = await scheduler.processAndRetrieveChunk(index: i) else { continue }
             let ids = chunk.entries.map(\.photoIdentifier)
             let entryMap = Dictionary(uniqueKeysWithValues: chunk.entries.map { ($0.photoIdentifier, $0) })
             let assets = PHAsset.fetchAssets(withLocalIdentifiers: ids, options: nil).toArray()
 
-            let idList = await LargeVideoAnalyzer.analyzeIDs(in: assets, thresholdBytes: largeVideoThreshold)
-            let models: [PhotoAssetModel] = idList.map {
+            let idList = await PRLargeVideoAnalyzer.findLargeVideoIdentifiers(in: assets, thresholdBytes: largeVideoThreshold)
+            let models: [PRPhotoAssetModel] = idList.map {
                 let e = entryMap[$0]
-                return PhotoAssetModel(id: $0, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
+                return PRPhotoAssetModel(id: $0, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
             }
 
             await MainActor.run {
-                self.applyAddSingle(.largevideo, add: models)
-                self.recomputeTotalSize()
+                self.integrateSingleCategoryAssets(.largevideo, add: models)
+                self.recalculateTotalStorageSize()
             }
 
-            progress = ensureProgress()
+            progress = guaranteeProgressState()
             progress?.lastLarge = i
             persistN += 1
             if persistN >= kPersistEveryN {
                 persistN = 0
-                await MainActor.run { self.saveMapsAndProgress() }
+                await MainActor.run { self.persistMapsAndProgressState() }
             }
         }
 
-        await MainActor.run { self.saveMapsAndProgress() }
+        await MainActor.run { self.persistMapsAndProgressState() }
     }
 
     // MARK: - Phase B2：模糊
-    private func runPhaseB2_Blurry(totalChunks: Int) async {
+    private func executePhaseB2Blurry(totalChunks: Int) async {
         let start = (progress?.lastBlurry ?? -1) + 1
         guard start < totalChunks else { return }
         var persistN = 0
 
         for i in start..<totalChunks {
-            guard let chunk = await scheduler.materializeChunk(index: i) else { continue }
+            guard let chunk = await scheduler.processAndRetrieveChunk(index: i) else { continue }
             let ids = chunk.entries.map(\.photoIdentifier)
             let entryMap = Dictionary(uniqueKeysWithValues: chunk.entries.map { ($0.photoIdentifier, $0) })
             let assets = PHAsset.fetchAssets(withLocalIdentifiers: ids, options: nil).toArray()
 
-            let idList = await BlurryAnalyzer.analyzeIDs(in: assets)
-            let models: [PhotoAssetModel] = idList.map {
+            let idList = await PRBlurryAnalyzer.detectBlurryAssetIdentifiers(in: assets)
+            let models: [PRPhotoAssetModel] = idList.map {
                 let e = entryMap[$0]
-                return PhotoAssetModel(id: $0, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
+                return PRPhotoAssetModel(id: $0, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
             }
 
             await MainActor.run {
-                self.applyAddSingle(.blurryphoto, add: models)
-                self.recomputeTotalSize()
+                self.integrateSingleCategoryAssets(.blurryphoto, add: models)
+                self.recalculateTotalStorageSize()
             }
 
-            progress = ensureProgress()
+            progress = guaranteeProgressState()
             progress?.lastBlurry = i
             persistN += 1
             if persistN >= kPersistEveryN {
                 persistN = 0
-                await MainActor.run { self.saveMapsAndProgress() }
+                await MainActor.run { self.persistMapsAndProgressState() }
             }
         }
 
-        await MainActor.run { self.saveMapsAndProgress() }
+        await MainActor.run { self.persistMapsAndProgressState() }
     }
 
     // MARK: - Phase B2：文字
-    private func runPhaseB2_Text(totalChunks: Int) async {
+    private func executePhaseB2Text(totalChunks: Int) async {
         let start = (progress?.lastText ?? -1) + 1
         guard start < totalChunks else { return }
         var persistN = 0
 
         for i in start..<totalChunks {
-            guard let chunk = await scheduler.materializeChunk(index: i) else { continue }
+            guard let chunk = await scheduler.processAndRetrieveChunk(index: i) else { continue }
             let ids = chunk.entries.map(\.photoIdentifier)
             let entryMap = Dictionary(uniqueKeysWithValues: chunk.entries.map { ($0.photoIdentifier, $0) })
             let assets = PHAsset.fetchAssets(withLocalIdentifiers: ids, options: nil).toArray()
 
-            let idList = await TextAnalyzer.analyzeIDs(in: assets)
-            let models: [PhotoAssetModel] = idList.map {
+            let idList = await PRTextAnalyzer.scanForTextContainingAssets(in: assets)
+            let models: [PRPhotoAssetModel] = idList.map {
                 let e = entryMap[$0]
-                return PhotoAssetModel(id: $0, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
+                return PRPhotoAssetModel(id: $0, bytes: e?.photoBytes ?? 0, date: e?.photoDate ?? 0)
             }
 
             await MainActor.run {
-                self.applyAddSingle(.textphoto, add: models)
-                self.recomputeTotalSize()
+                self.integrateSingleCategoryAssets(.textphoto, add: models)
+                self.recalculateTotalStorageSize()
             }
 
-            progress = ensureProgress()
+            progress = guaranteeProgressState()
             progress?.lastText = i
             persistN += 1
             if persistN >= kPersistEveryN {
                 persistN = 0
-                await MainActor.run { self.saveMapsAndProgress() }
+                await MainActor.run { self.persistMapsAndProgressState() }
             }
         }
 
-        await MainActor.run { self.saveMapsAndProgress() }
+        await MainActor.run { self.persistMapsAndProgressState() }
     }
 
     // MARK: - 合并 & 统计（主线程）
     @MainActor
-    private func applyAddSingle(_ cat: PhotoCategory, add models: [PhotoAssetModel]) {
+    private func integrateSingleCategoryAssets(_ cat: PRPhotoCategory, add models: [PRPhotoAssetModel]) {
         guard !models.isEmpty else { return }
 
-        func insertUnique(_ add: [PhotoAssetModel], into arr: inout [PhotoAssetModel]) -> Int64 {
+        func insertUnique(_ add: [PRPhotoAssetModel], into arr: inout [PRPhotoAssetModel]) -> Int64 {
             var seen = Set(arr.map(\.photoIdentifier))
             var addedBytes: Int64 = 0
             for m in add where seen.insert(m.photoIdentifier).inserted {
@@ -551,22 +551,22 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
     }
 
     @MainActor
-    private func applyAddGrouped(
-        _ cat: PhotoCategory,
+    private func integrateGroupedCategoryAssets(
+        _ cat: PRPhotoCategory,
         addGroupIDs: [[String]],
-        addGroupModels: [[PhotoAssetModel]]
+        addGroupModels: [[PRPhotoAssetModel]]
     ) {
         guard cat == .similarphoto || cat == .duplicatephoto else { return }
         guard !addGroupIDs.isEmpty else { return }
 
         if cat == .similarphoto {
-            similarPhotosMap.doubleAssetIDs = GroupMerge.merge(existing: similarPhotosMap.doubleAssetIDs, adding: addGroupIDs)
+            similarPhotosMap.doubleAssetIDs = PRGroupMerge.mergeAssetGroups(existing: similarPhotosMap.doubleAssetIDs, adding: addGroupIDs)
         } else {
-            duplicatePhotosMap.doubleAssetIDs = GroupMerge.merge(existing: duplicatePhotosMap.doubleAssetIDs, adding: addGroupIDs)
+            duplicatePhotosMap.doubleAssetIDs = PRGroupMerge.mergeAssetGroups(existing: duplicatePhotosMap.doubleAssetIDs, adding: addGroupIDs)
         }
 
-        func buildIndex(existing: [[PhotoAssetModel]], adding: [[PhotoAssetModel]]) -> [String: PhotoAssetModel] {
-            var dict: [String: PhotoAssetModel] = [:]
+        func buildIndex(existing: [[PRPhotoAssetModel]], adding: [[PRPhotoAssetModel]]) -> [String: PRPhotoAssetModel] {
+            var dict: [String: PRPhotoAssetModel] = [:]
             dict.reserveCapacity(existing.reduce(0){$0+$1.count} + adding.reduce(0){$0+$1.count})
             for m in existing.flatMap({$0}) where dict[m.photoIdentifier] == nil {
                 dict[m.photoIdentifier] = m
@@ -577,11 +577,11 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
             return dict
         }
 
-        func rebuildAndCountDelta(map: inout PhotoAssetsMap, addModels: [[PhotoAssetModel]]) -> Int64 {
+        func rebuildAndCountDelta(map: inout PRPhotoAssetsMap, addModels: [[PRPhotoAssetModel]]) -> Int64 {
             let oldIDs = Set(map.doubleAssets.flatMap { $0.map(\.photoIdentifier) })
             let index = buildIndex(existing: map.doubleAssets, adding: addModels)
 
-            let newGroups: [[PhotoAssetModel]] = map.doubleAssetIDs.compactMap { ids in
+            let newGroups: [[PRPhotoAssetModel]] = map.doubleAssetIDs.compactMap { ids in
                 let arr = ids.compactMap { index[$0] }.sorted(by: {$0.photoBytes > $1.photoBytes})
                 return arr.count >= 2 ? arr : nil
             }
@@ -601,12 +601,12 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
             duplicatePhotosMap.totalBytes &+= delta
         }
 
-        recomputeTotalSize()
+        recalculateTotalStorageSize()
     }
 
     // MARK: - 持久化
     @MainActor
-    private func saveMapsAndProgress(forceAll: Bool = false) {
+    private func persistMapsAndProgressState(forceAll: Bool = false) {
         let snap = PRMapsSnapshot(
             screenshot: screenshotPhotosMap.assets,
             screenshotBytes: screenshotPhotosMap.totalBytes,
@@ -638,7 +638,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
             try? data.write(to: files.maps, options: .atomic)
         }
 
-        var p = ensureProgress()
+        var p = guaranteeProgressState()
         if forceAll {
             p.updatedAt = Date()
             progress = p
@@ -651,7 +651,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         }
     }
 
-    private func ensureProgress() -> PRProgressSnapshot {
+    private func guaranteeProgressState() -> PRProgressSnapshot {
         if let p = progress { return p }
         let p = PRProgressSnapshot(
             snapshotHash: "hash-\(UUID().uuidString)",
@@ -670,13 +670,13 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
 
     // MARK: - 删除应用（精确字节扣减）
     /// 将外部删除的资产应用到各类目地图中（精确字节扣减）
-    public func applyRemovedAssetsToMaps(_ removed: [PHAsset]) {
+    public func removeAssetsFromMaps(_ removed: [PHAsset]) {
         let ids = Set(removed.map { $0.localIdentifier })
         guard !ids.isEmpty else { return }
 
         Task { @MainActor in
             withTransaction(Transaction(animation: nil)) {
-                func strip(_ arr: inout [PhotoAssetModel]) -> Int64 {
+                func strip(_ arr: inout [PRPhotoAssetModel]) -> Int64 {
                     var delta: Int64 = 0
                     arr.removeAll { m in
                         if ids.contains(m.photoIdentifier) {
@@ -697,19 +697,19 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
                 blurryPhotosMap.totalBytes &-= strip(&blurryPhotosMap.assets)
                 textPhotosMap.totalBytes &-= strip(&textPhotosMap.assets)
 
-                let dupRemoved = stripGroupsInPlace(&duplicatePhotosMap, removing: ids)
+                let dupRemoved = removeAssetsFromGroupsInPlace(&duplicatePhotosMap, removing: ids)
                 duplicatePhotosMap.totalBytes &-= dupRemoved
-                let simRemoved = stripGroupsInPlace(&similarPhotosMap, removing: ids)
+                let simRemoved = removeAssetsFromGroupsInPlace(&similarPhotosMap, removing: ids)
                 similarPhotosMap.totalBytes &-= simRemoved
 
-                recomputeTotalSize()
-                self.saveMapsAndProgress()
+                recalculateTotalStorageSize()
+                self.persistMapsAndProgressState()
             }
         }
     }
 
     @MainActor
-    private func stripGroupsInPlace(_ map: inout PhotoAssetsMap, removing ids: Set<String>) -> Int64 {
+    private func removeAssetsFromGroupsInPlace(_ map: inout PRPhotoAssetsMap, removing ids: Set<String>) -> Int64 {
         var removedBytes: Int64 = 0
         for gi in map.doubleAssets.indices {
             for m in map.doubleAssets[gi] where ids.contains(m.photoIdentifier) {
@@ -729,7 +729,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
 
     // MARK: - 运行期：解析 PHAsset
     /// 解析并缓存单个 `PHAsset`（存在即取缓存，未命中则查询）
-    public func resolvePHAsset(for id: String) -> PHAsset? {
+    public func fetchOrResolvePHAsset(for id: String) -> PHAsset? {
         if let a = assetCache.object(forKey: id as NSString) { return a }
         let arr = PHAsset.fetchAssets(withLocalIdentifiers: [id], options: nil).toArray()
         if let a = arr.first {
@@ -748,7 +748,7 @@ extension PRPhotoMapManager: PHPhotoLibraryChangeObserver {
               let details = changeInstance.changeDetails(for: base) else { return }
 
         guard details.hasIncrementalChanges else {
-            Task { self.reloadAll() }
+            Task { self.reloadAllAssetsAndRestartPipeline() }
             return
         }
 
@@ -767,26 +767,26 @@ extension PRPhotoMapManager: PHPhotoLibraryChangeObserver {
         Task { @MainActor in self.state = .loading }
 
         if !removed.isEmpty {
-            self.applyRemovedAssetsToMaps(removed)
+            self.removeAssetsFromMaps(removed)
             return
         }
 
         Task.detached(priority: .utility) { [weak self] in
             guard let self else { return }
-            await self.rebuildLightFrom(afterArray)
+            await self.reconstructLightweightMaps(afterArray)
             await MainActor.run {
-                self.saveMapsAndProgress()
+                self.persistMapsAndProgressState()
                 self.state = .idle
             }
         }
     }
 
-    private func rebuildLightFrom(_ all: [PHAsset]) async {
+    private func reconstructLightweightMaps(_ all: [PHAsset]) async {
         @inline(__always)
-        func toModel(_ a: PHAsset) -> PhotoAssetModel {
-            let bytes = assetSizeBytes(a)
+        func toModel(_ a: PHAsset) -> PRPhotoAssetModel {
+            let bytes = calculateAssetSizeBytes(a)
             let date = Int64((a.creationDate ?? .distantPast).timeIntervalSince1970)
-            return PhotoAssetModel(id: a.localIdentifier, bytes: bytes, date: date, asset: a)
+            return PRPhotoAssetModel(id: a.localIdentifier, bytes: bytes, date: date, asset: a)
         }
 
         let shots = all.filter { $0.mediaType == .image && $0.mediaSubtypes.contains(.photoScreenshot) }.map(toModel)
@@ -804,14 +804,14 @@ extension PRPhotoMapManager: PHPhotoLibraryChangeObserver {
                 allVideosMap.assets = vids
                 allVideosMap.totalBytes = vids.reduce(0) { $0 &+ $1.photoBytes }
             }
-            recomputeTotalSize()
+            recalculateTotalStorageSize()
         }
     }
 }
 
 extension PRPhotoMapManager {
     private enum CameraFacing { case front, back }
-    private func cameraFacing(for asset: PHAsset) async -> CameraFacing? {
+    private func determineCameraFacing(for asset: PHAsset) async -> CameraFacing? {
         guard asset.mediaType == .image else { return nil }
         let opts = PHImageRequestOptions()
         opts.isNetworkAccessAllowed = false
@@ -841,11 +841,11 @@ extension PRPhotoMapManager {
         }
     }
 
-    private func splitFrontBackIDs(in assets: [PHAsset]) async -> (front: [String], back: [String]) {
+    private func categorizeFrontBackCameraAssets(in assets: [PHAsset]) async -> (front: [String], back: [String]) {
         var front: [String] = []
         var back: [String] = []
         await withTaskGroup(of: (String, CameraFacing?).self) { g in
-            for a in assets { g.addTask { (a.localIdentifier, await self.cameraFacing(for: a)) } }
+            for a in assets { g.addTask { (a.localIdentifier, await self.determineCameraFacing(for: a)) } }
             for await (id, f) in g {
                 if let f = f {
                     if f == .front { front.append(id) } else { back.append(id) }

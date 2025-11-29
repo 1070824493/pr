@@ -43,8 +43,8 @@ struct PRDuplicatePage: View {
     @ObservedObject private var manager = PRPhotoMapManager.shared
     @State private var thumbProvider: PRAssetThumbnailProvider
 
-    // 数据源：[[PhotoAssetModel]]（从 Map 读取）
-    @State private var doubleModels: [[PhotoAssetModel]] = []
+    // 数据源：[[PRPhotoAssetModel]]（从 Map 读取）
+    @State private var doubleModels: [[PRPhotoAssetModel]] = []
 
     // 选择集：使用 ID（localIdentifier）
     @State private var selectedIDs: Set<String> = []
@@ -76,7 +76,7 @@ struct PRDuplicatePage: View {
     }
 
     // 扁平化（懒用）
-    private var flatModels: [PhotoAssetModel] { doubleModels.flatMap { $0 } }
+    private var flatModels: [PRPhotoAssetModel] { doubleModels.flatMap { $0 } }
     private var totalDisorderCount: Int { flatModels.count }
     private var allSelected: Bool { !flatModels.isEmpty && selectedIDs.count == flatModels.count }
 
@@ -184,7 +184,7 @@ struct PRDuplicatePage: View {
                             model: model,
                             isSelected: selectedIDs.contains(model.photoIdentifier),
                             isBest: doubleModels[section].first?.photoIdentifier == model.photoIdentifier,
-                            // ✅ 使用统一的缩略图 Provider + 通过 manager.resolvePHAsset 懒解析
+                            // ✅ 使用统一的缩略图 Provider + 通过 manager.fetchOrResolvePHAsset 懒解析
                             thumbProvider: thumbProvider
                         ) {
                             toggle(model)
@@ -210,7 +210,7 @@ struct PRDuplicatePage: View {
                     let delIDs = selectedIDs
                     let selectedSize = selectedBytes
 
-                    AssetsHelper.shared.deleteAssetsRequiringVip(
+                    PRAssetsHelper.shared.removeAssetsWithVipCheck(
                         [],                               // 传空 assets，内部用 id 解析
                         assetIDs: Array(delIDs),          // ✅ 传入待删 ID
                         uiState: uiState,
@@ -300,10 +300,10 @@ private struct PRCustomNavBar: View {
 // MARK: - 业务逻辑
 
 private extension PRDuplicatePage {
-    /// 读取 manager 中的 [[PhotoAssetModel]]，并按需要做默认勾选
+    /// 读取 manager 中的 [[PRPhotoAssetModel]]，并按需要做默认勾选
     func refreshData(initial: Bool = false) {
         let m = PRPhotoMapManager.shared
-        let newDouble: [[PhotoAssetModel]]
+        let newDouble: [[PRPhotoAssetModel]]
         switch cardID {
         case "similarphoto":   newDouble = m.similarPhotosMap.doubleAssets
         case "duplicatephoto": newDouble = m.duplicatePhotosMap.doubleAssets
@@ -341,12 +341,12 @@ private extension PRDuplicatePage {
         else { selectedIDs.formUnion(ids) }
     }
 
-    func toggle(_ model: PhotoAssetModel) {
+    func toggle(_ model: PRPhotoAssetModel) {
         let id = model.photoIdentifier
         if selectedIDs.contains(id) { selectedIDs.remove(id) } else { selectedIDs.insert(id) }
     }
 
-    /// ✅ 同步计算选择字节：直接 sum PhotoAssetModel.photoBytes
+    /// ✅ 同步计算选择字节：直接 sum PRPhotoAssetModel.photoBytes
     func recalcSelectedBytes() {
         guard !selectedIDs.isEmpty else { selectedBytes = 0; return }
         let idx = Set(selectedIDs)
@@ -359,7 +359,7 @@ private extension PRDuplicatePage {
 
     /// 仅订阅当前需要的分组 Map
     func subscribeScoped() {
-        let pub: AnyPublisher<PhotoAssetsMap, Never>
+        let pub: AnyPublisher<PRPhotoAssetsMap, Never>
         switch cardID {
         case "similarphoto":   pub = manager.$similarPhotosMap.eraseToAnyPublisher()
         case "duplicatephoto": pub = manager.$duplicatePhotosMap.eraseToAnyPublisher()
@@ -375,7 +375,7 @@ private extension PRDuplicatePage {
 // MARK: - 单元格（缩略图由统一 Provider 提供；PHAsset 懒解析）
 
 private struct HCell: View {
-    let model: PhotoAssetModel
+    let model: PRPhotoAssetModel
     let isSelected: Bool
     let isBest: Bool
     let thumbProvider: PRAssetThumbnailProvider
@@ -384,11 +384,11 @@ private struct HCell: View {
 
     var body: some View {
         // 运行期解析 PHAsset（内部有 NSCache；无则显示占位）
-        let asset = PRPhotoMapManager.shared.resolvePHAsset(for: model.photoIdentifier)
+        let asset = PRPhotoMapManager.shared.fetchOrResolvePHAsset(for: model.photoIdentifier)
 
         ZStack(alignment: .bottomTrailing) {
             if let a = asset {
-                thumbProvider.thumbnailView(
+                thumbProvider.createThumbnailView(
                     for: a,
                     targetSize: CGSize(width: 140.fit, height: 140.fit),
                     preferFastFirst: true

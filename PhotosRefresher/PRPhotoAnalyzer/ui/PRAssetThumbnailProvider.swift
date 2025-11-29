@@ -9,7 +9,7 @@
 //  支持像素缓存、预热与 iCloud 退避策略。
 //  用法：在页面创建一个 provider 实例注入到 Cell；避免单例带来的强依赖。
 //  -----------------------------------------------------------
-//  依赖：AssetsHelper.requestFastThumbnail / requestThumbnail
+//  依赖：PRAssetsHelper.fetchFastThumbnail / fetchHighQualityThumbnail
 //
 
 import SwiftUI
@@ -23,10 +23,10 @@ final class PRAssetImageCache {
         cache.countLimit = 600
         cache.totalCostLimit = 160 * 1024 * 1024 // ~160MB，可按机型调
     }
-    func key(for id: String, size: CGSize, mode: PHImageRequestOptionsDeliveryMode) -> NSString {
+    func generateCacheKey(for id: String, size: CGSize, mode: PHImageRequestOptionsDeliveryMode) -> NSString {
         NSString(string: "\(id)_\(Int(size.width))x\(Int(size.height))_\(mode.rawValue)")
     }
-    func clear() { cache.removeAllObjects() }
+    func clearAllCache() { cache.removeAllObjects() }
 }
 
 // MARK: - 单张缩略图 Loader
@@ -36,10 +36,10 @@ private final class PRAssetThumbLoader: ObservableObject {
     private var task: Task<Void, Never>?
 
     /// 加载指定资产缩略图（优先显示缓存/快速图，随后替换为高清图）
-    func load(asset: PHAsset, targetSize: CGSize, preferFast: Bool) {
+    func startLoadingThumbnail(asset: PHAsset, targetSize: CGSize, preferFast: Bool) {
         let cache = PRAssetImageCache.shared
-        let fastKey = cache.key(for: asset.localIdentifier, size: targetSize, mode: .fastFormat)
-        let hqKey   = cache.key(for: asset.localIdentifier, size: targetSize, mode: .highQualityFormat)
+        let fastKey = cache.generateCacheKey(for: asset.localIdentifier, size: targetSize, mode: .fastFormat)
+        let hqKey   = cache.generateCacheKey(for: asset.localIdentifier, size: targetSize, mode: .highQualityFormat)
 
         // 命中缓存先显示
         if let v = cache.cache.object(forKey: fastKey) { self.image = v }
@@ -52,7 +52,7 @@ private final class PRAssetThumbLoader: ObservableObject {
                 // 先快图：不走网络，首帧快
                 if preferFast || self.image == nil {
                     if !Task.isCancelled {
-                        let fast = try await AssetsHelper.shared.requestFastThumbnail(
+                        let fast = try await PRAssetsHelper.shared.fetchFastThumbnail(
                             for: asset,
                             targetSize: CGSize(width: targetSize.width * 2, height: targetSize.height * 2)
                         )
@@ -61,9 +61,9 @@ private final class PRAssetThumbLoader: ObservableObject {
                         await MainActor.run { if self.image == nil { self.image = fast } }
                     }
                 }
-                // 再高清：若需要 iCloud 下载则退避（AssetsHelper 内部已处理）
+                // 再高清：若需要 iCloud 下载则退避（PRAssetsHelper 内部已处理）
                 if !Task.isCancelled {
-                    let hq = try await AssetsHelper.shared.requestThumbnail(
+                    let hq = try await PRAssetsHelper.shared.fetchHighQualityThumbnail(
                         for: asset,
                         targetSize: CGSize(width: targetSize.width * 2, height: targetSize.height * 2),
                         deliveryMode: .highQualityFormat
@@ -99,10 +99,10 @@ private struct PRAssetThumbnailView: View {
         ZStack {
             if let ui = loader.image {
                 Image(uiImage: ui)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .scaledToFill()
-                    .transition(.opacity.combined(with: .scale(scale: 0.995)))
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .scaledToFill()
+                .transition(.opacity.combined(with: .scale(scale: 0.995)))
             } else {
                 placeholder.resizable().scaledToFill().opacity(0.35)
             }
@@ -110,10 +110,10 @@ private struct PRAssetThumbnailView: View {
         .onAppear {
             guard !appeared else { return }
             appeared = true
-            loader.load(asset: asset, targetSize: targetSize, preferFast: preferFastFirst)
+            loader.startLoadingThumbnail(asset: asset, targetSize: targetSize, preferFast: preferFastFirst)
         }
         .onChange(of: asset.localIdentifier) { _ in
-            loader.load(asset: asset, targetSize: targetSize, preferFast: preferFastFirst)
+            loader.startLoadingThumbnail(asset: asset, targetSize: targetSize, preferFast: preferFastFirst)
         }
         .clipped()
     }
@@ -129,7 +129,7 @@ public final class PRAssetThumbnailProvider {
 
     /// SwiftUI 友好的缩略图视图（带缓存 & 防闪动 & 退避策略）
     /// SwiftUI 友好的缩略图视图（带缓存 & 防闪动 & 退避策略）
-    public func thumbnailView(
+    public func createThumbnailView(
         for asset: PHAsset,
         targetSize: CGSize,
         placeholder: Image = Image("PR_deaultImage"),
@@ -145,7 +145,7 @@ public final class PRAssetThumbnailProvider {
 
     /// 批量预热（建议在列表滚动 onAppear 里对后续 12~24 张调用）
     /// 批量预热（建议在列表滚动 onAppear 里对后续 12~24 张调用）
-    public func preheat(assets: [PHAsset], pixelSize: CGSize) {
+    public func startPreheatingAssets(assets: [PHAsset], pixelSize: CGSize) {
         guard !assets.isEmpty else { return }
         let opts = PHImageRequestOptions()
         opts.deliveryMode = .highQualityFormat
@@ -157,7 +157,7 @@ public final class PRAssetThumbnailProvider {
 
     /// 停止预热
     /// 停止预热
-    public func stopPreheat(assets: [PHAsset], pixelSize: CGSize) {
+    public func stopPreheatingAssets(assets: [PHAsset], pixelSize: CGSize) {
         guard !assets.isEmpty else { return }
         let opts = PHImageRequestOptions()
         opts.deliveryMode = .highQualityFormat
@@ -169,5 +169,5 @@ public final class PRAssetThumbnailProvider {
 
     /// 可选：清空缓存（如内存警告时）
     /// 清空缓存（如内存警告时）
-    public func clearCache() { PRAssetImageCache.shared.clear() }
+    public func purgeCache() { PRAssetImageCache.shared.clearAllCache() }
 }

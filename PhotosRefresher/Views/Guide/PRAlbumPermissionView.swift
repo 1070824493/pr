@@ -146,7 +146,7 @@ struct PRAlbumPermissionView: View {
 
     // 触发权限检查
     private func checkPermission() {
-        PRPhotoMapManager.shared.requestPermission { ok in
+        PRPhotoMapManager.shared.requestPhotoLibraryAccess { ok in
             showingLoading = true
             actionHandler?(ok)
         }

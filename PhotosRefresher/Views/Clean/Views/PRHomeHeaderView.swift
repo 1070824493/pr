@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PRHomeHeaderView: View {
     let totalCleanable: Int64
-    let disk: DiskSpace?
+    let disk: PRDiskSpace?
     let isIPad = DeviceUtils.getDeviceType() == .pad
     var onTapPay: () -> Void = {}
 

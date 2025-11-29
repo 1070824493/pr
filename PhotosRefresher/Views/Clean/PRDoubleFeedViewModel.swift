@@ -19,7 +19,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
     var currentCardID: String = ""
 
     /// 当前页面用于直加字节的索引：id -> model
-    private var modelIndex: [String: PhotoAssetModel] = [:]
+    private var modelIndex: [String: PRPhotoAssetModel] = [:]
 
     func bind(uiState: UIState) async {
         guard !isBound else { return }
@@ -27,7 +27,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
         isBound = true
     }
 
-    func loadAssets(cardID: PhotoCategory) {
+    func loadAssets(cardID: PRPhotoCategory) {
         currentCardID = cardID.rawValue
 
         // 1) 取得当前类目的 map，并建立 id->model 的索引
@@ -35,7 +35,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
         modelIndex = Dictionary(uniqueKeysWithValues: map.assets.map { ($0.photoIdentifier, $0) })
 
         // 2) 根据 id 列表解析 PHAsset（仅用于显示）
-        let newAssets = getPHAssets(by: map.assetIDs)
+        let newAssets = retrievePHAssets(by: map.assetIDs)
 
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
@@ -45,7 +45,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
         }
     }
 
-    private func mapFromManager(_ cardID: PhotoCategory) -> PhotoAssetsMap {
+    private func mapFromManager(_ cardID: PRPhotoCategory) -> PRPhotoAssetsMap {
         let m = PRPhotoMapManager.shared
         switch cardID {
         case .screenshot:     return m.screenshotPhotosMap
@@ -59,17 +59,17 @@ final class PRDoubleFeedViewModel: ObservableObject {
         case .backphoto:      return m.backPhotosMap
         case .similarphoto:
             // 展平分组为单列表，便于选择/删除
-            var map = PhotoAssetsMap(.similarphoto)
+            var map = PRPhotoAssetsMap(.similarphoto)
             map.assets = m.similarPhotosMap.doubleAssets.flatMap { $0 }
             map.totalBytes = map.assets.reduce(0) { $0 &+ $1.photoBytes }
             return map
         case .duplicatephoto:
-            var map = PhotoAssetsMap(.duplicatephoto)
+            var map = PRPhotoAssetsMap(.duplicatephoto)
             map.assets = m.duplicatePhotosMap.doubleAssets.flatMap { $0 }
             map.totalBytes = map.assets.reduce(0) { $0 &+ $1.photoBytes }
             return map
 //        default:
-//            return PhotoAssetsMap(.screenshot)
+//            return PRPhotoAssetsMap(.screenshot)
         }
     }
 
@@ -111,7 +111,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
         let selectedCount = Int64(idsToDelete.count)
         let selectedSize  = selectedBytes
 
-        AssetsHelper.shared.deleteAssetsRequiringVip(
+        PRAssetsHelper.shared.removeAssetsWithVipCheck(
             assetsToDelete,
             assetIDs: Array(idsToDelete),                     // 新签名：传入 id 兜底
             uiState: uiState ?? UIState.shared,

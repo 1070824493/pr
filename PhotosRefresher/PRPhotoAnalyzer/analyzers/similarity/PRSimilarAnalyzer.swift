@@ -4,18 +4,18 @@ import CoreGraphics
 
 /// 相似图片分组
 /// - 输出: 相似分组的 `localIdentifier` 列表集合
-enum SimilarAnalyzer {
+enum PRSimilarAnalyzer {
     private static let pThreshold = 18
     private static let dThreshold = 20
     private static let bands = 8
     private static let segW = 8
     private static let maxBucket = 120
 
-    static func analyzeGroupIDs(in assets: [PHAsset]) async -> [[String]] {
+    static func findSimilarAssetGroups(in assets: [PHAsset]) async -> [[String]] {
         guard !assets.isEmpty else { return [] }
         let opts = PHImageRequestOptions(); opts.isSynchronous = true; opts.deliveryMode = .fastFormat; opts.resizeMode = .fast; opts.isNetworkAccessAllowed = true
         let targetSize = CGSize(width: 64, height: 64)
-        let (sigP, sigD, dims) = computeHashes(assets: assets, target: targetSize, options: opts)
+        let (sigP, sigD, dims) = generateImageHashes(assets: assets, target: targetSize, options: opts)
 
         let ids = assets.map(\.localIdentifier)
         var buckets: [UInt64: [String]] = [:]
@@ -45,7 +45,7 @@ enum SimilarAnalyzer {
                 for j in (i + 1)..<bid.count {
                     let id2 = bid[j]
                     guard let p2 = sigP[id2], let d2 = sigD[id2] else { continue }
-                    if !aspectClose(wh1, dims[id2], tol: 0.15) { continue }
+                    if !isAspectRatioSimilar(wh1, dims[id2], tol: 0.15) { continue }
                     if (p1 ^ p2).nonzeroBitCount > pThreshold { continue }
                     if (d1 ^ d2).nonzeroBitCount > dThreshold { continue }
                     uf.union(id1, id2)
@@ -55,7 +55,7 @@ enum SimilarAnalyzer {
         return uf.groups().filter { $0.count >= 2 }
     }
 
-    private static func aspectClose(_ a: (Int,Int)?, _ b: (Int,Int)?, tol: CGFloat) -> Bool {
+    private static func isAspectRatioSimilar(_ a: (Int,Int)?, _ b: (Int,Int)?, tol: CGFloat) -> Bool {
         guard let a, let b else { return false }
         let ra = CGFloat(a.0) / max(1, CGFloat(a.1))
         let rb = CGFloat(b.0) / max(1, CGFloat(b.1))
