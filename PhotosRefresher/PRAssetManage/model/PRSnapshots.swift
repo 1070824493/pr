@@ -1,11 +1,12 @@
 //
-//  PRPhotoCacheSnapshots.swift
-
+//  PRSnapshots.swift
+//  PhotosRefresher
 //
-
+//  Created by tom on 2025/11/28.
 //
 
 import Foundation
+
 
 let kBytesSchemaVersion: Int = 1
 let kPersistEveryN: Int = 3

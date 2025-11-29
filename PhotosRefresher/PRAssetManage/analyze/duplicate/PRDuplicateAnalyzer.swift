@@ -1,3 +1,10 @@
+//
+//  PRDuplicateAnalyzer.swift
+//  PhotosRefresher
+//
+//  Created by tom on 2025/11/28.
+//
+
 import Foundation
 import Photos
 import CoreGraphics
@@ -103,3 +110,4 @@ enum PRDuplicateAnalyzer {
         return Array(buckets.values).filter { $0.count >= 2 }
     }
 }
+

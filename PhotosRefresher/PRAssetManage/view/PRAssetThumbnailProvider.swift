@@ -1,15 +1,8 @@
 //
 //  PRAssetThumbnailProvider.swift
-
+//  PhotosRefresher
 //
-
-//
-
-//  统一缩略图加载入口（两段式：fastFormat → highQualityFormat），
-//  支持像素缓存、预热与 iCloud 退避策略。
-//  用法：在页面创建一个 provider 实例注入到 Cell；避免单例带来的强依赖。
-//  -----------------------------------------------------------
-//  依赖：PRAssetsHelper.fetchFastThumbnail / fetchHighQualityThumbnail
+//  Created by tom on 2025/11/28.
 //
 
 import SwiftUI
@@ -171,3 +164,4 @@ public final class PRAssetThumbnailProvider {
     /// 清空缓存（如内存警告时）
     public func purgeCache() { PRAssetImageCache.shared.clearAllCache() }
 }
+

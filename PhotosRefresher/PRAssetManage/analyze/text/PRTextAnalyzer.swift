@@ -1,3 +1,10 @@
+//
+//  PRTextAnalyzer.swift
+//  PhotosRefresher
+//
+//  Created by tom on 2025/11/28.
+//
+
 import Foundation
 import Photos
 import Vision
@@ -45,3 +52,4 @@ enum PRTextAnalyzer {
         return chars >= 6 || area >= 0.03
     }
 }
+
