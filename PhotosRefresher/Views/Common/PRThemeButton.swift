@@ -1,10 +1,11 @@
 //
-//  ThemeButton.swift
-
+//  PRThemeButton.swift
+//  PhotosRefresher
 //
-//  Created by zyb on 2025/8/23.
+//  Created by tom on 2025/11/28.
 //
 
+import Foundation
 import SwiftUI
 
 enum ThemeButtonType {

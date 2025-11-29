@@ -1,5 +1,5 @@
 //
-//  GlobalOverlay.swift
+//  PRGlobalOverlay.swift
 
 //
 

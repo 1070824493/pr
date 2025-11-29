@@ -878,7 +878,7 @@ extension PRPhotoMapManager {
             }
         }()
         
-        permissionAlert = AlertModalModel(
+        permissionAlert = PRAlertModalModel(
             imgName: "", title: title, desc: message,
             firstBtnTitle: "Not Now", secondBtnTitle: "Open Settings",
             actionHandler: { [weak self] action in

@@ -49,7 +49,7 @@ struct PRAppView: View {
     
     var guideView: some View {
         PRGuidePage {
-//            if UserManager.shared.isVip() {
+//            if PRUserManager.shared.isVip() {
                 viewModel.launchState = .main
 //            } else {
 //                viewModel.launchState = .subscription

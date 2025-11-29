@@ -11,7 +11,7 @@ final class PRProductManager: ObservableObject {
     static let shared = PRProductManager()
     private init() {}
     
-    @Published private var packageResp: [String: SubscribeResponseModel] = [:]
+    @Published private var packageResp: [String: PRSubscribeResponseModel] = [:]
     
     func packageList(for scene: PayScene = .normal) -> [SubscriptionPackageModel] {
         packageResp["\(scene.rawValue)"]?.packageList ?? []
@@ -30,9 +30,9 @@ final class PRProductManager: ObservableObject {
     }
     
     @discardableResult
-    func refreshPackageList(_ sendModel: SubscribeListRequestModel) async -> [SubscriptionPackageModel] {
+    func refreshPackageList(_ sendModel: PRSubscribeListRequestModel) async -> [SubscriptionPackageModel] {
         
-        let resp: PRCommonResponse<SubscribeResponseModel>? =
+        let resp: PRCommonResponse<PRSubscribeResponseModel>? =
         try? await PRRequestHandlerManager.shared.PRrequest(
             url: ApiConstants.photosrefresher_subscribe_home,
             method: .get,

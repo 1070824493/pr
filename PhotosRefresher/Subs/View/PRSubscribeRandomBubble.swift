@@ -2,7 +2,7 @@
 //  SubscribeRandomBubble.swift
 //  PhotosRefresher
 //
-//  Created by ty on 2025/11/28.
+//  Created by tom on 2025/11/28.
 //
 
 import SwiftUI
@@ -36,4 +36,5 @@ struct PRSubscribeRandomBubble: View {
             .onReceive(stepTimer) { _ in if joinedDisplay < joinedTarget { joinedDisplay += 1 } }
     }
 }
+
 

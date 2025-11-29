@@ -20,7 +20,7 @@ class PRAppReviewManager {
     
     public func reviewIfNeeded() {
         Task {
-//            if UserManager.shared.isVip() {
+//            if PRUserManager.shared.isVip() {
 //                return
 //            }
             

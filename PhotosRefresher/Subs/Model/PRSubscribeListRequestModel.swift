@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SubscribeListRequestModel: Encodable {
+struct PRSubscribeListRequestModel: Encodable {
     let source: Int // 来源
     let scene: Int  //订阅页类型
 }

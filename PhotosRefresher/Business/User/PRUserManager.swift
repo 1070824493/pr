@@ -1,5 +1,5 @@
 //
-//  UserManager.swift
+//  PRUserManager.swift
 
 //
 //

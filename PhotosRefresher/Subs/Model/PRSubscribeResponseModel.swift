@@ -5,8 +5,8 @@
 //  Created by tom on 2025/11/28.
 //
 
-struct SubscribeResponseModel: Decodable, DefaultInitializable {
-    static var defaultValue: SubscribeResponseModel {
+struct PRSubscribeResponseModel: Decodable, DefaultInitializable {
+    static var defaultValue: PRSubscribeResponseModel {
         .init(
             packageList: [],
             activityList: [],

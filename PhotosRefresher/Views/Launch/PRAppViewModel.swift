@@ -161,7 +161,7 @@ class PRAppViewModel: ObservableObject {
     }
     
     private func requestProducts() async {
-        let _ = await PRProductManager.shared.refreshPackageList(SubscribeListRequestModel(source: PaySource.guided.rawValue, scene: PayScene.normal.rawValue))
+        let _ = await PRProductManager.shared.refreshPackageList(PRSubscribeListRequestModel(source: PaySource.guided.rawValue, scene: PayScene.normal.rawValue))
 
     }
     

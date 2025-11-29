@@ -1,8 +1,8 @@
 //
-//  SubscriptionEntryView.swift
-//  Dialogo
+//  SubscribeEntryView.swift
+//  PhotosRefresher
 //
-//  
+//  Created by tom on 2025/11/28.
 //
 
 import SwiftUI
@@ -19,7 +19,7 @@ struct PRSubscribeEntryView: View {
         
         self.paySource = paySource
         self.onDismiss = onDismiss
-        _subscribeVM = StateObject(wrappedValue: PRSubscribeViewModel(paySource: paySource, onDismiss: onDismiss)) 
+        _subscribeVM = StateObject(wrappedValue: PRSubscribeViewModel(paySource: paySource, onDismiss: onDismiss))
     }
 
     var body: some View {
@@ -32,4 +32,5 @@ struct PRSubscribeEntryView: View {
         }
     }
 }
+
 
