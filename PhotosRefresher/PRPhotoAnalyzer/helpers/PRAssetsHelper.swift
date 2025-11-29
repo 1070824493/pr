@@ -13,7 +13,7 @@ extension PRAssetsHelper {
     public func removeAssetsWithVipCheck(
         _ assets: [PHAsset],
         assetIDs: [String]? = nil,
-        uiState: UIState,
+        uiState: PRUIState,
         paySource: PaySource = .guided,
         from: String = "",
         completion: @escaping (Result<Void, Error>) -> Void
@@ -31,7 +31,7 @@ extension PRAssetsHelper {
 
 //        StatisticsManager.log(name: "JHQ_001", params: ["from": from])
 
-        if !UserManager.shared.isVip() {
+        if !PRUserManager.shared.isVip() {
             Task { @MainActor in
                 uiState.fullScreenCoverDestination = .subscription(
                     paySource: paySource,

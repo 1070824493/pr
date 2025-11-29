@@ -46,7 +46,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
     }
 
     // 权限弹窗
-    @Published public var permissionAlert: AlertModalModel?
+    @Published public var permissionAlert: PRAlertModalModel?
     public var permissionAlertOnDismiss: (() -> Void)?
 
     // MARK: - 依赖/内部状态

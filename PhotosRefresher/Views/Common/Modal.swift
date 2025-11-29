@@ -6,7 +6,7 @@
 
 import SwiftUI
 
-struct ModalView: View {
+struct PRModalView: View {
     @Binding var destination: AppModalDestination?
     
     @State private var contentHeight: CGFloat = 0

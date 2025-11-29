@@ -73,7 +73,7 @@ struct PRHomeHUDView: View {
     var body: some View {
         ZStack {
             Color.clear.ignoresSafeArea()
-            BlurView(style: .systemMaterialDark).ignoresSafeArea()
+            PRBlurView(style: .systemMaterialDark).ignoresSafeArea()
 
             GeometryReader { geo in
                 VStack(spacing: 0) {
@@ -135,7 +135,7 @@ struct PRHomeHUDView: View {
         dismissTask = Task {
             try? await Task.sleep(nanoseconds: 8_000_000_000)
             await MainActor.run {
-                GlobalOverlay.shared.dismiss()
+                PRGlobalOverlay.shared.dismiss()
             }
         }
     }

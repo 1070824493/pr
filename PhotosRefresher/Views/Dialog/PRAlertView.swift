@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PRAlertView: View {
 
-    var model: AlertModalModel
+    var model: PRAlertModalModel
     
     var body: some View {
         VStack(spacing: 12) {
@@ -84,7 +84,7 @@ struct PRAlertView: View {
 //    LLAlertView(imgName: "icon_emoji_cry", title: "Are you sure?", desc: "You won't receive a feedback report unless you complete the session.", firstBtnTitle: "Continue Call", secondBtnTitle: "Leave Call") { action in
 //    }
     
-    PRAlertView(model: AlertModalModel(
+    PRAlertView(model: PRAlertModalModel(
         imgName: "icon_emoji_cry", title: "Are you sure to jump to this exercise?", desc: "Following your personalized path will boost your English, but you can still jump to this exercise if you prefer.", firstBtnTitle: "Continue Call", secondBtnTitle: "Leave Call") { action in
        }
     )

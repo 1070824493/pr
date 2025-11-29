@@ -10,7 +10,7 @@ import SwiftUI
 struct PRHomeHeaderView: View {
     let totalCleanable: Int64
     let disk: PRDiskSpace?
-    let isIPad = DeviceUtils.getDeviceType() == .pad
+    let isIPad = PRDeviceUtils.getDeviceType() == .pad
     var onTapPay: () -> Void = {}
 
     var body: some View {
@@ -77,7 +77,7 @@ struct PRHomeHeaderView: View {
                 let usedProgress = used / total
                 let clutterProgress = clutter / total
                 
-                MultiProgressBarView(progressList: [clutterProgress, usedProgress], progressColor: [Color.hexColor(0x5A63FF), Color.hexColor(0x50D97D)])
+                PRMultiProgressBarView(progressList: [clutterProgress, usedProgress], progressColor: [Color.hexColor(0x5A63FF), Color.hexColor(0x50D97D)])
                     .frame(height: 16)
                     .padding(.top, 12)
             }

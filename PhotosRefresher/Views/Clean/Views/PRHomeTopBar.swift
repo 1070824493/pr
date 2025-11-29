@@ -12,7 +12,7 @@ struct PRHomeTopBar: View {
     let isVip: Bool
     var onTap: () -> Void = {}
     
-    @EnvironmentObject var appRouterPath: AppRouterPath
+    @EnvironmentObject var appRouterPath: PRAppRouterPath
 
     var body: some View {
         ZStack(alignment: .bottom) {

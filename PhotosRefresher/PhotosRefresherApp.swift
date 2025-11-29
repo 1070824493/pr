@@ -13,13 +13,13 @@ import UIKit
 struct PhotosRefresherApp: App {
     @UIApplicationDelegateAdaptor(AppDelegateAdaptor.self) var appDelegate
     @Environment(\.scenePhase) var scenePhase
-    @StateObject private var uiState = UIState.shared
+    @StateObject private var uiState = PRUIState.shared
     
-    @StateObject var subscribeVM = SubscribeViewModel(paySource: .appStorePay, onDismiss: nil)
+    @StateObject var subscribeVM = PRSubscribeViewModel(paySource: .appStorePay, onDismiss: nil)
     
     var body: some Scene {
         WindowGroup {
-            AppView()
+            PRAppView()
                 .withEnvironments()
                 .withBottomSheet($uiState.bottomSheetDestination)
                 .withModal($uiState.modalDestination)
@@ -48,7 +48,7 @@ struct PhotosRefresherApp: App {
     private func applicationDidBecomeActive() {
         Task {
             if (PRRequestHandlerObserver.shared.isReachable) {
-                let _ = await IdfaUtils.shared.requestIdfa()
+                let _ = await PRIdfaUtils.shared.requestIdfa()
             }
         }
 //        AppsFlyerLib.shared().start()
@@ -72,7 +72,7 @@ struct PhotosRefresherApp: App {
                     await subscribeVM.purchase(package: product)
                      
                 } catch {
-                    await MainActor.run { Toast.show(message: "Payment failed", duration: 3) }
+                    await MainActor.run { PRToast.show(message: "Payment failed", duration: 3) }
                 }
             }
         }
@@ -120,7 +120,7 @@ class AppDelegateAdaptor: NSObject, UIApplicationDelegate, UNUserNotificationCen
                 onlineDomain: AppDomainConstants.unifypay_cleanai_online_domain,
                 testDomain: AppDomainConstants.unifypay_cleanai_test_domain
             )
-        ], inEnvName: AppInfo.envName)
+        ], inEnvName: PRAppInfo.envName)
     }
     
     private func initNetwork() {
@@ -131,8 +131,8 @@ class AppDelegateAdaptor: NSObject, UIApplicationDelegate, UNUserNotificationCen
             randomKey3: "K*;z(i",
             prefixKey: "xtU7w90{g9@MqRH2"
         )
-        PRRequestHandlerManager.shared.registerDynamicCommonParamsProvider(provider: AppInfo.self)
-        PRRequestHandlerManager.shared.addCommonParameters(AppInfo.staticCommonParams)
+        PRRequestHandlerManager.shared.registerDynamicCommonParamsProvider(provider: PRAppInfo.self)
+        PRRequestHandlerManager.shared.addCommonParameters(PRAppInfo.staticCommonParams)
     }
     
     private func initPurchaseManager() {
@@ -155,7 +155,7 @@ class AppDelegateAdaptor: NSObject, UIApplicationDelegate, UNUserNotificationCen
             if online {
                 Task {
                     try await Task.sleep(nanoseconds: 1_000_000_000)
-                    let _ = await IdfaUtils.shared.requestIdfa()
+                    let _ = await PRIdfaUtils.shared.requestIdfa()
                 }
             }
         }

@@ -10,9 +10,9 @@ import Photos
 
 struct PRSlidePage: View {
     
-    @EnvironmentObject var uiState: UIState
-    @EnvironmentObject var appRouter: AppRouterPath
-    @StateObject private var userManager = UserManager.shared
+    @EnvironmentObject var uiState: PRUIState
+    @EnvironmentObject var appRouter: PRAppRouterPath
+    @StateObject private var userManager = PRUserManager.shared
     @StateObject private var vm = PRSlideViewModel()
     
     var body: some View {
@@ -228,7 +228,7 @@ struct ReviewCompleteView: View {
         VStack(spacing: 16) {
             Spacer()
             Text("Review Complete").font(.bold24).foregroundColor(.white)
-            ThemeButton(title: "One More Set", action: onMore)
+            PRThemeButton(title: "One More Set", action: onMore)
                 .frame(width: 220)
             Spacer()
         }

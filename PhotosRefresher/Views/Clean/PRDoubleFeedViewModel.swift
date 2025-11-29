@@ -15,13 +15,13 @@ final class PRDoubleFeedViewModel: ObservableObject {
     @Published var selectedBytes: Int64 = 0
 
     private(set) var isBound = false
-    private weak var uiState: UIState?
+    private weak var uiState: PRUIState?
     var currentCardID: String = ""
 
     /// 当前页面用于直加字节的索引：id -> model
     private var modelIndex: [String: PRPhotoAssetModel] = [:]
 
-    func bind(uiState: UIState) async {
+    func bind(uiState: PRUIState) async {
         guard !isBound else { return }
         self.uiState = uiState
         isBound = true
@@ -114,7 +114,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
         PRAssetsHelper.shared.removeAssetsWithVipCheck(
             assetsToDelete,
             assetIDs: Array(idsToDelete),                     // 新签名：传入 id 兜底
-            uiState: uiState ?? UIState.shared,
+            uiState: uiState ?? PRUIState.shared,
             from: currentCardID
         ) { [weak self] result in
             guard let self else { return }

@@ -85,7 +85,7 @@ struct PRGuideWelcomePage: View {
                     
                     VStack {
                         Spacer()
-                        ThemeButton(title: "Continue", type: .guide) {
+                        PRThemeButton(title: "Continue", type: .guide) {
                             goNextIfNeeded()
                         }
                         .frame(height: 56)
@@ -101,7 +101,7 @@ struct PRGuideWelcomePage: View {
             }
             
             
-            ProgressBarView(progress: progress)
+            PRProgressBarView(progress: progress)
                 .cornerRadius(4)
                 .frame(height: 8)
                 .padding(.horizontal, 40)

@@ -31,8 +31,7 @@ extension PRPhotoMapManager {
                         "Enable photo access in Settings to scan your library, remove clutter, and instantly free up valuable space.")
             }
         }()
-        
-        permissionAlert = AlertModalModel(
+        permissionAlert = PRAlertModalModel(
             imgName: "", title: title, desc: message,
             firstBtnTitle: "Not Now", secondBtnTitle: "Open Settings",
             actionHandler: { [weak self] action in

@@ -11,7 +11,7 @@ import UIKit
 
 struct PRSettingPage: View {
     
-    @EnvironmentObject var appRouter: AppRouterPath
+    @EnvironmentObject var appRouter: PRAppRouterPath
     
     @State var settings: [PRSettingSection] = [
         
@@ -47,7 +47,7 @@ struct PRSettingPage: View {
     }
     
     var navBarView: some View {
-        CustomNavigationBarView(height: 44) {
+        PRCustomNavigationBarView(height: 44) {
             Button {
                 appRouter.back()
             } label: {
@@ -68,14 +68,14 @@ struct PRSettingPage: View {
         switch type {
 
         case .navigation(.contactUs):
-            AppMailHelper.presentSupportEmail()
+            PRAppMailHelper.presentSupportEmail()
         case .navigation(.termsOfUse):
             openUrl(WebUrl.terms.fullPath)
         case .navigation(.privacyPolicy):
             openUrl(WebUrl.privatePolicy.fullPath)
         case .navigation(.clearSlideHistory):
             PRSlideCacheManager.shared.cleanAll()
-            Toast.show(message: "succeed")
+            PRToast.show(message: "succeed")
         default:
             break
         }
@@ -86,10 +86,10 @@ struct PRSettingPage: View {
             if UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)
             }else{
-                Toast.show(message: "Unable to open Email app")
+                PRToast.show(message: "Unable to open Email app")
             }
         } else {
-            Toast.show(message: "Failed to open Email app")
+            PRToast.show(message: "Failed to open Email app")
         }
     }
     
@@ -122,7 +122,7 @@ struct SettingsView: View {
                     ForEach(section.items, id: \.id) { item in
                         SettingItemRow(item: item, onAction: onAction)
                             .frame(height: 60)
-                        DividerView(color: Color.black.opacity(0.08))
+                        PRDividerView(color: Color.black.opacity(0.08))
                     }
                 } header: {
                     

@@ -27,7 +27,7 @@ func formatBytes(_ bytes: Int64) -> String {
 // MARK: - Main View
 
 public struct PRDeleteFinishPage: View {
-    @EnvironmentObject var appRouterPath: AppRouterPath
+    @EnvironmentObject var appRouterPath: PRAppRouterPath
     public var onDismiss: (() -> Void)?
 
     public var totalGB: Int64 = 0
@@ -208,7 +208,7 @@ public struct PRDeleteFinishPage: View {
                         }
                         .padding(.horizontal, 46)
                         
-                        ThemeButton(title: "Continue") {
+                        PRThemeButton(title: "Continue") {
                             onDismiss?()
                         }
                         .frame(height: 48)

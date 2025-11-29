@@ -56,8 +56,8 @@ struct PRDuplicatePage: View {
 
     // 订阅/删除
     @State private var cancellable: AnyCancellable?
-    @EnvironmentObject var appRouterPath: AppRouterPath
-    @EnvironmentObject private var uiState: UIState
+    @EnvironmentObject var appRouterPath: PRAppRouterPath
+    @EnvironmentObject private var uiState: PRUIState
 
     // MARK: 标题/副标题
     private var headerTitle: String {
@@ -205,7 +205,7 @@ struct PRDuplicatePage: View {
         ZStack {
             Color.white.ignoresSafeArea(edges: .bottom) // 纯白背景，延伸到底部安全区
             HStack {
-                ThemeButton(title: bottomTitle, enable: !selectedIDs.isEmpty, type: .delete) {
+                PRThemeButton(title: bottomTitle, enable: !selectedIDs.isEmpty, type: .delete) {
                     guard !selectedIDs.isEmpty else { return }
                     let delIDs = selectedIDs
                     let selectedSize = selectedBytes

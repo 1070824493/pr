@@ -113,7 +113,7 @@ private struct PRBottomBar: View {
     let bytes: Int64
     let deleteAction: () -> Void
     var body: some View {
-        ThemeButton(title: enabled ? "Delete (\(checkFormatBytes(bytes)))" : "Delete", enable: enabled, type: .delete, action:  {
+        PRThemeButton(title: enabled ? "Delete (\(checkFormatBytes(bytes)))" : "Delete", enable: enabled, type: .delete, action:  {
             if enabled {
                 deleteAction()
             }
@@ -128,9 +128,9 @@ private struct PRBottomBar: View {
 
 /// 两列的图片展示页面
 struct PRDoubleFeedPage: View {
-    @EnvironmentObject var appRouterPath: AppRouterPath
-    @EnvironmentObject private var uiState: UIState
     let cardID: PRPhotoCategory
+    @EnvironmentObject var appRouterPath: PRAppRouterPath
+    @EnvironmentObject private var uiState: PRUIState
     var isVideo: Bool = false
     @StateObject private var vm = PRDoubleFeedViewModel()
     @State private var scrollY: CGFloat = 0

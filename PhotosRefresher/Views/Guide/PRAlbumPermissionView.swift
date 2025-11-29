@@ -25,7 +25,7 @@ struct PRAlbumPermissionView: View {
                         dismissTask = Task {
                             try? await Task.sleep(nanoseconds: 8_000_000_000)
                             await MainActor.run {
-                                GlobalOverlay.shared.dismiss()
+                                PRGlobalOverlay.shared.dismiss()
                             }
                         }
                     }
@@ -64,7 +64,7 @@ struct PRAlbumPermissionView: View {
             
             Spacer()
 
-            ThemeButton(title: "Continue", type: .guide) {
+            PRThemeButton(title: "Continue", type: .guide) {
                 checkPermission()
             }
             .padding(.bottom, 60)

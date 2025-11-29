@@ -34,7 +34,7 @@ struct PRHomeAuthorizationView: View {
 
             Spacer()
             
-            ThemeButton(title: "Set Access", action: onTapAllow)
+            PRThemeButton(title: "Set Access", action: onTapAllow)
                 .frame(width: 216.fit)
                 .padding(.bottom, 44)
                 .padding(.horizontal, 36)

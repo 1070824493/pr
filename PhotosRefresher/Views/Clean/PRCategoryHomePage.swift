@@ -14,8 +14,8 @@ struct PRCategoryHomePage: View {
     
     @StateObject private var vm: PRCategoryHomeViewModel
     
-    @EnvironmentObject var appRouterPath: AppRouterPath
-    @EnvironmentObject private var uiState: UIState
+    @EnvironmentObject var appRouterPath: PRAppRouterPath
+    @EnvironmentObject private var uiState: PRUIState
     
     @State private var topInset: CGFloat = 0
     private var barHeight: CGFloat { topInset + 44 }
@@ -44,15 +44,15 @@ struct PRCategoryHomePage: View {
     ]
     
     private var hasPermission: Bool {
-        if AppUserPreferences.shared.hasFinishAlbumPermission {
-            if AppUserPreferences.shared.albumPermissionStatus != .authorized {
+        if PRAppUserPreferences.shared.hasFinishAlbumPermission {
+            if PRAppUserPreferences.shared.albumPermissionStatus != .authorized {
                 DispatchQueue.main.async {
-                    AppUserPreferences.shared.albumPermissionStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+                    PRAppUserPreferences.shared.albumPermissionStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
                 }
             }
         }
         
-        switch AppUserPreferences.shared.albumPermissionStatus {
+        switch PRAppUserPreferences.shared.albumPermissionStatus {
         case .authorized, .limited:
             return true
         case .notDetermined:
@@ -138,7 +138,7 @@ struct PRCategoryHomePage: View {
 
             PRHomeTopBar(
                 navBarHeight: barHeight,
-                isVip: (UserManager.shared.userInfo?.vipStatus == 1),
+                isVip: (PRUserManager.shared.userInfo?.vipStatus == 1),
                 onTap: {
                     appRouterPath.navigate(.settingPage)
                 }
@@ -163,7 +163,7 @@ struct PRCategoryHomePage: View {
             bindAndMaybeStart()
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 10_000_000_000)
-                AppReviewManager.shared.reviewIfNeeded()
+                PRAppReviewManager.shared.reviewIfNeeded()
             }
         }
     }
@@ -194,29 +194,29 @@ struct PRCategoryHomePage: View {
         guard PHPhotoLibrary.authorizationStatus(for: .readWrite) == .notDetermined else {
             return
         }
-        if !AppUserPreferences.shared.hasFinishAlbumPermission, !GlobalOverlay.shared.isPresenting {
-            GlobalOverlay.shared.showOverlayHUDView = true
-            GlobalOverlay.shared.present(content: {
+        if !PRAppUserPreferences.shared.hasFinishAlbumPermission, !PRGlobalOverlay.shared.isPresenting {
+            PRGlobalOverlay.shared.showOverlayHUDView = true
+            PRGlobalOverlay.shared.present(content: {
                 PRAlbumPermissionView { ok in
-                    AppUserPreferences.shared.hasFinishAlbumPermission = true
+                    PRAppUserPreferences.shared.hasFinishAlbumPermission = true
                     if ok {
-                        AppUserPreferences.shared.albumPermissionStatus = .authorized
+                        PRAppUserPreferences.shared.albumPermissionStatus = .authorized
                         NotificationCenter.default.post(name: .ckStartPipeline, object: nil)
                     } else {
-                        AppUserPreferences.shared.albumPermissionStatus = .denied
-                        GlobalOverlay.shared.dismiss()
+                        PRAppUserPreferences.shared.albumPermissionStatus = .denied
+                        PRGlobalOverlay.shared.dismiss()
                     }
                 }
             },animation: .rightToLeft)
         }
-        else if AppUserPreferences.shared.hasFinishAlbumPermission,
-                AppUserPreferences.shared.albumPermissionStatus == .authorized,
-                !GlobalOverlay.shared.isPresenting {
-            if !GlobalOverlay.shared.showOverlayHUDView {
-                GlobalOverlay.shared.showOverlayHUDView = true
-                GlobalOverlay.shared.present {
+        else if PRAppUserPreferences.shared.hasFinishAlbumPermission,
+                PRAppUserPreferences.shared.albumPermissionStatus == .authorized,
+                !PRGlobalOverlay.shared.isPresenting {
+            if !PRGlobalOverlay.shared.showOverlayHUDView {
+                PRGlobalOverlay.shared.showOverlayHUDView = true
+                PRGlobalOverlay.shared.present {
                     PRHomeHUDView(type: .notText) {
-                        GlobalOverlay.shared.dismiss()
+                        PRGlobalOverlay.shared.dismiss()
                     }
                 }
             }
@@ -225,7 +225,7 @@ struct PRCategoryHomePage: View {
     
     private func bindAndMaybeStart() {
 
-        guard AppUserPreferences.shared.albumPermissionStatus == .authorized else { return }
+        guard PRAppUserPreferences.shared.albumPermissionStatus == .authorized else { return }
 
         if !didBindOverlaySubscriber {
             didBindOverlaySubscriber = true
@@ -238,7 +238,7 @@ struct PRCategoryHomePage: View {
             .first { !$0.assets.isEmpty || !$0.doubleAssets.isEmpty }
             .delay(for: 0.8, scheduler: DispatchQueue.main)
             .sink { _ in
-                GlobalOverlay.shared.dismiss()
+                PRGlobalOverlay.shared.dismiss()
             }
             .store(in: &cancellables)
         }
@@ -300,7 +300,7 @@ struct PRCategoryPageCard: View {
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .background {
-                            BlurView(style: .systemMaterialDark)
+                            PRBlurView(style: .systemMaterialDark)
                         }
                         .frame(alignment: .top)
                     }

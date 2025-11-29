@@ -26,7 +26,7 @@
 
 + (void)x_limit_requestTrackingAuthorizationWithCompletionHandler:(void (^)(ATTrackingManagerAuthorizationStatus))completion {
     
-    if (!PermissionManager.canShowIDFA) {
+    if (!PRPermissionManager.canShowIDFA) {
         return;
     }
     [self x_limit_requestTrackingAuthorizationWithCompletionHandler:completion];

@@ -19,11 +19,11 @@ extension PHAsset: @retroactive Identifiable {
 struct PRSlideDetailPage: View {
     @State var category: PRPhotoCategory {
         didSet{
-            AppUserPreferences.shared.currentSlideCategory = category
+            PRAppUserPreferences.shared.currentSlideCategory = category
         }
     }
-    @EnvironmentObject var uiState: UIState
-    @EnvironmentObject var appRouter: AppRouterPath
+    @EnvironmentObject var uiState: PRUIState
+    @EnvironmentObject var appRouter: PRAppRouterPath
     
     @Environment(\.dismiss) var dismiss
     @State private var assets: [PHAsset] = []
@@ -103,7 +103,7 @@ struct PRSlideDetailPage: View {
         .ignoresSafeArea()
         .onAppear { loadAssets(for: category) }
         .onDisappear(perform: {
-            AppUserPreferences.shared.hasShowSwipeUpDelete = true
+            PRAppUserPreferences.shared.hasShowSwipeUpDelete = true
         })
         .overlay(alignment: .top) {
             if showCategoryMenu {
@@ -181,7 +181,7 @@ struct PRSlideDetailPage: View {
                 }
             }
             
-            if !AppUserPreferences.shared.hasShowSwipeUpDelete {
+            if !PRAppUserPreferences.shared.hasShowSwipeUpDelete {
                 Text("Swipe up to delete")
                     .font(.semibold24)
                     .foregroundColor(.white)
@@ -227,7 +227,7 @@ struct PRSlideDetailPage: View {
         if assets.isEmpty {
             openTrashReview()
         }
-        AppUserPreferences.shared.hasShowSwipeUpDelete = true
+        PRAppUserPreferences.shared.hasShowSwipeUpDelete = true
     }
     private func undoLastDelete() {
         guard let last = sessionTrash.popLast() else { return }
@@ -281,7 +281,7 @@ struct PRSlideDetailPage: View {
                     DispatchQueue.main.async {
                         sessionTrash.removeAll()
                         uiState.modalDestination = nil
-                        Toast.show(message: "删除成功")
+                        PRToast.show(message: "删除成功")
                     }
                 case .failure:
                     DispatchQueue.main.async { }

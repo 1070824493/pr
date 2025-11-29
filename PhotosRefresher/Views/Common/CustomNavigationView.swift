@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct CustomNavigationBarView<LhsView, CenterView, RhsView>: View where LhsView : View, CenterView : View, RhsView : View {
+public struct PRCustomNavigationBarView<LhsView, CenterView, RhsView>: View where LhsView : View, CenterView : View, RhsView : View {
     var lhsView : (() -> LhsView)?
     var centerView : (() -> CenterView)?
     var rhsView : (() -> RhsView)?

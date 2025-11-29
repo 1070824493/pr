@@ -11,7 +11,7 @@ import Photos
 
 class PRSlideViewModel: ObservableObject {
     
-    @Published var currentCategory: PRPhotoCategory = AppUserPreferences.shared.currentSlideCategory {
+    @Published var currentCategory: PRPhotoCategory = PRAppUserPreferences.shared.currentSlideCategory {
         didSet {
             previewFive = []
             prepareSet()
@@ -26,11 +26,11 @@ class PRSlideViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     init() {
-        AppUserPreferences.shared.objectWillChange
+        PRAppUserPreferences.shared.objectWillChange
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                let newCat = AppUserPreferences.shared.currentSlideCategory
+                let newCat = PRAppUserPreferences.shared.currentSlideCategory
                 if newCat != self.currentCategory {
                     self.currentCategory = newCat
                 }
@@ -55,7 +55,7 @@ class PRSlideViewModel: ObservableObject {
     }
 
     var hasPermission: Bool {
-        switch AppUserPreferences.shared.albumPermissionStatus {
+        switch PRAppUserPreferences.shared.albumPermissionStatus {
         case .authorized, .limited: return true
         case .notDetermined: return true
         default: return false
@@ -64,7 +64,7 @@ class PRSlideViewModel: ObservableObject {
 
     func loadCategory(_ cat: PRPhotoCategory) {
         currentCategory = cat
-        AppUserPreferences.shared.currentSlideCategory = cat
+        PRAppUserPreferences.shared.currentSlideCategory = cat
     }
 
     func prepareSet() {
