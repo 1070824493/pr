@@ -220,19 +220,3 @@ struct NoPhotosView: View {
     }
 
 }
-
-struct ReviewCompleteView: View {
-    let hasTrash: Bool
-    var onMore: () -> Void
-    var body: some View {
-        VStack(spacing: 16) {
-            Spacer()
-            Text("Review Complete").font(.bold24).foregroundColor(.white)
-            PRThemeButton(title: "One More Set", action: onMore)
-                .frame(width: 220)
-            Spacer()
-        }
-        .padding()
-    }
-}
-

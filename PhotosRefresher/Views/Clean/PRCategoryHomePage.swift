@@ -250,28 +250,6 @@ struct PRCategoryHomePage: View {
     }
 }
 
-struct PRHomePagingView: View {
-    let items: [PRPhotoCategory]
-    var onTapClean: (_ tappedCategory: PRPhotoCategory) -> Void
-    @EnvironmentObject var vm: PRCategoryHomeViewModel
-    @State private var selection: Int = 0
-    private let thumbProvider = PRAssetThumbnailProvider()
-
-    var body: some View {
-        TabView(selection: $selection) {
-            ForEach(Array(items.enumerated()), id: \.offset) { idx, item in
-                let snap = vm.snapshots[item] ?? CategoryItemVM(category: item, bytes: 0, repID: nil, repAsset: nil, totalCount: 0)
-                PRCategoryPageCard(snapshot: snap, thumbProvider: thumbProvider) {
-                    onTapClean(item)
-                }
-                .tag(idx)
-            }
-        }
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
 struct PRCategoryPageCard: View {
     let snapshot: CategoryItemVM
     let thumbProvider: PRAssetThumbnailProvider

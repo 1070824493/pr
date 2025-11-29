@@ -133,27 +133,3 @@ struct PRGuideWelcomePage: View {
         }
     }
 }
-
-struct GuideButton: View {
-    
-    let title: String
-    var enable: Bool = true
-    let action: () -> ()
-    
-    
-    var body: some View {
-        
-        Button {
-            if enable { action() }
-        } label: {
-            
-            Text(title)
-                .font(.system(size: 20, weight: .heavy))
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(Color.hexColor(0x3867FF).opacity(enable ? 1 : 0.4))
-                .cornerRadius(16)
-        }
-    }
-}

@@ -14,12 +14,6 @@ public enum StreamEvent<T> {
     case finished
 }
 
-public struct SSEEvent {
-    let id: String?
-    let event: String?
-    let data: String
-}
-
 public extension PRRequestHandlerManager {
     
     func PRMakeStream<Input: Encodable>(

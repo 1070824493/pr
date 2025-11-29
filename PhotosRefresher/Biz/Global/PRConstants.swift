@@ -66,10 +66,10 @@ public enum WebUrl: String {
     
 }
 
-public struct HybridActionConstants {
-    
-    public struct Common {
-        
+//public struct HybridActionConstants {
+//    
+//    public struct Common {
+//        
 //        // 打开web页
 //        public static let openWindow = "openWindow"
 //        
@@ -84,23 +84,23 @@ public struct HybridActionConstants {
 //        
 //        // 获取用户信息
 //        public static let getUserInfo = "getUserInfo"
-        
-    }
-    
-}
+//        
+//    }
+//    
+//}
 
-public struct MarkerReportEvent {
-    
-    // 订阅页曝光
-    public static let subscription_page_show = "af_subscribe_show"
-    
-    // 点击订阅按钮
-    public static let subscription_btn_click = "initiatecheckout"
-    
-    // 使用核心功能
-    public static let all_function_used = "all_function_used"
-    
-}
+//public struct MarkerReportEvent {
+//    
+//    // 订阅页曝光
+//    public static let subscription_page_show = "af_subscribe_show"
+//    
+//    // 点击订阅按钮
+//    public static let subscription_btn_click = "initiatecheckout"
+//    
+//    // 使用核心功能
+//    public static let all_function_used = "all_function_used"
+//    
+//}
 
 
 //public struct BuglyInfoConfig {

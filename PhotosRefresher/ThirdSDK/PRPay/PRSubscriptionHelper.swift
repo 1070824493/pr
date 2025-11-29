@@ -76,14 +76,3 @@ class PRSubscriptionHelper {
     }
     
 }
-
-public struct PRTransactionIntentCallback {
-    private var storage: Any?
-    
-    @available(iOS 16.4, *)
-    var value: ((PurchaseIntent) -> Void)? {
-        get { storage as? ((PurchaseIntent) -> Void) }
-        set { storage = newValue }
-    }
-}
-

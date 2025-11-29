@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1EB3197F2ED1978300884DD1 /* CustomPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB3197E2ED1978300884DD1 /* CustomPageView.swift */; };
-		1EE8CC1B2EDA9AD50064F683 /* DismissingKeyboardOnSwipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBEF2EDA9AD40064F683 /* DismissingKeyboardOnSwipe.swift */; };
 		1EE8CC1D2EDA9AD50064F683 /* OnReceiveChangeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF02EDA9AD40064F683 /* OnReceiveChangeModifier.swift */; };
 		1EE8CC212EDA9AD50064F683 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF72EDA9AD40064F683 /* Date+Extension.swift */; };
 		1EE8CC232EDA9AD50064F683 /* Array+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBE82EDA9AD40064F683 /* Array+Extension.swift */; };
@@ -44,7 +43,6 @@
 		1EE8CC722EDAC8960064F683 /* PRRouterDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC6E2EDAC8960064F683 /* PRRouterDestination.swift */; };
 		1EE8CC732EDAC8960064F683 /* PRRouterRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC702EDAC8960064F683 /* PRRouterRegistry.swift */; };
 		1EE8CC762EDAC8A80064F683 /* PRAppUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC742EDAC8A80064F683 /* PRAppUserDefaults.swift */; };
-		1EE8CC772EDAC8A80064F683 /* PRLLCachePath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC752EDAC8A80064F683 /* PRLLCachePath.swift */; };
 		1EE8CC792EDAC8BA0064F683 /* PRConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC782EDAC8BA0064F683 /* PRConfigManager.swift */; };
 		1EE8CC802EDAC8CC0064F683 /* PRMailHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC7D2EDAC8CC0064F683 /* PRMailHelper.swift */; };
 		1EE8CC812EDAC8CC0064F683 /* PRConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC7B2EDAC8CC0064F683 /* PRConstants.swift */; };
@@ -65,9 +63,7 @@
 		1EE8CC9B2EDAC9600064F683 /* PRDeviceUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC942EDAC9600064F683 /* PRDeviceUtils.swift */; };
 		1EE8CCA62EDAC97F0064F683 /* PRMultiProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CCA22EDAC97F0064F683 /* PRMultiProgressBarView.swift */; };
 		1EE8CCA72EDAC97F0064F683 /* PRDividerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC9D2EDAC97F0064F683 /* PRDividerView.swift */; };
-		1EE8CCA82EDAC97F0064F683 /* PRLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CCA12EDAC97F0064F683 /* PRLoadingView.swift */; };
 		1EE8CCA92EDAC97F0064F683 /* PRShareImageActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CCA42EDAC97F0064F683 /* PRShareImageActivityView.swift */; };
-		1EE8CCAB2EDAC97F0064F683 /* PRGradientCircularProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC9E2EDAC97F0064F683 /* PRGradientCircularProgressView.swift */; };
 		1EE8CCAC2EDAC97F0064F683 /* PRBlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC9C2EDAC97F0064F683 /* PRBlurView.swift */; };
 		1EE8CCAD2EDAC97F0064F683 /* PRHomeBottomGestureModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC9F2EDAC97F0064F683 /* PRHomeBottomGestureModifier.swift */; };
 		1EE8CCAE2EDAC97F0064F683 /* PRLaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CCA02EDAC97F0064F683 /* PRLaunchView.swift */; };
@@ -161,7 +157,6 @@
 		1EE8CBEA2EDA9AD40064F683 /* Font+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Extension.swift"; sourceTree = "<group>"; };
 		1EE8CBEC2EDA9AD40064F683 /* KeyboardPublishers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardPublishers.swift; sourceTree = "<group>"; };
 		1EE8CBED2EDA9AD40064F683 /* RotationPublihsers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotationPublihsers.swift; sourceTree = "<group>"; };
-		1EE8CBEF2EDA9AD40064F683 /* DismissingKeyboardOnSwipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DismissingKeyboardOnSwipe.swift; sourceTree = "<group>"; };
 		1EE8CBF02EDA9AD40064F683 /* OnReceiveChangeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnReceiveChangeModifier.swift; sourceTree = "<group>"; };
 		1EE8CBF12EDA9AD40064F683 /* StrokeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StrokeModifier.swift; sourceTree = "<group>"; };
 		1EE8CBF22EDA9AD40064F683 /* ViewDurationTrackerModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewDurationTrackerModifier.swift; sourceTree = "<group>"; };
@@ -187,7 +182,6 @@
 		1EE8CC6F2EDAC8960064F683 /* PRRouterPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRouterPath.swift; sourceTree = "<group>"; };
 		1EE8CC702EDAC8960064F683 /* PRRouterRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRouterRegistry.swift; sourceTree = "<group>"; };
 		1EE8CC742EDAC8A80064F683 /* PRAppUserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAppUserDefaults.swift; sourceTree = "<group>"; };
-		1EE8CC752EDAC8A80064F683 /* PRLLCachePath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRLLCachePath.swift; sourceTree = "<group>"; };
 		1EE8CC782EDAC8BA0064F683 /* PRConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRConfigManager.swift; sourceTree = "<group>"; };
 		1EE8CC7A2EDAC8CC0064F683 /* PRAppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAppInfo.swift; sourceTree = "<group>"; };
 		1EE8CC7B2EDAC8CC0064F683 /* PRConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRConstants.swift; sourceTree = "<group>"; };
@@ -208,10 +202,8 @@
 		1EE8CC972EDAC9600064F683 /* PRToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRToast.swift; sourceTree = "<group>"; };
 		1EE8CC9C2EDAC97F0064F683 /* PRBlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRBlurView.swift; sourceTree = "<group>"; };
 		1EE8CC9D2EDAC97F0064F683 /* PRDividerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDividerView.swift; sourceTree = "<group>"; };
-		1EE8CC9E2EDAC97F0064F683 /* PRGradientCircularProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRGradientCircularProgressView.swift; sourceTree = "<group>"; };
 		1EE8CC9F2EDAC97F0064F683 /* PRHomeBottomGestureModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRHomeBottomGestureModifier.swift; sourceTree = "<group>"; };
 		1EE8CCA02EDAC97F0064F683 /* PRLaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRLaunchView.swift; sourceTree = "<group>"; };
-		1EE8CCA12EDAC97F0064F683 /* PRLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRLoadingView.swift; sourceTree = "<group>"; };
 		1EE8CCA22EDAC97F0064F683 /* PRMultiProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRMultiProgressBarView.swift; sourceTree = "<group>"; };
 		1EE8CCA32EDAC97F0064F683 /* PRProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRProgressBarView.swift; sourceTree = "<group>"; };
 		1EE8CCA42EDAC97F0064F683 /* PRShareImageActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRShareImageActivityView.swift; sourceTree = "<group>"; };
@@ -361,7 +353,6 @@
 		1EE8CBF32EDA9AD40064F683 /* ViewModifiers */ = {
 			isa = PBXGroup;
 			children = (
-				1EE8CBEF2EDA9AD40064F683 /* DismissingKeyboardOnSwipe.swift */,
 				1EE8CBF02EDA9AD40064F683 /* OnReceiveChangeModifier.swift */,
 				1EE8CBF12EDA9AD40064F683 /* StrokeModifier.swift */,
 				1EE8CBF22EDA9AD40064F683 /* ViewDurationTrackerModifier.swift */,
@@ -674,7 +665,6 @@
 			isa = PBXGroup;
 			children = (
 				1EE8CC742EDAC8A80064F683 /* PRAppUserDefaults.swift */,
-				1EE8CC752EDAC8A80064F683 /* PRLLCachePath.swift */,
 			);
 			path = Cache;
 			sourceTree = "<group>";
@@ -792,10 +782,8 @@
 			children = (
 				1EE8CC9C2EDAC97F0064F683 /* PRBlurView.swift */,
 				1EE8CC9D2EDAC97F0064F683 /* PRDividerView.swift */,
-				1EE8CC9E2EDAC97F0064F683 /* PRGradientCircularProgressView.swift */,
 				1EE8CC9F2EDAC97F0064F683 /* PRHomeBottomGestureModifier.swift */,
 				1EE8CCA02EDAC97F0064F683 /* PRLaunchView.swift */,
-				1EE8CCA12EDAC97F0064F683 /* PRLoadingView.swift */,
 				1EE8CCA22EDAC97F0064F683 /* PRMultiProgressBarView.swift */,
 				1EE8CCA32EDAC97F0064F683 /* PRProgressBarView.swift */,
 				1EE8CCA42EDAC97F0064F683 /* PRShareImageActivityView.swift */,
@@ -1098,7 +1086,6 @@
 				E2242C392ECF120700C867D4 /* PRHomeAuthorizationView.swift in Sources */,
 				1EE8CC692EDAC8730064F683 /* PRAlertModal.swift in Sources */,
 				1EE8CC8D2EDAC9020064F683 /* PRPermissonsManager.swift in Sources */,
-				1EE8CC1B2EDA9AD50064F683 /* DismissingKeyboardOnSwipe.swift in Sources */,
 				1EE8CC1D2EDA9AD50064F683 /* OnReceiveChangeModifier.swift in Sources */,
 				E202D6F72EDAD24C00B1F55F /* PRRequestHandlerInterceptor.swift in Sources */,
 				E202D6FB2EDAD27200B1F55F /* PRRequestHandlerNetworkManager+File.swift in Sources */,
@@ -1142,9 +1129,7 @@
 				E202D6DA2EDACF1500B1F55F /* PRSubscribeResponseModel.swift in Sources */,
 				1EE8CCA62EDAC97F0064F683 /* PRMultiProgressBarView.swift in Sources */,
 				1EE8CCA72EDAC97F0064F683 /* PRDividerView.swift in Sources */,
-				1EE8CCA82EDAC97F0064F683 /* PRLoadingView.swift in Sources */,
 				1EE8CCA92EDAC97F0064F683 /* PRShareImageActivityView.swift in Sources */,
-				1EE8CCAB2EDAC97F0064F683 /* PRGradientCircularProgressView.swift in Sources */,
 				1EE8CCAC2EDAC97F0064F683 /* PRBlurView.swift in Sources */,
 				1EE8CCAD2EDAC97F0064F683 /* PRHomeBottomGestureModifier.swift in Sources */,
 				1EE8CCAE2EDAC97F0064F683 /* PRLaunchView.swift in Sources */,
@@ -1157,7 +1142,6 @@
 				1EE8CC3B2EDA9AD50064F683 /* UIApplication+Extension.swift in Sources */,
 				1EE8CC3C2EDA9AD50064F683 /* URL+Extension.swift in Sources */,
 				1EE8CC762EDAC8A80064F683 /* PRAppUserDefaults.swift in Sources */,
-				1EE8CC772EDAC8A80064F683 /* PRLLCachePath.swift in Sources */,
 				1EE8CC3D2EDA9AD50064F683 /* UIImage+Extension.swift in Sources */,
 				1EE8CC3E2EDA9AD50064F683 /* Codable+Extension.swift in Sources */,
 				E202D6F92EDAD25C00B1F55F /* PRRequestHandlerManager.swift in Sources */,

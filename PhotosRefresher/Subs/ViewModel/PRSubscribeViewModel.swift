@@ -8,15 +8,6 @@
 import Foundation
 import UIKit
 
-
-// 触发购买的上下文（用于决定失败弹窗是否该弹）
-public enum PurchaseTriggerContext {
-    case manual        // 用户主动点按钮/卡片
-    case auto          // 自动拉起
-    case exitDetain    // 挽留弹窗上的购买
-    case retry         // 失败弹窗的“Try again”
-}
-
 /// 订阅页展现来源
 public enum PaySource: Int {
     case guided = 0

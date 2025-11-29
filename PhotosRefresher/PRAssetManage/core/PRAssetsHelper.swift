@@ -586,15 +586,5 @@ func computeLaplacianOperatorScore(from image: UIImage) -> Float? {
     return variance
 }
 
-public enum PRLog {
-    public static var enabled: Bool = true
-    @inline(__always)
-    public static func debugTrace(_ tag: String, _ msg: @autoclosure () -> String,
-                         file: String = #fileID, line: Int = #line) {
-        guard enabled else { return }
-        let ts = String(format: "%.3f", CFAbsoluteTimeGetCurrent() - _cuLogStart)
-        print("CU[\(ts)s] [\(tag)] \(msg())  <\(file):\(line)>")
-    }
-}
 private let _cuLogStart = CFAbsoluteTimeGetCurrent()
 
