@@ -26,15 +26,15 @@ enum PRTextAnalyzer {
         for a in assets where a.mediaType == .image {
             autoreleasepool {
                 guard let low = produceVisualRepresentation(for: a, manager: manager, options: optLow, target: .init(width: 160, height: 160))?.cgImage else { return }
-                if !performCoarseTextDetection(low) { return }
+                if !executePreliminaryGlyphDetection(low) { return }
                 guard let hi = produceVisualRepresentation(for: a, manager: manager, options: optHi, target: .init(width: 512, height: 512))?.cgImage else { return }
-                if performFineTextRecognition(hi) { hits.append(a.localIdentifier) }
+                if executeDetailedCharacterRecognition(hi) { hits.append(a.localIdentifier) }
             }
         }
         return hits
     }
 
-    private static func performCoarseTextDetection(_ cg: CGImage) -> Bool {
+    private static func executePreliminaryGlyphDetection(_ cg: CGImage) -> Bool {
         let req = VNDetectTextRectanglesRequest(); req.reportCharacterBoxes = false
         let h = VNImageRequestHandler(cgImage: cg, options: [:])
         try? h.perform([req])
@@ -42,7 +42,7 @@ enum PRTextAnalyzer {
         return rects.count >= 1
     }
 
-    private static func performFineTextRecognition(_ cg: CGImage) -> Bool {
+    private static func executeDetailedCharacterRecognition(_ cg: CGImage) -> Bool {
         let req = VNRecognizeTextRequest(); req.recognitionLevel = .accurate; req.usesLanguageCorrection = false
         let h = VNImageRequestHandler(cgImage: cg, options: [:])
         try? h.perform([req])

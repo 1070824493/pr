@@ -22,19 +22,19 @@ actor PRChunkScheduler {
         self.files = files
     }
 
-    func setupSnapshotConfiguration(with assetsDesc: [PHAsset]) {
+    func configureSnapshotParameters(with assetsDesc: [PHAsset]) {
         allIds = assetsDesc.map(\.localIdentifier)
         snapshotHash = "\(allIds.hashValue)_\(allIds.count)"
     }
 
-    func retrieveTotalChunkCount() -> Int {
+    func calculateSegmentQuantity() -> Int {
         guard !allIds.isEmpty else { return 0 }
         return (allIds.count + chunkSize - 1) / chunkSize
     }
 
-    func processAndRetrieveChunk(index: Int) -> PRChunkSnapshot? {
-        guard index >= 0, index < retrieveTotalChunkCount() else { return nil }
-        let u = files.chunk(index)
+    func materializeSegmentAtIndex(index: Int) -> PRChunkSnapshot? {
+        guard index >= 0, index < calculateSegmentQuantity() else { return nil }
+        let u = files.locateSegmentFile(index)
 
         if let data = try? Data(contentsOf: u),
            let s = try? JSONDecoder().decode(PRChunkSnapshot.self, from: data) {

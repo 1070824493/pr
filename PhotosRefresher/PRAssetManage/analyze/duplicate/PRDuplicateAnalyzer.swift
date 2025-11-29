@@ -38,7 +38,7 @@ enum PRDuplicateAnalyzer {
         var pairLinks: [(String, String)] = []
         pairLinks.reserveCapacity(assets.count)
 
-        func bandKey(_ hash: UInt64, bandIndex: Int, bandWidth: Int) -> UInt64 {
+        func computeBandSegmentHash(_ hash: UInt64, bandIndex: Int, bandWidth: Int) -> UInt64 {
             let mask: UInt64 = bandWidth == 64 ? ~0 : ((1 << UInt64(bandWidth)) - 1)
             let part = (hash >> UInt64(bandIndex * bandWidth)) & mask
             return (UInt64(bandIndex) << 56) | part
@@ -63,7 +63,7 @@ enum PRDuplicateAnalyzer {
             buckets.reserveCapacity(min(ids.count * 8, 1024))
             for id in ids {
                 if let h = pMap[id] {
-                    for b in 0..<8 { buckets[bandKey(h, bandIndex: b, bandWidth: 8), default: []].append(id) }
+                    for b in 0..<8 { buckets[computeBandSegmentHash(h, bandIndex: b, bandWidth: 8), default: []].append(id) }
                 }
             }
 
@@ -76,7 +76,7 @@ enum PRDuplicateAnalyzer {
                     for j in (i+1)..<bid.count {
                         let id2 = bid[j]
                         guard let p2 = pMap[id2], let d2 = dMap[id2] else { continue }
-                        if !isAspectRatioSimilar(wh1, dims[id2], tol: aspectTol) { continue }
+                        if !checkDimensionRatioConsistency(wh1, dims[id2], tol: aspectTol) { continue }
                         let hdp = (p1 ^ p2).nonzeroBitCount
                         if hdp > hdSimUpper { continue }
                         let hdd = (d1 ^ d2).nonzeroBitCount
@@ -86,17 +86,17 @@ enum PRDuplicateAnalyzer {
             }
         }
 
-        return mergeDuplicatePairs(pairLinks)
+        return consolidateRedundantPairs(pairLinks)
     }
 
-    private static func isAspectRatioSimilar(_ a: (Int, Int)?, _ b: (Int, Int)?, tol: CGFloat) -> Bool {
+    private static func checkDimensionRatioConsistency(_ a: (Int, Int)?, _ b: (Int, Int)?, tol: CGFloat) -> Bool {
         guard let a, let b else { return false }
         let ra = CGFloat(a.0) / max(1, CGFloat(a.1))
         let rb = CGFloat(b.0) / max(1, CGFloat(b.1))
         return abs(ra - rb) / max(ra, rb) <= tol
     }
 
-    private static func mergeDuplicatePairs(_ links: [(String, String)]) -> [[String]] {
+    private static func consolidateRedundantPairs(_ links: [(String, String)]) -> [[String]] {
         if links.isEmpty { return [] }
         var id2idx: [String: Int] = [:]
         func idx(_ id: String) -> Int { if let i = id2idx[id] { return i }; let i = id2idx.count; id2idx[id] = i; return i }

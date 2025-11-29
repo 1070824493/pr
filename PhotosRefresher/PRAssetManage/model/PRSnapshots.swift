@@ -82,5 +82,5 @@ struct PRCacheFiles {
     let dir: URL
     var progress: URL { dir.appendingPathComponent("progress.json") }
     var maps: URL { dir.appendingPathComponent("maps.json") }
-    func chunk(_ i: Int) -> URL { dir.appendingPathComponent("chunk_\(i).json") }
+    func locateSegmentFile(_ i: Int) -> URL { dir.appendingPathComponent("chunk_\(i).json") }
 }

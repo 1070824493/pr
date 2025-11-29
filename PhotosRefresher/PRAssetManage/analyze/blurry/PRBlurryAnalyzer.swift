@@ -27,7 +27,7 @@ enum PRBlurryAnalyzer {
         let opt = PHImageRequestOptions(); opt.isSynchronous = true; opt.deliveryMode = .fastFormat; opt.resizeMode = .fast; opt.isNetworkAccessAllowed = true
         for a in assets where a.mediaType == .image {
             autoreleasepool {
-                if checkIfAssetIsBlurry(a, manager: manager, options: opt, target: params.targetSize, base: params.blurThresholdBase, flatThr: params.flatVarYThreshold) {
+                if evaluateVisualAcuity(a, manager: manager, options: opt, target: params.targetSize, base: params.blurThresholdBase, flatThr: params.flatVarYThreshold) {
                     ids.append(a.localIdentifier)
                 }
             }
@@ -35,15 +35,15 @@ enum PRBlurryAnalyzer {
         return ids
     }
 
-    private static func checkIfAssetIsBlurry(_ asset: PHAsset, manager: PHImageManager, options: PHImageRequestOptions, target: CGSize, base: Double, flatThr: Double) -> Bool {
+    private static func evaluateVisualAcuity(_ asset: PHAsset, manager: PHImageManager, options: PHImageRequestOptions, target: CGSize, base: Double, flatThr: Double) -> Bool {
         guard let cg = produceVisualRepresentation(for: asset, manager: manager, options: options, target: target)?.cgImage else { return false }
-        if calculateLumaVariance(cg) < flatThr { return false }
-        let lv = calculateLightweightEdgeVariance(cg)
-        let thr = computeAdaptiveBlurThreshold(cg, base: base)
+        if measureLuminanceDispersion(cg) < flatThr { return false }
+        let lv = computeGradientMagnitudeVariance(cg)
+        let thr = deriveDynamicSharpnessLimit(cg, base: base)
         return lv < thr
     }
 
-    private static func calculateLightweightEdgeVariance(_ cg: CGImage) -> Double {
+    private static func computeGradientMagnitudeVariance(_ cg: CGImage) -> Double {
         guard let data = cg.dataProvider?.data as Data? else { return 0 }
         var acc: Double = 0
         var cnt = 0
@@ -57,13 +57,13 @@ enum PRBlurryAnalyzer {
         return acc / Double(max(1, cnt))
     }
 
-    private static func computeAdaptiveBlurThreshold(_ cg: CGImage, base: Double) -> Double {
-        let varY = calculateLumaVariance(cg)
+    private static func deriveDynamicSharpnessLimit(_ cg: CGImage, base: Double) -> Double {
+        let varY = measureLuminanceDispersion(cg)
         let k = min(1.0, max(0.0, varY / 60.0))
         return base * (0.9 + 0.2 * k)
     }
 
-    private static func calculateLumaVariance(_ cg: CGImage) -> Double {
+    private static func measureLuminanceDispersion(_ cg: CGImage) -> Double {
         guard let data = cg.dataProvider?.data as Data? else { return 0 }
         let step = max(1, (cg.width * cg.height) / 4096)
         var mean: Double = 0, m2: Double = 0, n: Double = 0

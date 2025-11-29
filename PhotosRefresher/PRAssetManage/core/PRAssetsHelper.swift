@@ -543,7 +543,7 @@ func computePerceptualHash(from image: UIImage) -> UInt64? {
 }
 
 
-func calculateLaplacianScore(from image: UIImage) -> Float? {
+func computeLaplacianOperatorScore(from image: UIImage) -> Float? {
     guard let cg = image.cgImage else { return nil }
     let w = 128, h = 128
     let grayCS = CGColorSpaceCreateDeviceGray()
@@ -589,7 +589,7 @@ func calculateLaplacianScore(from image: UIImage) -> Float? {
 public enum PRLog {
     public static var enabled: Bool = true
     @inline(__always)
-    public static func d(_ tag: String, _ msg: @autoclosure () -> String,
+    public static func debugTrace(_ tag: String, _ msg: @autoclosure () -> String,
                          file: String = #fileID, line: Int = #line) {
         guard enabled else { return }
         let ts = String(format: "%.3f", CFAbsoluteTimeGetCurrent() - _cuLogStart)
