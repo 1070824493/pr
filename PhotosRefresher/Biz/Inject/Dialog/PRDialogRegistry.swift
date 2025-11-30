@@ -13,7 +13,7 @@ extension View {
         self.overlay {
             bottomSheet.wrappedValue != nil
             ? PRBottomSheetView(destination: bottomSheet)
-                .withEnvironments()
+                .provideEnivironmentObject()
             : nil
         }
     }
@@ -22,7 +22,7 @@ extension View {
         self.overlay {
             modal.wrappedValue != nil
             ? PRModalView(destination: modal)
-                .withEnvironments()
+                .provideEnivironmentObject()
             : nil
         }
     }

@@ -19,7 +19,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
     var currentCardID: String = ""
 
     /// 当前页面用于直加字节的索引：id -> model
-    private var modelIndex: [String: PRPhotoAssetModel] = [:]
+    private var modelIndex: [String: PRAssetsAnalyzeResult] = [:]
 
     func bind(uiState: PRUIState) async {
         guard !isBound else { return }
@@ -27,7 +27,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
         isBound = true
     }
 
-    func loadAssets(cardID: PRPhotoCategory) {
+    func loadAssets(cardID: PRAssetType) {
         currentCardID = cardID.rawValue
 
         // 1) 取得当前类目的 map，并建立 id->model 的索引
@@ -35,7 +35,7 @@ final class PRDoubleFeedViewModel: ObservableObject {
         modelIndex = Dictionary(uniqueKeysWithValues: map.assets.map { ($0.assetIdentifier, $0) })
 
         // 2) 根据 id 列表解析 PHAsset（仅用于显示）
-        let newAssets = fetchAssetEntities(by: map.assetIDs)
+        let newAssets = fetchAssetEntities(by: map.localIdentifiers)
 
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
@@ -45,28 +45,27 @@ final class PRDoubleFeedViewModel: ObservableObject {
         }
     }
 
-    private func mapFromManager(_ cardID: PRPhotoCategory) -> PRPhotoAssetsMap {
-        let m = PRPhotoMapManager.shared
+    private func mapFromManager(_ cardID: PRAssetType) -> PRAssetsInfo {
+        let m = PRAssetsCleanManager.shared
         switch cardID {
-        case .screenshot:     return m.screenshotPhotosMap
-        case .livePhoto:      return m.livePhotosMap
-        case .allvideo:       return m.allVideosMap
-        case .blurryphoto:    return m.blurryPhotosMap
-        case .textphoto:      return m.textPhotosMap
-        case .largevideo:     return m.largeVideosMap
-        case .similarvideo:   return m.similarVideosMap
-        case .selfiephoto:    return m.selfiePhotosMap
-        case .backphoto:      return m.backPhotosMap
-        case .similarphoto:
+        case .PhotosScreenshot:     return m.assetsInfoForScreenShot
+        case .PhotosLive:      return m.assetsInfoForLivePhoto
+        case .VideoAll:       return m.assetsInfoForVideo
+        case .PhotosBlurry:    return m.assetsInfoForBlurry
+        case .PhotosText:      return m.assetsInfoForTextPhotos
+        case .VideoLarge:     return m.assetsInfoForLargeVideo
+        case .selfiephoto:    return m.assetsInfoForSelfiePhotos
+        case .backphoto:      return m.assetsInfoForBackPhotos
+        case .PhotosSimilar:
             // 展平分组为单列表，便于选择/删除
-            var map = PRPhotoAssetsMap(.similarphoto)
-            map.assets = m.similarPhotosMap.doubleAssets.flatMap { $0 }
-            map.totalBytes = map.assets.reduce(0) { $0 &+ $1.storageSize }
+            var map = PRAssetsInfo(.PhotosSimilar)
+            map.assets = m.assetsInfoForSimilar.groupAssets.flatMap { $0 }
+            map.bytes = map.assets.reduce(0) { $0 &+ $1.storageSize }
             return map
-        case .duplicatephoto:
-            var map = PRPhotoAssetsMap(.duplicatephoto)
-            map.assets = m.duplicatePhotosMap.doubleAssets.flatMap { $0 }
-            map.totalBytes = map.assets.reduce(0) { $0 &+ $1.storageSize }
+        case .PhotosDuplicate:
+            var map = PRAssetsInfo(.PhotosDuplicate)
+            map.assets = m.assetsInfoForDuplicate.groupAssets.flatMap { $0 }
+            map.bytes = map.assets.reduce(0) { $0 &+ $1.storageSize }
             return map
 //        default:
 //            return PRPhotoAssetsMap(.screenshot)

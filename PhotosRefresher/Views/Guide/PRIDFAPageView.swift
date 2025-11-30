@@ -52,8 +52,8 @@ struct PRIDFAPageView: View {
     
     func checkIDFA() {
         PRPermissionManager.canShowIDFA = true
-        PRPermissionManager.showIDFA {
-            if PRPermissionManager.shared.checkIDFAStatus() != .notDetermined {
+        PRPermissionManager.requestTrackingPermission {
+            if PRPermissionManager.shared.queryTrackingAuthorizationStatus() != .notDetermined {
                 DispatchQueue.main.async {
                     viewModel.next()
                 }

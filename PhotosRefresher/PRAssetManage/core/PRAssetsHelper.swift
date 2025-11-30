@@ -62,7 +62,7 @@ func fetchAssetEntity(by assetIdentifier: String) -> PHAsset? {
 /// 通过一组 `localIdentifier` 获取 `PHAsset` 列表（自动过滤空串与去重）
 func fetchAssetEntities(by assetIdentifiers: [String]) -> [PHAsset] {
     guard !assetIdentifiers.isEmpty else {
-        print("❌ Identifiers array is empty")
+        print("")
         return []
     }
     
@@ -76,11 +76,10 @@ func fetchAssetEntities(by assetIdentifiers: [String]) -> [PHAsset] {
         retrievedAssets.append(assetItem)
     }
     if retrievedAssets.count < assetIdentifiers.count {
-        print("⚠️ Found \(retrievedAssets.count) out of \(assetIdentifiers.count) requested assets")
         let missingIdentifiers = assetIdentifiers.filter { identifierToAssetMap[$0] == nil }
-        if !missingIdentifiers.isEmpty { print("📋 Missing identifiers: \(missingIdentifiers)") }
+        if !missingIdentifiers.isEmpty {  }
     } else {
-        print("✅ Successfully found all \(retrievedAssets.count) assets")
+        
     }
     return assetIdentifiers.compactMap { identifierToAssetMap[$0] }
 }
@@ -109,7 +108,7 @@ extension PRAssetsHelper {
 
 //        StatisticsManager.log(name: "JHQ_001", params: ["from": from])
 
-        if !PRUserManager.shared.isVip() {
+        if !PRUserManager.shared.checkVipEligibility() {
             Task { @MainActor in
                 uiState.fullScreenCoverDestination = .subscription(
                     paySource: paySource,
@@ -118,7 +117,7 @@ extension PRAssetsHelper {
                         if isSuccess {
                             self.executeResourcePurge(assetsToDelete, from: from, completion: completion)
                         } else {
-                            completion(.failure(PRAssetsExecError.requestCancelled))
+                            completion(.failure(PRAssetAnalysisError.cancel))
                         }
                     }
                 )
@@ -163,7 +162,7 @@ class PRAssetsHelper {
                 }
                 
                 guard let resultImage = imageData else {
-                    continuation.resume(throwing: PRAssetsExecError.imageNotFound)
+                    continuation.resume(throwing: PRAssetAnalysisError.assetNull)
                     return
                 }
                 
@@ -195,7 +194,7 @@ class PRAssetsHelper {
                 }
                 
                 guard let resultImage = imageData else {
-                    continuation.resume(throwing: PRAssetsExecError.imageNotFound)
+                    continuation.resume(throwing: PRAssetAnalysisError.assetNull)
                     return
                 }
                 
@@ -275,7 +274,7 @@ class PRAssetsHelper {
         
         let authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         guard authorizationStatus == .authorized || authorizationStatus == .limited else {
-            completion(.failure(PRAssetsExecError.authorizationDenied))
+            completion(.failure(PRAssetAnalysisError.permissionDenied))
             return
         }
         
@@ -285,30 +284,30 @@ class PRAssetsHelper {
 //            StatisticsManager.log(name: "JHQ_002", params: ["from": from])
             DispatchQueue.main.async {
                 if successStatus {
-                    PRPhotoMapManager.shared.lastDeleteAssets = assetsToDelete
+                    PRAssetsCleanManager.shared.lastDeleteAssets = assetsToDelete
                     completion(.success(()))
                 } else {
-                    completion(.failure(errorInfo ?? PRAssetsExecError.unknown))
+                    completion(.failure(errorInfo ?? PRAssetAnalysisError.unknown))
                 }
             }
         }
     }
 }
 
-enum PRAssetsExecError: Error, LocalizedError {
-    case imageNotFound
-    case authorizationDenied
-    case requestCancelled
+enum PRAssetAnalysisError: Error, LocalizedError {
+    case assetNull
+    case permissionDenied
+    case cancel
     case unknown
     
     var errorDescription: String? {
         switch self {
-        case .imageNotFound:
-            return "imageNotFound"
-        case .authorizationDenied:
-            return "authorizationDenied"
-        case .requestCancelled:
-            return "requestCancelled"
+        case .assetNull:
+            return "assetNull"
+        case .permissionDenied:
+            return "permissionDenied"
+        case .cancel:
+            return "cancel"
         case .unknown:
             return "unknown"
         }

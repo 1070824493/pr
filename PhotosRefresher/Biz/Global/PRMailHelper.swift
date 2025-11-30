@@ -34,12 +34,12 @@ final class PRAppMailHelper: NSObject, MFMailComposeViewControllerDelegate {
               font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
               font-size:16px;
               line-height:1.6;
-              color: #000000; /* 默认黑色（首段用于输入） */
+              color: #000000;
               margin: 0;
               padding: 12px;
             }
-            .input-start { margin: 0 0 12px 0; color: #000000; } /* 黑色空段落，放光标 */
-            .placeholder { color: #8E8E93; margin: 0 0 8px 0; }   /* 灰色说明 */
+            .input-start { margin: 0 0 12px 0; color: #000000; }
+            .placeholder { color: #8E8E93; margin: 0 0 8px 0; }
             .note {
               display:inline-block;
               background:#F5F5F7;
@@ -54,18 +54,14 @@ final class PRAppMailHelper: NSObject, MFMailComposeViewControllerDelegate {
           </style>
         </head>
         <body>
-          <!-- 1. 首段：黑色空段落。光标通常会落在这里，用户输入为黑色 -->
           <p class="input-start"><br></p>
 
-          <!-- 2. 灰色占位/提示（在首段下面，不影响输入颜色） -->
           <div class="placeholder">Write your message here</div>
 
-          <!-- 3. 强调句：单独的黑色高亮块（不会影响首段颜色） -->
           <div class="note">In order to successfully reply to your email, please do not delete the following content. Thank you!</div>
 
           <hr class="sep">
 
-          <!-- 4. 元信息：灰色 -->
           <div class="meta">
             <div><strong>App version:</strong> \(appVersion)</div>
             <div><strong>DeviceID:</strong> \(deviceID)</div>
@@ -107,29 +103,5 @@ final class PRAppMailHelper: NSObject, MFMailComposeViewControllerDelegate {
                                didFinishWith result: MFMailComposeResult,
                                error: Error?) {
         controller.dismiss(animated: true)
-    }
-}
-
-// MARK: - 顶层 VC 获取
-extension UIApplication {
-    func topMostViewController() -> UIViewController? {
-        guard let scene = connectedScenes.first as? UIWindowScene,
-              let root = scene.windows.first(where: { $0.isKeyWindow })?.rootViewController else { return nil }
-        return root.topMostPresented()
-    }
-}
-
-private extension UIViewController {
-    func topMostPresented() -> UIViewController {
-        if let nav = self as? UINavigationController {
-            return nav.visibleViewController?.topMostPresented() ?? nav
-        }
-        if let tab = self as? UITabBarController {
-            return tab.selectedViewController?.topMostPresented() ?? tab
-        }
-        if let presented = presentedViewController {
-            return presented.topMostPresented()
-        }
-        return self
     }
 }

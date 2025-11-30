@@ -1,5 +1,5 @@
 //
-//  ATTrackingManager+Limit.h
+//  TrackingAuthorizationInterceptor.h
 //  PlantAI
 //
 //  Created by zhaoliang09 on 2024/11/26.
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ATTrackingManager (Limit)
+@interface ATTrackingManager (Interceptor)
 
 @end
 

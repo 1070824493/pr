@@ -29,12 +29,12 @@ final class PRSlideCacheManager {
         }
     }
 
-    func viewedIDs(for category: PRPhotoCategory) -> Set<String> {
+    func viewedIDs(for category: PRAssetType) -> Set<String> {
         let dict = load()
         return Set(dict[category.rawValue] ?? [])
     }
 
-    func markViewed(category: PRPhotoCategory, ids: [String]) {
+    func markViewed(category: PRAssetType, ids: [String]) {
         guard !ids.isEmpty else { return }
         var dict = load()
         var arr = dict[category.rawValue] ?? []
@@ -49,7 +49,7 @@ final class PRSlideCacheManager {
     ///   - limit: 个数
     ///   - category: 分组
     ///   - sourceIDs: 全集
-    func unviewedFirst(limit: Int, category: PRPhotoCategory, sourceIDs: [String]) -> [String] {
+    func unviewedFirst(limit: Int, category: PRAssetType, sourceIDs: [String]) -> [String] {
         let seen = viewedIDs(for: category)
         var result: [String] = []
         result.reserveCapacity(limit)

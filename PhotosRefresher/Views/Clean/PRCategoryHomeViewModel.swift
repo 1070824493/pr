@@ -13,25 +13,25 @@ import Combine
 final class PRCategoryHomeViewModel: ObservableObject {
     @Published private(set) var totalCleanable: Int64 = 0
     @Published private(set) var isLoading: Bool = false
-    @Published private(set) var snapshots: [PRPhotoCategory: CategoryItemVM] = [:]
+    @Published private(set) var snapshots: [PRAssetType: CategoryItemVM] = [:]
     @Published var disk: PRDiskSpace? = nil
 
-    let order: [PRPhotoCategory] = [
-        .allvideo,
-        .screenshot,
-        .livePhoto,
-        .similarphoto,
-        .duplicatephoto,
-        .largevideo,
-        .blurryphoto,
-        .textphoto
+    let order: [PRAssetType] = [
+        .VideoAll,
+        .PhotosScreenshot,
+        .PhotosLive,
+        .PhotosSimilar,
+        .PhotosDuplicate,
+        .VideoLarge,
+        .PhotosBlurry,
+        .PhotosText
     ]
 
-    private let manager: PRPhotoMapManager
+    private let manager: PRAssetsCleanManager
     private var bag = Set<AnyCancellable>()
     private var assetCache: [String: PHAsset] = [:]
 
-    init(manager: PRPhotoMapManager = .shared) {
+    init(manager: PRAssetsCleanManager = .shared) {
         self.manager = manager
         bind()
         Task.detached(priority: .utility) { [weak self] in
@@ -41,13 +41,13 @@ final class PRCategoryHomeViewModel: ObservableObject {
     }
 
     private func bind() {
-        manager.$dashboard
+        manager.$snap
             .receive(on: DispatchQueue.main)
             .sink { [weak self] dash in
                 guard let self, let dash = dash else { return }
 
                 self.totalCleanable = dash.aggregateSize
-                var out: [PRPhotoCategory: CategoryItemVM] = [:]
+                var out: [PRAssetType: CategoryItemVM] = [:]
                 
                 let validIDs = dash.cellCollectioncellCollection
                     .compactMap({$0.previewIdentifiers}).reduce(into: []) { partialResult, ids in

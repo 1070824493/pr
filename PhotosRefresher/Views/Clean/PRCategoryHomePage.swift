@@ -30,29 +30,29 @@ struct PRCategoryHomePage: View {
         _vm = StateObject(wrappedValue: .init(manager: .shared))
     }
     
-    let allCategory: [PRPhotoCategory] = [
-        .blurryphoto,
-        .duplicatephoto,
-        .similarphoto,
-        .screenshot,
-        .largevideo,
-        .allvideo,
-        .livePhoto,
-        .textphoto,
+    let allCategory: [PRAssetType] = [
+        .PhotosBlurry,
+        .PhotosDuplicate,
+        .PhotosSimilar,
+        .PhotosScreenshot,
+        .VideoLarge,
+        .VideoAll,
+        .PhotosLive,
+        .PhotosText,
 //        .selfiephoto,
 //        .backphoto
     ]
     
     private var hasPermission: Bool {
-        if PRAppUserPreferences.shared.hasFinishAlbumPermission {
-            if PRAppUserPreferences.shared.albumPermissionStatus != .authorized {
+        if PRAppUserPreferences.shared.accessGalleryPermission {
+            if PRAppUserPreferences.shared.galleryPermissionState != .authorized {
                 DispatchQueue.main.async {
-                    PRAppUserPreferences.shared.albumPermissionStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+                    PRAppUserPreferences.shared.galleryPermissionState = PHPhotoLibrary.authorizationStatus(for: .readWrite)
                 }
             }
         }
         
-        switch PRAppUserPreferences.shared.albumPermissionStatus {
+        switch PRAppUserPreferences.shared.galleryPermissionState {
         case .authorized, .limited:
             return true
         case .notDetermined:
@@ -138,7 +138,7 @@ struct PRCategoryHomePage: View {
 
             PRHomeTopBar(
                 navBarHeight: barHeight,
-                isVip: (PRUserManager.shared.userInfo?.vipStatus == 1),
+                isVip: (PRUserManager.shared.checkVipEligibility()),
                 onTap: {
                     appRouterPath.navigate(.settingPage)
                 }
@@ -159,7 +159,7 @@ struct PRCategoryHomePage: View {
                 checkPermissionAlert()
             }
         }
-        .onReceive(NotificationCenter.default.publisher(for: .ckStartPipeline)) { _ in
+        .onReceive(NotificationCenter.default.publisher(for: .prStartPipeline)) { _ in
             bindAndMaybeStart()
             Task { @MainActor in
                 try? await Task.sleep(nanoseconds: 10_000_000_000)
@@ -177,13 +177,13 @@ struct PRCategoryHomePage: View {
             .ignoresSafeArea()
     }
     
-    private func clickCellAction(category: PRPhotoCategory) {
+    private func clickCellAction(category: PRAssetType) {
         switch category {
         
-        case .similarphoto, .similarvideo, .duplicatephoto:
+        case .PhotosSimilar, .PhotosDuplicate:
             appRouterPath.navigate(.exploreSecondRepeat(cardID: category.rawValue))
         
-        case .allvideo, .largevideo:
+        case .VideoAll, .VideoLarge:
             appRouterPath.navigate(.exploreDoubleFeed(cardID: category, isVideo: true))
         default:
             appRouterPath.navigate(.exploreDoubleFeed(cardID: category, isVideo: false))
@@ -194,29 +194,29 @@ struct PRCategoryHomePage: View {
         guard PHPhotoLibrary.authorizationStatus(for: .readWrite) == .notDetermined else {
             return
         }
-        if !PRAppUserPreferences.shared.hasFinishAlbumPermission, !PRGlobalOverlay.shared.isPresenting {
-            PRGlobalOverlay.shared.showOverlayHUDView = true
-            PRGlobalOverlay.shared.present(content: {
+        if !PRAppUserPreferences.shared.accessGalleryPermission, !PRGlobalOverlay.shared.isDisplaying {
+            PRGlobalOverlay.shared.displayHUDOverlay = true
+            PRGlobalOverlay.shared.show(body: {
                 PRAlbumPermissionView { ok in
-                    PRAppUserPreferences.shared.hasFinishAlbumPermission = true
+                    PRAppUserPreferences.shared.accessGalleryPermission = true
                     if ok {
-                        PRAppUserPreferences.shared.albumPermissionStatus = .authorized
-                        NotificationCenter.default.post(name: .ckStartPipeline, object: nil)
+                        PRAppUserPreferences.shared.galleryPermissionState = .authorized
+                        NotificationCenter.default.post(name: .prStartPipeline, object: nil)
                     } else {
-                        PRAppUserPreferences.shared.albumPermissionStatus = .denied
-                        PRGlobalOverlay.shared.dismiss()
+                        PRAppUserPreferences.shared.galleryPermissionState = .denied
+                        PRGlobalOverlay.shared.hide()
                     }
                 }
-            },animation: .rightToLeft)
+            }, showAnimation: .slideFromRight)
         }
-        else if PRAppUserPreferences.shared.hasFinishAlbumPermission,
-                PRAppUserPreferences.shared.albumPermissionStatus == .authorized,
-                !PRGlobalOverlay.shared.isPresenting {
-            if !PRGlobalOverlay.shared.showOverlayHUDView {
-                PRGlobalOverlay.shared.showOverlayHUDView = true
-                PRGlobalOverlay.shared.present {
+        else if PRAppUserPreferences.shared.accessGalleryPermission,
+                PRAppUserPreferences.shared.galleryPermissionState == .authorized,
+                !PRGlobalOverlay.shared.isDisplaying {
+            if !PRGlobalOverlay.shared.displayHUDOverlay {
+                PRGlobalOverlay.shared.displayHUDOverlay = true
+                PRGlobalOverlay.shared.show {
                     PRHomeHUDView(type: .notText) {
-                        PRGlobalOverlay.shared.dismiss()
+                        PRGlobalOverlay.shared.hide()
                     }
                 }
             }
@@ -225,20 +225,20 @@ struct PRCategoryHomePage: View {
     
     private func bindAndMaybeStart() {
 
-        guard PRAppUserPreferences.shared.albumPermissionStatus == .authorized else { return }
+        guard PRAppUserPreferences.shared.galleryPermissionState == .authorized else { return }
 
         if !didBindOverlaySubscriber {
             didBindOverlaySubscriber = true
 
             Publishers.Merge(
-                Just(PRPhotoMapManager.shared.similarPhotosMap),
-                PRPhotoMapManager.shared.$similarPhotosMap.dropFirst()
+                Just(PRAssetsCleanManager.shared.assetsInfoForSimilar),
+                PRAssetsCleanManager.shared.$assetsInfoForSimilar.dropFirst()
             )
             .receive(on: DispatchQueue.main)
-            .first { !$0.assets.isEmpty || !$0.doubleAssets.isEmpty }
+            .first { !$0.assets.isEmpty || !$0.groupAssets.isEmpty }
             .delay(for: 0.8, scheduler: DispatchQueue.main)
             .sink { _ in
-                PRGlobalOverlay.shared.dismiss()
+                PRGlobalOverlay.shared.hide()
             }
             .store(in: &cancellables)
         }
@@ -292,10 +292,10 @@ struct PRCategoryPageCard: View {
                 HStack(spacing: 0) {
                     VStack(alignment: .leading, spacing: 6) {
                         Text(snapshot.bytes.prettyBytes)
-                            .font(.heavy32)
+                            .font(.system(size: 32.fit, weight: .heavy, design: .default))
                             .foregroundColor(.white)
                         Text(snapshot.category.title)
-                            .font(.bold20)
+                            .font(.system(size: 20.fit, weight: .bold, design: .default))
                             .foregroundColor(Color.white.opacity(0.65))
                     }
                     
@@ -307,7 +307,7 @@ struct PRCategoryPageCard: View {
                                 .resizable()
                                 .frame(width: 24, height: 24)
                             Text("Clean")
-                                .font(.bold18)
+                                .font(.system(size: 18.fit, weight: .bold, design: .default))
                                 .foregroundColor(.white)
                         }
                         .frame(width: 107.fit, height: 56.fit)
@@ -354,17 +354,17 @@ extension Int64 {
     }
 }
 
-extension PRPhotoCategory {
+extension PRAssetType {
     var title: String {
         switch self {
-        case .blurryphoto:   return "Blurry Photos"
-        case .duplicatephoto:return "Duplicate Photos"
-        case .screenshot:    return "Screenshots"
-        case .similarphoto:  return "Similar Photos"
-        case .textphoto:     return "Text Photos"
-        case .livePhoto:     return "Live Photos"
-        case .allvideo:      return "All Videos"
-        case .largevideo:    return "Large Videos"
+        case .VideoAll:      return "All Videos"
+        case .VideoLarge:    return "Large Videos"
+        case .PhotosBlurry:   return "Blurry Photos"
+        case .PhotosDuplicate:return "Duplicate Photos"
+        case .PhotosScreenshot:    return "Screenshots"
+        case .PhotosSimilar:  return "Similar Photos"
+        case .PhotosText:     return "Text Photos"
+        case .PhotosLive:     return "Live Photos"
         default:             return self.rawValue
         }
     }
@@ -372,11 +372,11 @@ extension PRPhotoCategory {
 }
 
 extension Notification.Name {
-    static let ckStartPipeline = Notification.Name("CKCleaningHomeView.startPipeline")
+    static let prStartPipeline = Notification.Name("PRstartPipeline")
 }
 
 struct CategoryItemVM: Equatable, Hashable {
-    let category: PRPhotoCategory
+    let category: PRAssetType
     let bytes: Int64
     let repID: [String]?
     let repAsset: [PHAsset]?

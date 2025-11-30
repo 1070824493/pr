@@ -41,7 +41,7 @@ struct PRHomeHeaderView: View {
                         .frame(width: 3, height: 10)
                         .padding(.trailing, 2)
                     Text("Clutter: \(totalCleanable.prettyBytes)")
-                        .font(.regular12)
+                        .font(.system(size: 12.fit, weight: .regular, design: .default))
                         .foregroundColor(Color.hexColor(0x666666))
                 }
                 if let d = disk {
@@ -51,7 +51,7 @@ struct PRHomeHeaderView: View {
                             .frame(width: 3, height: 10)
                             .padding(.trailing, 2)
                         Text("App & data: \(d.utilizedCapacity.prettyBytes)")
-                            .font(.regular12)
+                            .font(.system(size: 12.fit, weight: .regular, design: .default))
                             .foregroundColor(Color.hexColor(0x666666))
 
                     }
@@ -61,7 +61,7 @@ struct PRHomeHeaderView: View {
                             .frame(width: 3, height: 10)
                             .padding(.trailing, 2)
                         Text("Total: \(d.totalCapacity.prettyBytes)")
-                            .font(.regular12)
+                            .font(.system(size: 12.fit, weight: .regular, design: .default))
                             .foregroundColor(Color.hexColor(0x666666))
                     }
                     

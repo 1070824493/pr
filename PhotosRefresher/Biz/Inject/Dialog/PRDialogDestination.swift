@@ -59,14 +59,11 @@ public enum AppBottomSheetDestination {
 }
 
 public enum AppModalDestination {
-    case commonAlert(model: PRAlertModalModel)
     case trashReview(model: TrashReviewViewModel)
     
     @ViewBuilder
     func makeContentView() -> some View {
         switch self {
-        case .commonAlert(let model):
-            PRAlertView(model: model)
         case .trashReview(let model):
             TrashReviewAlertView(model: model)
         }
@@ -106,8 +103,6 @@ public enum AppModalDestination {
     // 关闭回调
     var onDismiss: () -> Void {
         switch self {
-        case .commonAlert(let model):
-            return model.onDismiss ?? {}
         case .trashReview(let model):
             return model.onDismiss ?? {}
         }

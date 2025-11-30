@@ -18,7 +18,7 @@ class PRAppViewModel: ObservableObject {
     
     var showSubscriptionViewInMainTabView = true
     
-    private var tag = "AppViewModel"
+    private var tag = "PRAppViewModel"
     
     private var initialized = false
     
@@ -108,7 +108,7 @@ class PRAppViewModel: ObservableObject {
     
     func checkProductData() async {
         await withTaskGroup(of: Void.self) { group in
-            if !PRUserManager.shared.isVip() {
+            if !PRUserManager.shared.checkVipEligibility() {
                 group.addTask {
                     await withTaskCancellationHandler(
                         operation: {
@@ -153,11 +153,11 @@ class PRAppViewModel: ObservableObject {
     }
     
     private func requestConfig() async {
-        let _ = await PRConfigManager.shared.refreshConfig()
+        let _ = await PRConfigurationManager.instance.updateConfiguration()
     }
     
     private func requestUserInfo() async {
-        let _ = await PRUserManager.shared.refreshUserInfo()
+        let _ = await PRUserManager.shared.synchronizeUserInfo()
     }
     
     private func requestProducts() async {

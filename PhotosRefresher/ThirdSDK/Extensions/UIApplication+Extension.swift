@@ -22,4 +22,25 @@ public extension UIApplication {
             .first?.endEditing(true)
     }
     
+    func topMostViewController() -> UIViewController? {
+        guard let scene = connectedScenes.first as? UIWindowScene,
+              let root = scene.windows.first(where: { $0.isKeyWindow })?.rootViewController else { return nil }
+        return root.topMostPresented()
+    }
+    
+}
+
+extension UIViewController {
+    func topMostPresented() -> UIViewController {
+        if let nav = self as? UINavigationController {
+            return nav.visibleViewController?.topMostPresented() ?? nav
+        }
+        if let tab = self as? UITabBarController {
+            return tab.selectedViewController?.topMostPresented() ?? tab
+        }
+        if let presented = presentedViewController {
+            return presented.topMostPresented()
+        }
+        return self
+    }
 }

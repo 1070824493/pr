@@ -12,14 +12,14 @@ public class PRAppUserPreferences: ObservableObject {
     
     @AppStorage("hasShowSwipeUpDelete") var hasShowSwipeUpDelete: Bool = false
     
-    @AppStorage("hasFinishGuide") var hasFinishGuide: Bool = false
+    @AppStorage("guided") var guided: Bool = false
     
-    @AppStorage("hasFinishAlbumPermission") var hasFinishAlbumPermission: Bool = false
+    @AppStorage("accessGalleryPermission") var accessGalleryPermission: Bool = false
     
-    @AppStorage("albumPermissionStatus") var albumPermissionStatus: PHAuthorizationStatus = .notDetermined
+    @AppStorage("galleryPermissionState") var galleryPermissionState: PHAuthorizationStatus = .notDetermined
     
-    @UserDefaultEnum("currentSlideCategory", defaultValue: PRPhotoCategory.backphoto)
-    public var currentSlideCategory: PRPhotoCategory {
+    @UserDefaultEnum("currentSlideCategory", defaultValue: PRAssetType.backphoto)
+    public var currentSlideCategory: PRAssetType {
         willSet {
             objectWillChange.send()
         }

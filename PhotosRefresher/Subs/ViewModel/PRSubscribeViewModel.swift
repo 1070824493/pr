@@ -110,20 +110,20 @@ extension PRSubscribeViewModel {
 
         let isFreeTrial = pkg.freeDays > 0
         await MainActor.run {
-            PRGlobalOverlay.shared.present {
+            PRGlobalOverlay.shared.show {
                 PRHomeHUDView(type: isFreeTrial ? .freeTrial : .normal) {
-                    PRGlobalOverlay.shared.dismiss()
+                    PRGlobalOverlay.shared.hide()
                 }
             }
         }
         defer {
             Task { @MainActor in
-                PRGlobalOverlay.shared.dismiss()
+                PRGlobalOverlay.shared.hide()
             }
         }
 
         // 已订阅兜底
-        if PRUserManager.shared.isVip() {
+        if PRUserManager.shared.checkVipEligibility() {
             return true
         }
 
@@ -171,11 +171,11 @@ extension PRSubscribeViewModel {
                 let delay = pow(2.0, Double(retry))
                 try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
             }
-            let ok = await PRUserManager.shared.refreshUserInfo()
-            if ok, PRUserManager.shared.isVip() { return true }
+            let ok = await PRUserManager.shared.synchronizeUserInfo()
+            if ok, PRUserManager.shared.checkVipEligibility() { return true }
             retry += 1
         }
-        return PRUserManager.shared.isVip()
+        return PRUserManager.shared.checkVipEligibility()
     }
 }
 

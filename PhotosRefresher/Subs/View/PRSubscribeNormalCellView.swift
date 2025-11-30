@@ -28,13 +28,13 @@ struct PRSubscribeNormalCellView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     let durationText = viewModel.durationForDisplay(item)
                     Text(viewModel.titleFor(item))
-                        .font(.bold16)
+                        .font(.system(size: 16.fit, weight: .bold, design: .default))
                         .foregroundColor(Color(hex: "141414"))
                         .padding(.top, durationText.isEmpty ? 0 : 14)
                     
                     if !durationText.isEmpty {
                         Text(durationText)
-                            .font(.regular12)
+                            .font(.system(size: 12.fit, weight: .regular, design: .default))
                             .foregroundColor(isSelected ? Color(hex: "35B923") : Color(hex: "A3A3A3"))
                             .padding(.bottom, 14)
                     }
@@ -45,7 +45,7 @@ struct PRSubscribeNormalCellView: View {
                 let price = viewModel.priceForDisplay(item)
                 if !price.isEmpty {
                     Text(price)
-                        .font(.bold16)
+                        .font(.system(size: 16.fit, weight: .bold, design: .default))
                         .foregroundColor(Color(hex: "141414"))
                         .padding(.trailing, 15)
                 }

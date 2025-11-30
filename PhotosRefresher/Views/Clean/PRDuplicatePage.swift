@@ -9,20 +9,6 @@ import SwiftUI
 import Photos
 import Combine
 
-// MARK: - Bytes 格式化
-
-private func checkFormatBytes(_ bytes: Int64) -> String {
-    guard bytes > 0 else { return "0 KB" }
-    let units = ["B", "KB", "MB", "GB", "TB"]
-    var v = Double(bytes)
-    var i = 0
-    while v >= 1024, i < units.count - 1 { v /= 1024; i += 1 }
-    return (v >= 10 || i == 0) ? String(format: "%.0f %@", v, units[i])
-                                : String(format: "%.1f %@", v, units[i])
-}
-
-// MARK: - Scroll offset key（自定义导航显隐）
-
 private struct ScrollOffsetKey: PreferenceKey {
     static var defaultValue: CGFloat = 0
     static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) { value = nextValue() }
@@ -31,7 +17,6 @@ private struct ScrollOffsetKey: PreferenceKey {
 // MARK: - 主视图：相似/重复 列表页（双排组）
 
 struct PRDuplicatePage: View {
-    // 卡片 ID：similarphoto / duplicatephoto / （预留 similarvideo）
     let cardID: String
     init(_ cardID: String, thumbProvider: PRAssetThumbnailProvider? = nil) {
         self.cardID = cardID
@@ -40,11 +25,11 @@ struct PRDuplicatePage: View {
     }
 
     // 依赖
-    @ObservedObject private var manager = PRPhotoMapManager.shared
+    @ObservedObject private var manager = PRAssetsCleanManager.shared
     @State private var thumbProvider: PRAssetThumbnailProvider
 
     // 数据源：[[PRPhotoAssetModel]]（从 Map 读取）
-    @State private var doubleModels: [[PRPhotoAssetModel]] = []
+    @State private var doubleModels: [[PRAssetsAnalyzeResult]] = []
 
     // 选择集：使用 ID（localIdentifier）
     @State private var selectedIDs: Set<String> = []
@@ -64,7 +49,6 @@ struct PRDuplicatePage: View {
         switch cardID {
         case "similarphoto":   return "Similar Photos"
         case "duplicatephoto": return "Duplicate Photos"
-        case "similarvideo":   return "Similar Videos"
         default:               return "Library"
         }
     }
@@ -76,7 +60,7 @@ struct PRDuplicatePage: View {
     }
 
     // 扁平化（懒用）
-    private var flatModels: [PRPhotoAssetModel] { doubleModels.flatMap { $0 } }
+    private var flatModels: [PRAssetsAnalyzeResult] { doubleModels.flatMap { $0 } }
     private var totalDisorderCount: Int { flatModels.count }
     private var allSelected: Bool { !flatModels.isEmpty && selectedIDs.count == flatModels.count }
 
@@ -110,9 +94,9 @@ struct PRDuplicatePage: View {
             if doubleModels.isEmpty {
                 VStack(spacing: 10) {
                     Image("PR_empty_icon").resizable().frame(width: 100, height: 100)
-                    Text("No Content").font(.semibold15).foregroundColor(Color(hex: "#141414"))
+                    Text("No Content").font(.system(size: 15.fit, weight: .semibold, design: .default)).foregroundColor(Color(hex: "#141414"))
                     Text("Perfect！You can go and clean other categories.")
-                        .font(.regular14).foregroundColor(Color(hex: "#A3A3A3")).multilineTextAlignment(.center)
+                        .font(.system(size: 14.fit, weight: .regular, design: .default)).foregroundColor(Color(hex: "#A3A3A3")).multilineTextAlignment(.center)
                 }
                 .padding(.horizontal, 24)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -152,8 +136,8 @@ struct PRDuplicatePage: View {
 
     private var headerView: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(headerTitle).font(.heavy24).foregroundColor(Color(hex: "#141414")).padding(.top, 0)
-            Text("Disorderly content: \(totalDisorderCount)").font(.regular12).foregroundColor(Color(hex: "#666666"))
+            Text(headerTitle).font(.system(size: 24.fit, weight: .heavy, design: .default)).foregroundColor(Color(hex: "#141414")).padding(.top, 0)
+            Text("Disorderly content: \(totalDisorderCount)").font(.system(size: 12.fit, weight: .regular, design: .default)).foregroundColor(Color(hex: "#666666"))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 16).frame(height: 44).background(.white)
@@ -164,12 +148,12 @@ struct PRDuplicatePage: View {
             HStack {
                 let items = doubleModels[section]
                 Text("\(items.count) \(vcellSuffix)")
-                    .font(.bold16).foregroundColor(Color(hex: "#141414"))
+                    .font(.system(size: 16.fit, weight: .bold, design: .default)).foregroundColor(Color(hex: "#141414"))
                 Spacer()
                 Button(isSectionAllSelected(section) ? "Deselect All" : "Select All") {
                     toggleSectionSelection(section)
                 }
-                .font(.regular14)
+                .font(.system(size: 14.fit, weight: .regular, design: .default))
                 .foregroundColor(Color(hex: "#A3A3A3"))
                 .buttonStyle(.plain)
             }
@@ -229,7 +213,7 @@ struct PRDuplicatePage: View {
                                 selectedBytes = 0
 
 //                                let storageSize = await AlbumFileMananger.shared.storageUsageByte()
-                                let deletedText = checkFormatBytes(selectedSize)
+                                let deletedText = formatBytes(selectedSize)
                                 uiState.fullScreenCoverDestination = .exploreDeleteFinish(
                                     count: Int64(delSet.count),
                                     deletedText: deletedText,
@@ -252,7 +236,7 @@ struct PRDuplicatePage: View {
 
     private var bottomTitle: String {
         if selectedIDs.isEmpty { return "Delete" }
-        return "Delete (\(checkFormatBytes(selectedBytes)))"
+        return "Delete (\(formatBytes(selectedBytes)))"
     }
 }
 
@@ -276,7 +260,7 @@ private struct PRCustomNavBar: View {
             }
 
             Text(title)
-                .font(.semibold20)
+                .font(.system(size: 20.fit, weight: .semibold, design: .default))
                 .foregroundColor(Color(hex: "#141414"))
                 .opacity(titleOpacity)
 
@@ -285,7 +269,7 @@ private struct PRCustomNavBar: View {
             if showToggleAll {
                 Button(action: toggleAll) {
                     Text(allSelected ? "Deselect all" : "Select all")
-                        .font(.regular15)
+                        .font(.system(size: 15.fit, weight: .regular, design: .default))
                         .foregroundColor(Color(hex: "#141414"))
                 }
             }
@@ -302,12 +286,11 @@ private struct PRCustomNavBar: View {
 private extension PRDuplicatePage {
     /// 读取 manager 中的 [[PRPhotoAssetModel]]，并按需要做默认勾选
     func refreshData(initial: Bool = false) {
-        let m = PRPhotoMapManager.shared
-        let newDouble: [[PRPhotoAssetModel]]
+        let m = PRAssetsCleanManager.shared
+        let newDouble: [[PRAssetsAnalyzeResult]]
         switch cardID {
-        case "similarphoto":   newDouble = m.similarPhotosMap.doubleAssets
-        case "duplicatephoto": newDouble = m.duplicatePhotosMap.doubleAssets
-        case "similarvideo":   newDouble = m.similarVideosMap.doubleAssets
+        case "similarphoto":   newDouble = m.assetsInfoForSimilar.groupAssets
+        case "duplicatephoto": newDouble = m.assetsInfoForDuplicate.groupAssets
         default:               newDouble = []
         }
         doubleModels = newDouble
@@ -341,7 +324,7 @@ private extension PRDuplicatePage {
         else { selectedIDs.formUnion(ids) }
     }
 
-    func toggle(_ model: PRPhotoAssetModel) {
+    func toggle(_ model: PRAssetsAnalyzeResult) {
         let id = model.assetIdentifier
         if selectedIDs.contains(id) { selectedIDs.remove(id) } else { selectedIDs.insert(id) }
     }
@@ -359,11 +342,10 @@ private extension PRDuplicatePage {
 
     /// 仅订阅当前需要的分组 Map
     func subscribeScoped() {
-        let pub: AnyPublisher<PRPhotoAssetsMap, Never>
+        let pub: AnyPublisher<PRAssetsInfo, Never>
         switch cardID {
-        case "similarphoto":   pub = manager.$similarPhotosMap.eraseToAnyPublisher()
-        case "duplicatephoto": pub = manager.$duplicatePhotosMap.eraseToAnyPublisher()
-        case "similarvideo":   pub = manager.$similarVideosMap.eraseToAnyPublisher()
+        case "similarphoto":   pub = manager.$assetsInfoForSimilar.eraseToAnyPublisher()
+        case "duplicatephoto": pub = manager.$assetsInfoForDuplicate.eraseToAnyPublisher()
         default:               return
         }
         cancellable = pub
@@ -375,7 +357,7 @@ private extension PRDuplicatePage {
 // MARK: - 单元格（缩略图由统一 Provider 提供；PHAsset 懒解析）
 
 private struct HCell: View {
-    let model: PRPhotoAssetModel
+    let model: PRAssetsAnalyzeResult
     let isSelected: Bool
     let isBest: Bool
     let thumbProvider: PRAssetThumbnailProvider
@@ -384,7 +366,7 @@ private struct HCell: View {
 
     var body: some View {
         // 运行期解析 PHAsset（内部有 NSCache；无则显示占位）
-        let asset = PRPhotoMapManager.shared.resolveAssetEntity(for: model.assetIdentifier)
+        let asset = PRAssetsCleanManager.shared.resolveAssetEntity(for: model.assetIdentifier)
 
         ZStack(alignment: .bottomTrailing) {
             if let a = asset {
@@ -401,7 +383,7 @@ private struct HCell: View {
                     .overlay(
                         VStack(spacing: 8) {
                             ProgressView().progressViewStyle(.circular)
-                            Text("Loading…").font(.regular12).foregroundColor(.secondary)
+                            Text("Loading…").font(.system(size: 12.fit, weight: .regular, design: .default)).foregroundColor(.secondary)
                         }
                     )
             }

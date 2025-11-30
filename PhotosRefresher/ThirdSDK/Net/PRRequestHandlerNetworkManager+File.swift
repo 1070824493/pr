@@ -90,7 +90,7 @@ public extension PRRequestHandlerManager {
                 let commonParameters = self.commonParameterInterceptor.getCommonParameters()
                 addParameters.merge(commonParameters) { (current, new) in current }
                 
-                if let dynamicCommonParameters = self.commonParameterInterceptor.getDynamicCommonParams() {
+                if let dynamicCommonParameters = self.commonParameterInterceptor.getDynamicParams() {
                     addParameters.merge(dynamicCommonParameters) { (current, new) in current }
                 }
                 

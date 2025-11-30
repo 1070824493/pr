@@ -53,7 +53,7 @@ class PRGuideViewModel: ObservableObject {
             tempArr.append(.idfaPage)
         }
         
-//        if !PRUserManager.shared.isVip() {
+//        if !PRUserManager.shared.checkVipEligibility() {
 //            tempArr.append(.subscriptionPage)
 //        }
         stepList = tempArr

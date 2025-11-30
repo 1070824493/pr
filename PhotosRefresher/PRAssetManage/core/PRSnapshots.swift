@@ -12,12 +12,12 @@ let kDataFormatVersion: Int = 1
 let kSaveInterval: Int = 3
 
 public struct PRDashboardCell: Codable {
-    public var classification: PRPhotoCategory
+    public var classification: PRAssetType
     public var storageUsage: Int64
     public var previewIdentifiers: [String]
     public var elementCount: Int
 
-    public init(category: PRPhotoCategory, bytes: Int64, repID: [String], count: Int) {
+    public init(category: PRAssetType, bytes: Int64, repID: [String], count: Int) {
         self.classification = category
         self.storageUsage = bytes
         self.previewIdentifiers = repID
@@ -37,16 +37,12 @@ public struct PRDashboardSnapshot: Codable {
     }
 }
 
-extension PRCacheFiles {
-    var dashboard: URL { storageDirectory.appendingPathComponent("dashboard.json") }
-}
-
-struct PRChunkSnapshot: Codable {
+struct PRSnapshotSegment: Codable {
     let index: Int
-    let entries: [PRPhotoAssetModel]
+    let entries: [PRAssetsAnalyzeResult]
 }
 
-struct PRProgressSnapshot: Codable {
+struct PRSnapInProgress: Codable {
     var analysisIdentifier: String
     var lastPrimaryPhase: Int
     var lastSimilarityPhase: Int
@@ -58,29 +54,30 @@ struct PRProgressSnapshot: Codable {
     var analysisTimestamp: Date
 }
 
-struct PRMapsSnapshot: Codable {
-    var screenshot: [PRPhotoAssetModel]; var screenshotBytes: Int64
-    var live: [PRPhotoAssetModel];       var liveBytes: Int64
-    var allvideo: [PRPhotoAssetModel];   var allvideoBytes: Int64
+struct PRAssetsSnapInfo: Codable {
+    var screenshot: [PRAssetsAnalyzeResult]; var screenshotBytes: Int64
+    var live: [PRAssetsAnalyzeResult];       var liveBytes: Int64
+    var allvideo: [PRAssetsAnalyzeResult];   var allvideoBytes: Int64
 
-    var selfie: [PRPhotoAssetModel];     var selfieBytes: Int64
-    var back: [PRPhotoAssetModel];       var backBytes: Int64
+    var selfie: [PRAssetsAnalyzeResult];     var selfieBytes: Int64
+    var back: [PRAssetsAnalyzeResult];       var backBytes: Int64
 
-    var large: [PRPhotoAssetModel];      var largeBytes: Int64
-    var blurry: [PRPhotoAssetModel];     var blurryBytes: Int64
-    var text: [PRPhotoAssetModel];       var textBytes: Int64
+    var large: [PRAssetsAnalyzeResult];      var largeBytes: Int64
+    var blurry: [PRAssetsAnalyzeResult];     var blurryBytes: Int64
+    var text: [PRAssetsAnalyzeResult];       var textBytes: Int64
 
-    var similarGroupIds: [[String]];   var similarGroupModels: [[PRPhotoAssetModel]];   var similarBytes: Int64
-    var duplicateGroupIds: [[String]]; var duplicateGroupModels: [[PRPhotoAssetModel]]; var duplicateBytes: Int64
+    var similarGroupIds: [[String]];   var similarGroupModels: [[PRAssetsAnalyzeResult]];   var similarBytes: Int64
+    var duplicateGroupIds: [[String]]; var duplicateGroupModels: [[PRAssetsAnalyzeResult]]; var duplicateBytes: Int64
 
     var totalSize: Int64
     var bytesSchemaVersion: Int
     var updatedAt: Date
 }
 
-struct PRCacheFiles {
+struct PRSaveAssetDir {
     let storageDirectory: URL
     var progress: URL { storageDirectory.appendingPathComponent("progress.json") }
     var maps: URL { storageDirectory.appendingPathComponent("maps.json") }
+    var dashboard: URL { storageDirectory.appendingPathComponent("dashboard.json") }
     func locateSegmentFile(_ i: Int) -> URL { storageDirectory.appendingPathComponent("chunk_\(i).json") }
 }

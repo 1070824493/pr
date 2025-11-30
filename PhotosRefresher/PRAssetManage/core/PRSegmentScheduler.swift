@@ -8,16 +8,14 @@
 import Foundation
 import Photos
 
-/// 分块调度器（actor）
-/// - 职责: 根据快照资产列表生成固定大小的块，物化每块并缓存到磁盘
-/// - 并发: `actor` 保证内部状态串行化
-actor PRChunkScheduler {
+
+actor PRSegmentScheduler {
     let chunkSize: Int
-    private let fileManager: PRCacheFiles
+    private let fileManager: PRSaveAssetDir
     private var assetIdentifiers: [String] = []
     private(set) var snapshotIdentifier: String = ""
 
-    init(chunkSize: Int, files: PRCacheFiles) {
+    init(chunkSize: Int, files: PRSaveAssetDir) {
         self.chunkSize = chunkSize
         self.fileManager = files
     }
@@ -32,12 +30,12 @@ actor PRChunkScheduler {
         return (assetIdentifiers.count + chunkSize - 1) / chunkSize
     }
 
-    func materializeSegmentAtIndex(index: Int) -> PRChunkSnapshot? {
+    func materializeSegmentAtIndex(index: Int) -> PRSnapshotSegment? {
         guard index >= 0, index < calculateSegmentQuantity() else { return nil }
         let fileLocation = fileManager.locateSegmentFile(index)
 
         if let fileData = try? Data(contentsOf: fileLocation),
-           let decodedSnapshot = try? JSONDecoder().decode(PRChunkSnapshot.self, from: fileData) {
+           let decodedSnapshot = try? JSONDecoder().decode(PRSnapshotSegment.self, from: fileData) {
             return decodedSnapshot
         }
 
@@ -56,12 +54,12 @@ actor PRChunkScheduler {
             fileSizeMap[assetItem.localIdentifier] = computeResourceVolume(assetItem)
         }
 
-        var assetEntries = [PRPhotoAssetModel](); assetEntries.reserveCapacity(segmentIdentifiers.count)
+        var assetEntries = [PRAssetsAnalyzeResult](); assetEntries.reserveCapacity(segmentIdentifiers.count)
         for identifier in segmentIdentifiers {
             assetEntries.append(.init(id: identifier, bytes: fileSizeMap[identifier] ?? 0, date: creationDateMap[identifier] ?? 0))
         }
 
-        let chunkSnapshot = PRChunkSnapshot(index: index, entries: assetEntries)
+        let chunkSnapshot = PRSnapshotSegment(index: index, entries: assetEntries)
         if let encodedData = try? JSONEncoder().encode(chunkSnapshot) {
             try? encodedData.write(to: fileLocation, options: .atomic)
         }

@@ -1,155 +1,132 @@
-//
-//  PRGlobalOverlay.swift
-
-//
-
-//
-
 import SwiftUI
 import UIKit
 
-final class PRGlobalOverlay {
+class PRGlobalOverlay {
     static let shared = PRGlobalOverlay()
-    private var window: UIWindow?
-    public var showOverlayHUDView: Bool = false
-    private func activeScene() -> UIWindowScene? {
+    private var overlayWindow: UIWindow?
+    public var displayHUDOverlay: Bool = false
+    
+    private func getCurrentWindowScene() -> UIWindowScene? {
         UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .first { $0.activationState == .foregroundActive }
     }
 
-    enum PresentAnimation {
-        case none              // 直接显示（默认）
-        case rightToLeft       // 从右向左滑入
-        case bottomToTop       // 从下到上滑入
+    enum ShowAnimation {
+        case instant
+        case slideFromRight
+        case slideFromBottom
     }
 
-    enum DismissAnimation {
-        case fade              // 渐隐（默认）
-        case leftToRight       // 向右滑出
-        case topToBottom       // 向下滑出
-        case none              // 立即移除（无动画）
+    enum HideAnimation {
+        case fadeOut
+        case slideToLeft
+        case slideToTop
+        case instantRemove
     }
 
-    /// 展示任意 SwiftUI 视图为全局遮罩（在最顶层 UIWindow）
-    /// - Parameters:
-    ///   - content: 要展示的 SwiftUI 内容
-    ///   - windowLevel: 窗口层级
-    ///   - animation: 展示动画（默认 .none）
-    ///   - duration: 动画时长
-    func present<Content: View>(
-        @ViewBuilder content: () -> Content,
-        windowLevel: UIWindow.Level = .alert + 1,
-        animation: PresentAnimation = .none,
-        duration: TimeInterval = 0.15
+    /// 在最顶层显示自定义 SwiftUI 视图
+    func show<V: View>(
+        @ViewBuilder body: () -> V,
+        level: UIWindow.Level = .alert + 1,
+        showAnimation: ShowAnimation = .instant,
+        animationDuration: TimeInterval = 0.15
     ) {
-        // 若已有 overlay，先移除（立即）
-//        dismiss(immediately: true)
+        guard let scene = getCurrentWindowScene() else { return }
 
-        guard let scene = activeScene() else { return }
+        let controller = UIHostingController(rootView: ZStack { body().ignoresSafeArea() })
+        controller.view.backgroundColor = .clear
+        controller.view.isOpaque = false
 
-        // HostingController 包装 content
-        let host = UIHostingController(rootView: ZStack { content().ignoresSafeArea() })
-        host.view.backgroundColor = .clear
-        host.view.isOpaque = false
+        let overlay = UIWindow(windowScene: scene)
+        overlay.frame = UIScreen.main.bounds
+        overlay.windowLevel = level
+        overlay.backgroundColor = .clear
+        overlay.isOpaque = false
+        overlay.rootViewController = controller
+        overlay.isHidden = false
 
-        let win = UIWindow(windowScene: scene)
-        win.frame = UIScreen.main.bounds
-        win.windowLevel = .alert + 1
-        win.backgroundColor = .clear
-        win.isOpaque = false
-        win.rootViewController = host
-        win.isHidden = false
+        self.overlayWindow = overlay
 
-        self.window = win
-
-        // 根据动画类型设置初始 transform / alpha
-        switch animation {
-        case .none:
-            // 默认：直接显示（不做 transform）
-            host.view.transform = .identity
-            host.view.alpha = 1.0
-        case .rightToLeft:
-            let startX = win.bounds.width
-            host.view.transform = CGAffineTransform(translationX: startX, y: 0)
-            host.view.alpha = 1.0
-            UIView.animate(withDuration: duration,
-                           delay: 0,
-                           options: [.curveEaseOut]) {
-                host.view.transform = .identity
+        switch showAnimation {
+        case .instant:
+            controller.view.transform = .identity
+            controller.view.alpha = 1.0
+            
+        case .slideFromRight:
+            let offset = overlay.bounds.width
+            controller.view.transform = CGAffineTransform(translationX: offset, y: 0)
+            controller.view.alpha = 1.0
+            UIView.animate(withDuration: animationDuration, delay: 0, options: [.curveEaseOut]) {
+                controller.view.transform = .identity
             }
-        case .bottomToTop:
-            let startY = win.bounds.height
-            host.view.transform = CGAffineTransform(translationX: 0, y: startY)
-            host.view.alpha = 1.0
-            UIView.animate(withDuration: duration,
-                           delay: 0,
-                           options: [.curveEaseOut]) {
-                host.view.transform = .identity
+            
+        case .slideFromBottom:
+            let offset = overlay.bounds.height
+            controller.view.transform = CGAffineTransform(translationX: 0, y: offset)
+            controller.view.alpha = 1.0
+            UIView.animate(withDuration: animationDuration, delay: 0, options: [.curveEaseOut]) {
+                controller.view.transform = .identity
             }
         }
     }
 
-    /// 关闭（支持多种动画）
-    /// - Parameters:
-    ///   - animation: 关闭时的动画（默认 .fade）
-    ///   - duration: 动画时长
-    ///   - immediately: 是否立即移除（无动画）
-    func dismiss(animation: DismissAnimation = .fade,
-                 duration: TimeInterval = 0.22,
-                 immediately: Bool = false) {
-        guard let win = window, let hostView = win.rootViewController?.view else { return }
-        let width = win.bounds.width
-        let height = win.bounds.height
+    /// 隐藏浮层视图
+    func hide(hideAnimation: HideAnimation = .fadeOut,
+              animationDuration: TimeInterval = 0.22,
+              isImmediate: Bool = false) {
+        guard let overlay = overlayWindow, let rootView = overlay.rootViewController?.view else { return }
+        let screenWidth = overlay.bounds.width
+        let screenHeight = overlay.bounds.height
 
-        if immediately || animation == .none {
-            cleanupWindow(win)
+        if isImmediate || hideAnimation == .instantRemove {
+            releaseOverlay(overlay)
             return
         }
 
-        switch animation {
-        case .fade:
-            UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseIn]) {
-                hostView.alpha = 0.0
+        switch hideAnimation {
+        case .fadeOut:
+            UIView.animate(withDuration: animationDuration, delay: 0, options: [.curveEaseIn]) {
+                rootView.alpha = 0.0
             } completion: { _ in
-                self.cleanupWindow(win)
+                self.releaseOverlay(overlay)
             }
-        case .leftToRight:
-            UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseIn]) {
-                hostView.transform = CGAffineTransform(translationX: width, y: 0)
+            
+        case .slideToLeft:
+            UIView.animate(withDuration: animationDuration, delay: 0, options: [.curveEaseIn]) {
+                rootView.transform = CGAffineTransform(translationX: screenWidth, y: 0)
             } completion: { _ in
-                self.cleanupWindow(win)
+                self.releaseOverlay(overlay)
             }
-        case .topToBottom:
-            UIView.animate(withDuration: duration, delay: 0, options: [.curveEaseIn]) {
-                hostView.transform = CGAffineTransform(translationX: 0, y: height)
+            
+        case .slideToTop:
+            UIView.animate(withDuration: animationDuration, delay: 0, options: [.curveEaseIn]) {
+                rootView.transform = CGAffineTransform(translationX: 0, y: -screenHeight)
             } completion: { _ in
-                self.cleanupWindow(win)
+                self.releaseOverlay(overlay)
             }
-        case .none:
-            cleanupWindow(win)
+            
+        case .instantRemove:
+            releaseOverlay(overlay)
         }
     }
 
-    /// 立即清理 window 资源（内部方法）
-    private func cleanupWindow(_ win: UIWindow) {
-        win.isHidden = true
-        win.rootViewController = nil
-        // 若 host view 有 transform/alpha 被改过，重置以免下次异常
-        win.transform = .identity
-        self.window = nil
+    /// 释放浮层资源
+    private func releaseOverlay(_ overlay: UIWindow) {
+        overlay.isHidden = true
+        overlay.rootViewController = nil
+        overlay.transform = .identity
+        self.overlayWindow = nil
     }
 
-    /// 立即强制移除（对外调用或内部使用）
-    func dismiss(immediately: Bool) {
-        if immediately {
-            if let win = window {
-                cleanupWindow(win)
-            }
+    /// 立即关闭
+    func hide(isImmediate: Bool) {
+        if isImmediate, let overlay = overlayWindow {
+            releaseOverlay(overlay)
         } else {
-            dismiss()
+            hide()
         }
     }
 
-    var isPresenting: Bool { window != nil }
+    var isDisplaying: Bool { overlayWindow != nil }
 }

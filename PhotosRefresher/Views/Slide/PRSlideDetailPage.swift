@@ -17,7 +17,7 @@ extension PHAsset: @retroactive Identifiable {
 }
 
 struct PRSlideDetailPage: View {
-    @State var category: PRPhotoCategory {
+    @State var category: PRAssetType {
         didSet{
             PRAppUserPreferences.shared.currentSlideCategory = category
         }
@@ -74,7 +74,7 @@ struct PRSlideDetailPage: View {
                 
                 HStack(spacing: 16) {
                     Text(timeText(for: assets.indices.contains(index) ? assets[index] : nil))
-                        .font(.regular14)
+                        .font(.system(size: 14.fit, weight: .regular, design: .default))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 48)
@@ -122,7 +122,7 @@ struct PRSlideDetailPage: View {
                     ZStack {
                         HStack(spacing: 8) {
                             Image(systemName: "trash").foregroundColor(.white)
-                            Text("Delete").font(.bold18).foregroundColor(.white)
+                            Text("Delete").font(.system(size: 18.fit, weight: .bold, design: .default)).foregroundColor(.white)
                         }
                         .frame(maxWidth: .infinity)
                     }
@@ -143,11 +143,11 @@ struct PRSlideDetailPage: View {
                     }
                     if assets.isEmpty {
                         Text("0/0")
-                            .font(.semibold14)
+                            .font(.system(size: 14.fit, weight: .semibold, design: .default))
                             .foregroundColor(.white)
                     }else{
                         Text("\(min(index+1, max(assets.count, 1)))/\(max(assets.count, 1))")
-                            .font(.semibold14)
+                            .font(.system(size: 14.fit, weight: .semibold, design: .default))
                             .foregroundColor(.white)
                     }
                 }
@@ -168,7 +168,7 @@ struct PRSlideDetailPage: View {
                 Button(action: { showCategoryMenu = true }) {
                     HStack(spacing: 8) {
                         Text(menuTitle(category))
-                            .font(.semibold18)
+                            .font(.system(size: 18.fit, weight: .semibold, design: .default))
                             .foregroundColor(.white)
                         Image(systemName: "chevron.down").foregroundColor(.white)
                     }
@@ -183,7 +183,7 @@ struct PRSlideDetailPage: View {
             
             if !PRAppUserPreferences.shared.hasShowSwipeUpDelete {
                 Text("Swipe up to delete")
-                    .font(.semibold24)
+                    .font(.system(size: 24.fit, weight: .semibold, design: .default))
                     .foregroundColor(.white)
                     .padding(.top, 48 + getStatusBarHeight())
                     .breathing()
@@ -193,14 +193,14 @@ struct PRSlideDetailPage: View {
         .padding(.top, getStatusBarHeight())
     }
     
-    private func loadAssets(for cat: PRPhotoCategory) {
-        let ids = mapFor(cat).assetIDs
+    private func loadAssets(for cat: PRAssetType) {
+        let ids = mapFor(cat).localIdentifiers
         let unviewed = PRSlideCacheManager.shared.unviewedFirst(limit: 15, category: cat, sourceIDs: ids)
         assets = fetchAssetEntities(by: unviewed)
         index = 0
     }
     
-    private func switchCategory(_ cat: PRPhotoCategory) {
+    private func switchCategory(_ cat: PRAssetType) {
         loadAssets(for: cat)
         category = cat
         if assets.isEmpty {
@@ -208,14 +208,14 @@ struct PRSlideDetailPage: View {
         }
     }
     
-    private func mapFor(_ cat: PRPhotoCategory) -> PRPhotoAssetsMap {
-        let m = PRPhotoMapManager.shared
+    private func mapFor(_ cat: PRAssetType) -> PRAssetsInfo {
+        let m = PRAssetsCleanManager.shared
         switch cat {
-        case .screenshot: return m.screenshotPhotosMap
-        case .livePhoto: return m.livePhotosMap
-        case .selfiephoto: return m.selfiePhotosMap
-        case .backphoto: return m.backPhotosMap
-        default: return m.backPhotosMap
+        case .PhotosScreenshot: return m.assetsInfoForScreenShot
+        case .PhotosLive: return m.assetsInfoForLivePhoto
+        case .selfiephoto: return m.assetsInfoForSelfiePhotos
+        case .backphoto: return m.assetsInfoForBackPhotos
+        default: return m.assetsInfoForBackPhotos
         }
     }
     
@@ -257,12 +257,12 @@ struct PRSlideDetailPage: View {
             }
         }
     }
-    private func menuTitle(_ c: PRPhotoCategory) -> String {
+    private func menuTitle(_ c: PRAssetType) -> String {
         switch c {
         case .backphoto: return "Photos"
-        case .screenshot: return "Screenshots"
+        case .PhotosScreenshot: return "Screenshots"
         case .selfiephoto: return "Selfies"
-        case .livePhoto: return "Live"
+        case .PhotosLive: return "Live"
         default: return c.rawValue
         }
     }
@@ -298,8 +298,8 @@ struct PRSlideDetailPage: View {
     }
     
     /// 获取下一轮图片
-    func getNextUnviewedSource(limit: Int, category: PRPhotoCategory) {
-        let sourceIDs = mapFor(category).assetIDs
+    func getNextUnviewedSource(limit: Int, category: PRAssetType) {
+        let sourceIDs = mapFor(category).localIdentifiers
         //先标记已读,
         PRSlideCacheManager.shared.markViewed(category: category, ids: assets.map({$0.localIdentifier}))
         //再重新获取
@@ -314,12 +314,12 @@ struct PRSlideDetailPage: View {
     }
 }
 
-extension PRPhotoCategory {
+extension PRAssetType {
     var slideImageName: String {
         switch self {
-        case .screenshot:
+        case .PhotosScreenshot:
             return "ic_screenshot"
-        case .livePhoto:
+        case .PhotosLive:
             return "ic_livephoto"
         case .selfiephoto:
             return "icon_self"
@@ -332,9 +332,9 @@ extension PRPhotoCategory {
     
     var slideTitle: String {
         switch self {
-        case .screenshot:
+        case .PhotosScreenshot:
             return "Screenshots"
-        case .livePhoto:
+        case .PhotosLive:
             return "Live"
         case .selfiephoto:
             return "Selfies"
@@ -347,21 +347,21 @@ extension PRPhotoCategory {
 }
 
 private struct CategoryAnchoredMenu: View {
-    let current: PRPhotoCategory
-    var onSelect: (PRPhotoCategory) -> Void
+    let current: PRAssetType
+    var onSelect: (PRAssetType) -> Void
     var onDismiss: () -> Void
     private let width: CGFloat = 240
     var body: some View {
         ZStack(alignment: .topLeading) {
             Color.black.opacity(0.001).ignoresSafeArea().onTapGesture { onDismiss() }
             VStack(spacing: 0) {
-                Button(action: { onSelect(.backphoto) }) { MenuRow(title: PRPhotoCategory.backphoto.slideTitle, iconName: PRPhotoCategory.backphoto.slideImageName, selected: current == .backphoto) }
+                Button(action: { onSelect(.backphoto) }) { MenuRow(title: PRAssetType.backphoto.slideTitle, iconName: PRAssetType.backphoto.slideImageName, selected: current == .backphoto) }
                 Divider().overlay(Color.white.opacity(0.15))
-                Button(action: { onSelect(.screenshot) }) { MenuRow(title: PRPhotoCategory.screenshot.slideTitle, iconName: PRPhotoCategory.screenshot.slideImageName, selected: current == .screenshot) }
+                Button(action: { onSelect(.PhotosScreenshot) }) { MenuRow(title: PRAssetType.PhotosScreenshot.slideTitle, iconName: PRAssetType.PhotosScreenshot.slideImageName, selected: current == .PhotosScreenshot) }
                 Divider().overlay(Color.white.opacity(0.15))
-                Button(action: { onSelect(.selfiephoto) }) { MenuRow(title: PRPhotoCategory.selfiephoto.slideTitle, iconName: PRPhotoCategory.selfiephoto.slideImageName, selected: current == .selfiephoto) }
+                Button(action: { onSelect(.selfiephoto) }) { MenuRow(title: PRAssetType.selfiephoto.slideTitle, iconName: PRAssetType.selfiephoto.slideImageName, selected: current == .selfiephoto) }
                 Divider().overlay(Color.white.opacity(0.15))
-                Button(action: { onSelect(.livePhoto) }) { MenuRow(title: PRPhotoCategory.livePhoto.slideTitle, iconName: PRPhotoCategory.livePhoto.slideImageName, selected: current == .livePhoto) }
+                Button(action: { onSelect(.PhotosLive) }) { MenuRow(title: PRAssetType.PhotosLive.slideTitle, iconName: PRAssetType.PhotosLive.slideImageName, selected: current == .PhotosLive) }
             }
             .frame(width: width)
             .background(Color.black.opacity(0.65))
@@ -381,7 +381,7 @@ private struct MenuRow: View {
             Image(iconName)
                 .resizable()
                 .frame(width: 16, height: 16)
-            Text(title).font(.regular14).foregroundColor(.white)
+            Text(title).font(.system(size: 14.fit, weight: .regular, design: .default)).foregroundColor(.white)
             Spacer()
             if selected {
                 

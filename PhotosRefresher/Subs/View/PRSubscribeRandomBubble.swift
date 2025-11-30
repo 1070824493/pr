@@ -16,7 +16,7 @@ struct PRSubscribeRandomBubble: View {
 
     var body: some View {
         Text("\(joinedDisplay) people have joined this plan today!")
-            .font(.regular12)
+            .font(.system(size: 12.fit, weight: .regular, design: .default))
             .foregroundColor(Color.hexColor(0x141414))
             .lineLimit(1)
             .padding(.horizontal, 12)

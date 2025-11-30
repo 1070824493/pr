@@ -13,18 +13,18 @@ import UIKit
 struct PhotosRefresherApp: App {
     @UIApplicationDelegateAdaptor(AppDelegateAdaptor.self) var appDelegate
     @Environment(\.scenePhase) var scenePhase
-    @StateObject private var uiState = PRUIState.shared
+    @StateObject private var prUIState = PRUIState.shared
     
-    @StateObject var subscribeVM = PRSubscribeViewModel(paySource: .appStorePay, onDismiss: nil)
+//    @StateObject var subscribeVM = PRSubscribeViewModel(paySource: .appStorePay, onDismiss: nil)
     
     var body: some Scene {
         WindowGroup {
             PRAppView()
-                .withEnvironments()
-                .withBottomSheet($uiState.bottomSheetDestination)
-                .withModal($uiState.modalDestination)
-                .withFullScreenCoverRouter($uiState.fullScreenCoverDestination)
-                .onAppear(perform: setupAppearance)
+                .provideEnivironmentObject()
+                .withBottomSheet($prUIState.bottomSheetDestination)
+                .withModal($prUIState.modalDestination)
+                .withFullScreenCoverRouter($prUIState.fullScreenCoverDestination)
+                .onAppear(perform: handlerAppear)
                 .onOpenURL(perform: handleURL(url:))
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
@@ -38,45 +38,45 @@ struct PhotosRefresherApp: App {
         // TODO: handle scheme
     }
     
-    private func setupAppearance() {
+    private func handlerAppear() {
         // TODO: support dark mode
-        if #available(iOS 16.4, *) {
-            handlePurchaseIntent()
-        }
+//        if #available(iOS 16.4, *) {
+//            handlePurchaseIntent()
+//        }
     }
     
     private func applicationDidBecomeActive() {
         Task {
             if (PRRequestHandlerObserver.shared.isReachable) {
-                let _ = await PRIdfaUtils.shared.requestIdfa()
+                let _ = await PRIdfaUtils.instance.requestIdfaAuthorization()
             }
         }
 //        AppsFlyerLib.shared().start()
         
     }
     
-    @available(iOS 16.4, *)
-    func handlePurchaseIntent() {
-        PROrderManager.shared.PRListenForPurchaseIntent { intent in
-            Task {
-                do {
-                    let productId = intent.product.id
-                    guard !productId.isEmpty else { return }
-                    let params: [String:String] = ["iapId": productId]
-                    let resp: PRCommonResponse<ProductInfoModel> = try await PRRequestHandlerManager.shared.PRrequest(
-                        url: ApiConstants.photosrefresher_product_getProductInfo,
-                        method: .get,
-                        parameters: params
-                    )
-                    let product = SubscriptionPackageModel(skuId: Int(resp.data.skuId), priceSale: 0, priceFirst: 0, duration: 0, recommendSku: false, beOffered: 0, freeDays: 0)
-                    await subscribeVM.purchase(package: product)
-                     
-                } catch {
-                    await MainActor.run { PRToast.show(message: "Payment failed", duration: 3) }
-                }
-            }
-        }
-    }
+//    @available(iOS 16.4, *)
+//    func handlePurchaseIntent() {
+//        PROrderManager.shared.PRListenForPurchaseIntent { intent in
+//            Task {
+//                do {
+//                    let productId = intent.product.id
+//                    guard !productId.isEmpty else { return }
+//                    let params: [String:String] = ["iapId": productId]
+//                    let resp: PRCommonResponse<ProductInfoModel> = try await PRRequestHandlerManager.shared.PRrequest(
+//                        url: ApiConstants.photosrefresher_product_getProductInfo,
+//                        method: .get,
+//                        parameters: params
+//                    )
+//                    let product = SubscriptionPackageModel(skuId: Int(resp.data.skuId), priceSale: 0, priceFirst: 0, duration: 0, recommendSku: false, beOffered: 0, freeDays: 0)
+//                    await subscribeVM.purchase(package: product)
+//                     
+//                } catch {
+//                    await MainActor.run { PRToast.show(message: "Payment failed", duration: 3) }
+//                }
+//            }
+//        }
+//    }
     
     
 }
@@ -84,11 +84,10 @@ struct PhotosRefresherApp: App {
 class AppDelegateAdaptor: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        initEnv()
-        initLog(application, didFinishLaunchingWithOptions: launchOptions)
+        initEnvironment()
+//        initLog(application, didFinishLaunchingWithOptions: launchOptions)
         initNetwork()
         initPurchaseManager()
-        listenNetWork()
         return true
     }
     
@@ -110,7 +109,7 @@ class AppDelegateAdaptor: NSObject, UIApplicationDelegate, UNUserNotificationCen
 //        )
 //    }
     
-    private func initEnv() {
+    private func initEnvironment() {
         PREnvironmentManager.shared.initEnv(domainConfigs: [
             "aivory": (
                 onlineDomain: AppDomainConstants.business_online_domain,
@@ -126,13 +125,22 @@ class AppDelegateAdaptor: NSObject, UIApplicationDelegate, UNUserNotificationCen
     private func initNetwork() {
         PRRequestHandlerSignUtils.registerKeys(
             privateKey: CommonAICuid.sharedInstance().getDeviceADID(),
-            randomKey1: "S#ZCL@%V8T7D<MW#",
-            randomKey2: "oc]s#LuxaFG>Atx(",
-            randomKey3: "K*;z(i",
+            rk1: "S#ZCL@%V8T7D<MW#",
+            rk2: "oc]s#LuxaFG>Atx(",
+            rk3: "K*;z(i",
             prefixKey: "xtU7w90{g9@MqRH2"
         )
         PRRequestHandlerManager.shared.registerDynamicCommonParamsProvider(provider: PRAppInfo.self)
         PRRequestHandlerManager.shared.addCommonParameters(PRAppInfo.staticCommonParams)
+        
+        PRRequestHandlerObserver.shared.startListening { online in
+            if online {
+                Task {
+                    try await Task.sleep(nanoseconds: 1_000_000_000)
+                    let _ = await PRIdfaUtils.instance.requestIdfaAuthorization()
+                }
+            }
+        }
     }
     
     private func initPurchaseManager() {
@@ -150,21 +158,10 @@ class AppDelegateAdaptor: NSObject, UIApplicationDelegate, UNUserNotificationCen
         PROrderManager.shared.PRListenForTransactionUpdates()
     }
     
-    func listenNetWork() {
-        PRRequestHandlerObserver.shared.startListening { online in
-            if online {
-                Task {
-                    try await Task.sleep(nanoseconds: 1_000_000_000)
-                    let _ = await PRIdfaUtils.shared.requestIdfa()
-                }
-            }
-        }
-    }
-    
-    func initLog(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
-    ) {
+//    func initLog(
+//        _ application: UIApplication,
+//        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
+//    ) {
 //        let testUploadUrl = "https://report.myplantai.com/log/app_test"
 //        let onlineUploadUrl = "https://report.myplantai.com/log/cf_app"
 //        let configUrl = "https://qaistats.studyquicks.com/stats/OB-LLEARN-I.json"
@@ -182,6 +179,6 @@ class AppDelegateAdaptor: NSObject, UIApplicationDelegate, UNUserNotificationCen
 //        )
 //        StatisticsManager.initManager(with: statisticsAppInfoProvider)
 //        MarketManager.shared.initManager(application, didFinishLaunchingWithOptions: launchOptions)
-    }
+//    }
     
 }

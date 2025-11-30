@@ -1,5 +1,5 @@
 //
-//  IdfaUtils.swift
+//  TrackingUtils.swift
 //
 
 import Foundation
@@ -8,35 +8,36 @@ import AdSupport
 
 class PRIdfaUtils {
     
-    public static let shared = PRIdfaUtils()
+    static let instance = PRIdfaUtils()
     
-    private var idfaCache = ""
+    private var cachedIdfa: String = ""
     
     private init() {}
     
-    func getIdfaSync() -> String {
-        return idfaCache
+    /// 同步获取 IDFA
+    func fetchIdfaSync() -> String {
+        return cachedIdfa
     }
     
+    /// 异步请求 IDFA
     @MainActor
-    func requestIdfa() async -> String {
-        if (!idfaCache.isEmpty) {
-            return idfaCache
+    func requestIdfaAuthorization() async -> String {
+        if !cachedIdfa.isEmpty {
+            return cachedIdfa
         }
         
-        var status = ATTrackingManager.trackingAuthorizationStatus
-        if (status == ATTrackingManager.AuthorizationStatus.notDetermined) {
-            status = await ATTrackingManager.requestTrackingAuthorization()
+        var authorizationStatus = ATTrackingManager.trackingAuthorizationStatus
+        if authorizationStatus == .notDetermined {
+            authorizationStatus = await ATTrackingManager.requestTrackingAuthorization()
         }
         
-        switch status {
-        case ATTrackingManager.AuthorizationStatus.authorized:
-            idfaCache = ASIdentifierManager.shared().advertisingIdentifier.uuidString
+        switch authorizationStatus {
+        case .authorized:
+            cachedIdfa = ASIdentifierManager.shared().advertisingIdentifier.uuidString
         default:
-            idfaCache = ""
+            cachedIdfa = ""
         }
-
-        return idfaCache
+        
+        return cachedIdfa
     }
-    
 }

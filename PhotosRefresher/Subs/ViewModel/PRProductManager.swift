@@ -20,7 +20,7 @@ final class PRProductManager: ObservableObject {
         packageResp["\(scene.rawValue)"]?.activityList ?? []
     }
     func isAudit(for scene: PayScene = .normal) -> Bool {
-        packageResp["\(scene.rawValue)"]?.isAudit ?? false
+        packageResp["\(scene.rawValue)"]?.isAudit ?? true
     }
     func closeDelay(for scene: PayScene = .normal) -> Int {
         packageResp["\(scene.rawValue)"]?.closeDelay ?? 0

@@ -13,29 +13,28 @@ import ImageIO
 /// 照片分析统一入口与管线管理器
 /// - 职责: 权限申请、资产拉取、分阶段并发分析、缓存持久化与首页 Dashboard 构建
 /// - 线程: 管线触发在后台并发，状态/地图更新在 `@MainActor`
-public final class PRPhotoMapManager: NSObject, ObservableObject {
-    public static let shared = PRPhotoMapManager()
+public class PRAssetsCleanManager: NSObject, ObservableObject {
+    public static let shared = PRAssetsCleanManager()
 
     // MARK: - 状态与公开属性
-    @Published public private(set) var state: PRPhotoPipelineState = .requesting
+    @Published public private(set) var state: PRAssetsPiplineStatus = .requesting
     @Published public private(set) var totalSize: Int64 = 0
     @Published public private(set) var allAssets: [PHAsset] = []
 
     // 单资产类目
-    @Published public private(set) var screenshotPhotosMap = PRPhotoAssetsMap(.screenshot)
-    @Published public private(set) var livePhotosMap = PRPhotoAssetsMap(.livePhoto)
-    @Published public private(set) var selfiePhotosMap = PRPhotoAssetsMap(.selfiephoto)
-    @Published public private(set) var backPhotosMap = PRPhotoAssetsMap(.backphoto)
-    @Published public private(set) var allVideosMap = PRPhotoAssetsMap(.allvideo)
+    @Published public private(set) var assetsInfoForScreenShot = PRAssetsInfo(.PhotosScreenshot)
+    @Published public private(set) var assetsInfoForLivePhoto = PRAssetsInfo(.PhotosLive)
+    @Published public private(set) var assetsInfoForSelfiePhotos = PRAssetsInfo(.selfiephoto)
+    @Published public private(set) var assetsInfoForBackPhotos = PRAssetsInfo(.backphoto)
+    @Published public private(set) var assetsInfoForVideo = PRAssetsInfo(.VideoAll)
     // 分组/重型类目
-    @Published public private(set) var similarPhotosMap = PRPhotoAssetsMap(.similarphoto)
-    @Published public private(set) var blurryPhotosMap = PRPhotoAssetsMap(.blurryphoto)
-    @Published public private(set) var duplicatePhotosMap = PRPhotoAssetsMap(.duplicatephoto)
-    @Published public private(set) var textPhotosMap = PRPhotoAssetsMap(.textphoto)
-    @Published public private(set) var largeVideosMap = PRPhotoAssetsMap(.largevideo)
-    @Published public private(set) var similarVideosMap = PRPhotoAssetsMap(.similarvideo) // 预留
+    @Published public private(set) var assetsInfoForSimilar = PRAssetsInfo(.PhotosSimilar)
+    @Published public private(set) var assetsInfoForBlurry = PRAssetsInfo(.PhotosBlurry)
+    @Published public private(set) var assetsInfoForDuplicate = PRAssetsInfo(.PhotosDuplicate)
+    @Published public private(set) var assetsInfoForTextPhotos = PRAssetsInfo(.PhotosText)
+    @Published public private(set) var assetsInfoForLargeVideo = PRAssetsInfo(.VideoLarge)
     
-    @Published public private(set) var dashboard: PRDashboardSnapshot?
+    @Published public private(set) var snap: PRDashboardSnapshot?
 
     // 删除广播（外部写入触发即时扣减）
     @Published public var lastDeleteAssets: [PHAsset] = [] {
@@ -51,20 +50,20 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
     public var permissionAlertOnDismiss: (() -> Void)?
 
     // MARK: - 依赖/内部状态
-    private var fetchAll: PHFetchResult<PHAsset>?
-    private let files: PRCacheFiles
-    private let scheduler: PRChunkScheduler
+    private var allPHAssets: PHFetchResult<PHAsset>?
+    private let files: PRSaveAssetDir
+    private let prChunkScheduler: PRSegmentScheduler
     private let assetCache = NSCache<NSString, PHAsset>()
-    private var progress: PRProgressSnapshot?
-    private let largeVideoThreshold: Int64 = 100 * 1024 * 1024
+    private var progress: PRSnapInProgress?
+    private let VIDEO_LARGE_SIZE: Int64 = 100 * 1024 * 1024
 
     // MARK: - Init
     override private init() {
         let directory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
-            .appendingPathComponent("ck_photo_v3")
+            .appendingPathComponent("photos_refresher_photo_v3")
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        self.files = PRCacheFiles(storageDirectory: directory)
-        self.scheduler = PRChunkScheduler(chunkSize: 500, files: files)
+        self.files = PRSaveAssetDir(storageDirectory: directory)
+        self.prChunkScheduler = PRSegmentScheduler(chunkSize: 500, files: files)
         super.init()
     }
     
@@ -78,14 +77,14 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         solicitLibraryAuthorization { [weak self] authorized in
             guard let selfReference = self else { return }
             guard authorized else {
-                selfReference.state = .noPermission
+                selfReference.state = .permissionDefined
                 return
             }
             PHPhotoLibrary.shared().register(selfReference)
             Task(priority: .userInitiated) {
                 await selfReference.restoreFromCache() // 秒显缓存
             let allAssets = selfReference.fetchAllAssetsReverseOrder()
-            await selfReference.scheduler.configureSnapshotParameters(with: allAssets)
+            await selfReference.prChunkScheduler.configureSnapshotParameters(with: allAssets)
             await selfReference.startOrContinueProcessing()
             }
         }
@@ -99,7 +98,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
                 if authorizationStatus == .authorized || authorizationStatus == .limited {
                     completion(true)
                 } else {
-                    selfReference.state = .noPermission
+                    selfReference.state = .permissionDefined
                     selfReference.presentAuthorizationGuidance(for: authorizationStatus)
                     completion(false)
                 }
@@ -107,18 +106,18 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         }
     }
     
-    @MainActor private func extractRepresentativeIdentifiers(_ photoMap: PRPhotoAssetsMap) -> [String] {
+    @MainActor private func extractRepresentativeIdentifiers(_ photoMap: PRAssetsInfo) -> [String] {
         let assetIds = photoMap.assets.prefix(2).map({$0.assetIdentifier})
         if !assetIds.isEmpty {
             return assetIds
         }
         
-        let doubleAssetsIds = photoMap.doubleAssets.prefix(2).compactMap({$0.first?.assetIdentifier})
+        let doubleAssetsIds = photoMap.groupAssets.prefix(2).compactMap({$0.first?.assetIdentifier})
         if !doubleAssetsIds.isEmpty {
             return doubleAssetsIds
         }
         
-        let doubleAssetIDs = photoMap.doubleAssetIDs.prefix(2).compactMap({$0.first})
+        let doubleAssetIDs = photoMap.groupAssetLocalIdentifiers.prefix(2).compactMap({$0.first})
         if !doubleAssetIDs.isEmpty {
             return doubleAssetIDs
         }
@@ -128,16 +127,16 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
 
     @MainActor private func composeDashboardSnapshot() -> PRDashboardSnapshot {
         let dashboardCells: [PRDashboardCell] = [
-            PRDashboardCell(category: .screenshot,   bytes: screenshotPhotosMap.totalBytes,   repID: extractRepresentativeIdentifiers(screenshotPhotosMap), count: screenshotPhotosMap.assets.count),
-            PRDashboardCell(category: .livePhoto,    bytes: livePhotosMap.totalBytes,         repID: extractRepresentativeIdentifiers(livePhotosMap), count: livePhotosMap.assets.count),
-            PRDashboardCell(category: .selfiephoto,  bytes: selfiePhotosMap.totalBytes,       repID: extractRepresentativeIdentifiers(selfiePhotosMap), count: selfiePhotosMap.assets.count),
-            PRDashboardCell(category: .backphoto,    bytes: backPhotosMap.totalBytes,         repID: extractRepresentativeIdentifiers(backPhotosMap), count: backPhotosMap.assets.count),
-            PRDashboardCell(category: .allvideo,     bytes: allVideosMap.totalBytes,          repID: extractRepresentativeIdentifiers(allVideosMap), count: allVideosMap.assets.count),
-            PRDashboardCell(category: .largevideo,   bytes: largeVideosMap.totalBytes,        repID: extractRepresentativeIdentifiers(largeVideosMap), count: largeVideosMap.assets.count),
-            PRDashboardCell(category: .blurryphoto,  bytes: blurryPhotosMap.totalBytes,       repID: extractRepresentativeIdentifiers(blurryPhotosMap), count: blurryPhotosMap.assets.count),
-            PRDashboardCell(category: .textphoto,    bytes: textPhotosMap.totalBytes,         repID: extractRepresentativeIdentifiers(textPhotosMap), count: textPhotosMap.assets.count),
-            PRDashboardCell(category: .similarphoto, bytes: similarPhotosMap.totalBytes,      repID: extractRepresentativeIdentifiers(similarPhotosMap), count: similarPhotosMap.assets.count),
-            PRDashboardCell(category: .duplicatephoto, bytes: duplicatePhotosMap.totalBytes,  repID: extractRepresentativeIdentifiers(duplicatePhotosMap), count: duplicatePhotosMap.assets.count)
+            PRDashboardCell(category: .PhotosScreenshot,   bytes: assetsInfoForScreenShot.bytes,   repID: extractRepresentativeIdentifiers(assetsInfoForScreenShot), count: assetsInfoForScreenShot.assets.count),
+            PRDashboardCell(category: .PhotosLive,    bytes: assetsInfoForLivePhoto.bytes,         repID: extractRepresentativeIdentifiers(assetsInfoForLivePhoto), count: assetsInfoForLivePhoto.assets.count),
+            PRDashboardCell(category: .selfiephoto,  bytes: assetsInfoForSelfiePhotos.bytes,       repID: extractRepresentativeIdentifiers(assetsInfoForSelfiePhotos), count: assetsInfoForSelfiePhotos.assets.count),
+            PRDashboardCell(category: .backphoto,    bytes: assetsInfoForBackPhotos.bytes,         repID: extractRepresentativeIdentifiers(assetsInfoForBackPhotos), count: assetsInfoForBackPhotos.assets.count),
+            PRDashboardCell(category: .VideoAll,     bytes: assetsInfoForVideo.bytes,          repID: extractRepresentativeIdentifiers(assetsInfoForVideo), count: assetsInfoForVideo.assets.count),
+            PRDashboardCell(category: .VideoLarge,   bytes: assetsInfoForLargeVideo.bytes,        repID: extractRepresentativeIdentifiers(assetsInfoForLargeVideo), count: assetsInfoForLargeVideo.assets.count),
+            PRDashboardCell(category: .PhotosBlurry,  bytes: assetsInfoForBlurry.bytes,       repID: extractRepresentativeIdentifiers(assetsInfoForBlurry), count: assetsInfoForBlurry.assets.count),
+            PRDashboardCell(category: .PhotosText,    bytes: assetsInfoForTextPhotos.bytes,         repID: extractRepresentativeIdentifiers(assetsInfoForTextPhotos), count: assetsInfoForTextPhotos.assets.count),
+            PRDashboardCell(category: .PhotosSimilar, bytes: assetsInfoForSimilar.bytes,      repID: extractRepresentativeIdentifiers(assetsInfoForSimilar), count: assetsInfoForSimilar.assets.count),
+            PRDashboardCell(category: .PhotosDuplicate, bytes: assetsInfoForDuplicate.bytes,  repID: extractRepresentativeIdentifiers(assetsInfoForDuplicate), count: assetsInfoForDuplicate.assets.count)
         ]
         return PRDashboardSnapshot(cells: dashboardCells, totalSize: totalSize, updatedAt: Date())
     }
@@ -159,7 +158,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
     private func updateDashboardMetrics() {
         Task { @MainActor in
             let dashboardSnapshot = composeDashboardSnapshot()
-            dashboard = dashboardSnapshot
+            snap = dashboardSnapshot
             archiveDashboardSnapshot(dashboardSnapshot)
         }
     }
@@ -170,41 +169,41 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
 
         // Dashboard 优先秒显
         if let cachedDashboard = await MainActor.run(body: { retrievePersistedDashboardSnapshot() }) {
-            await MainActor.run { self.dashboard = cachedDashboard }
+            await MainActor.run { self.snap = cachedDashboard }
         }
 
         if let mapData = try? Data(contentsOf: files.maps),
-           let photoMaps = try? JSONDecoder().decode(PRMapsSnapshot.self, from: mapData),
+           let photoMaps = try? JSONDecoder().decode(PRAssetsSnapInfo.self, from: mapData),
            photoMaps.bytesSchemaVersion == kDataFormatVersion {
             await MainActor.run {
-                screenshotPhotosMap.assets = photoMaps.screenshot
-                screenshotPhotosMap.totalBytes = photoMaps.screenshotBytes
-                livePhotosMap.assets = photoMaps.live
-                livePhotosMap.totalBytes = photoMaps.liveBytes
-                allVideosMap.assets = photoMaps.allvideo
-                allVideosMap.totalBytes = photoMaps.allvideoBytes
-                selfiePhotosMap.assets = photoMaps.selfie
-                selfiePhotosMap.totalBytes = photoMaps.selfieBytes
-                backPhotosMap.assets = photoMaps.back
-                backPhotosMap.totalBytes = photoMaps.backBytes
-                largeVideosMap.assets = photoMaps.large
-                largeVideosMap.totalBytes = photoMaps.largeBytes
-                blurryPhotosMap.assets = photoMaps.blurry
-                blurryPhotosMap.totalBytes = photoMaps.blurryBytes
-                textPhotosMap.assets = photoMaps.text
-                textPhotosMap.totalBytes = photoMaps.textBytes
-                similarPhotosMap.doubleAssetIDs = photoMaps.similarGroupIds
-                similarPhotosMap.doubleAssets = photoMaps.similarGroupModels
-                similarPhotosMap.totalBytes = photoMaps.similarBytes
-                duplicatePhotosMap.doubleAssetIDs = photoMaps.duplicateGroupIds
-                duplicatePhotosMap.doubleAssets = photoMaps.duplicateGroupModels
-                duplicatePhotosMap.totalBytes = photoMaps.duplicateBytes
+                assetsInfoForScreenShot.assets = photoMaps.screenshot
+                assetsInfoForScreenShot.bytes = photoMaps.screenshotBytes
+                assetsInfoForLivePhoto.assets = photoMaps.live
+                assetsInfoForLivePhoto.bytes = photoMaps.liveBytes
+                assetsInfoForVideo.assets = photoMaps.allvideo
+                assetsInfoForVideo.bytes = photoMaps.allvideoBytes
+                assetsInfoForSelfiePhotos.assets = photoMaps.selfie
+                assetsInfoForSelfiePhotos.bytes = photoMaps.selfieBytes
+                assetsInfoForBackPhotos.assets = photoMaps.back
+                assetsInfoForBackPhotos.bytes = photoMaps.backBytes
+                assetsInfoForLargeVideo.assets = photoMaps.large
+                assetsInfoForLargeVideo.bytes = photoMaps.largeBytes
+                assetsInfoForBlurry.assets = photoMaps.blurry
+                assetsInfoForBlurry.bytes = photoMaps.blurryBytes
+                assetsInfoForTextPhotos.assets = photoMaps.text
+                assetsInfoForTextPhotos.bytes = photoMaps.textBytes
+                assetsInfoForSimilar.groupAssetLocalIdentifiers = photoMaps.similarGroupIds
+                assetsInfoForSimilar.groupAssets = photoMaps.similarGroupModels
+                assetsInfoForSimilar.bytes = photoMaps.similarBytes
+                assetsInfoForDuplicate.groupAssetLocalIdentifiers = photoMaps.duplicateGroupIds
+                assetsInfoForDuplicate.groupAssets = photoMaps.duplicateGroupModels
+                assetsInfoForDuplicate.bytes = photoMaps.duplicateBytes
                 recalculateTotalStorage()
             }
         }
 
         if let progressData = try? Data(contentsOf: files.progress),
-           let progressSnapshot = try? JSONDecoder().decode(PRProgressSnapshot.self, from: progressData),
+           let progressSnapshot = try? JSONDecoder().decode(PRSnapInProgress.self, from: progressData),
            progressSnapshot.dataFormatVersion == kDataFormatVersion {
             self.progress = progressSnapshot
         } else {
@@ -214,9 +213,9 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
 
     // MARK: - 重算 totalSize 时同步更新 Dashboard
     private func recalculateTotalStorage() {
-        let calculatedSize = screenshotPhotosMap.totalBytes + livePhotosMap.totalBytes + allVideosMap.totalBytes + selfiePhotosMap.totalBytes + backPhotosMap.totalBytes +
-                similarPhotosMap.totalBytes + blurryPhotosMap.totalBytes + duplicatePhotosMap.totalBytes +
-                textPhotosMap.totalBytes + largeVideosMap.totalBytes + similarVideosMap.totalBytes
+        let calculatedSize = assetsInfoForScreenShot.bytes + assetsInfoForLivePhoto.bytes + assetsInfoForVideo.bytes + assetsInfoForSelfiePhotos.bytes + assetsInfoForBackPhotos.bytes +
+                assetsInfoForSimilar.bytes + assetsInfoForBlurry.bytes + assetsInfoForDuplicate.bytes +
+                assetsInfoForTextPhotos.bytes + assetsInfoForLargeVideo.bytes
         if calculatedSize != totalSize { totalSize = calculatedSize }
         updateDashboardMetrics()
     }
@@ -226,7 +225,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         let fetchResult = PHAsset.fetchAssets(with: fetchOptions)
-        fetchAll = fetchResult
+        allPHAssets = fetchResult
         var assetArray: [PHAsset] = []
         assetArray.reserveCapacity(fetchResult.count)
         fetchResult.enumerateObjects { assetItem,_,_ in assetArray.append(assetItem) }
@@ -238,7 +237,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
     private func startOrContinueProcessing() async {
         await MainActor.run { self.state = .loading }
 
-        let segmentCount = await scheduler.calculateSegmentQuantity()
+        let segmentCount = await prChunkScheduler.calculateSegmentQuantity()
         guard segmentCount > 0 else {
             await MainActor.run { self.state = .idle }
             return
@@ -275,7 +274,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         var saveCounter = 0
 
         for segmentIndex in startingIndex..<totalSegments {
-            guard let segmentData = await scheduler.materializeSegmentAtIndex(index: segmentIndex) else { continue }
+            guard let segmentData = await prChunkScheduler.materializeSegmentAtIndex(index: segmentIndex) else { continue }
 
             let segmentIdentifiers = segmentData.entries.map(\.assetIdentifier)
             let assetEntryMap = Dictionary(uniqueKeysWithValues: segmentData.entries.map { ($0.assetIdentifier, $0) })
@@ -287,27 +286,27 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
             let images = segmentAssets.filter { $0.mediaType == .image }
 
             @inline(__always)
-            func createAssetModels(_ assetArray: [PHAsset]) -> [PRPhotoAssetModel] {
+            func createAssetModels(_ assetArray: [PHAsset]) -> [PRAssetsAnalyzeResult] {
                 assetArray.map {
                     let entry = assetEntryMap[$0.localIdentifier]
-                    return PRPhotoAssetModel(id: $0.localIdentifier, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
+                    return PRAssetsAnalyzeResult(id: $0.localIdentifier, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
                 }
             }
 
             let cameraSplitResult = await self.categorizePhotosByCameraType(in: images)
-            let selfieModels: [PRPhotoAssetModel] = cameraSplitResult.frontCamera.map {
+            let selfieModels: [PRAssetsAnalyzeResult] = cameraSplitResult.frontCamera.map {
                 let entry = assetEntryMap[$0]
-                return PRPhotoAssetModel(id: $0, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
+                return PRAssetsAnalyzeResult(id: $0, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
             }
-            let backModels: [PRPhotoAssetModel] = cameraSplitResult.rearCamera.map {
+            let backModels: [PRAssetsAnalyzeResult] = cameraSplitResult.rearCamera.map {
                 let entry = assetEntryMap[$0]
-                return PRPhotoAssetModel(id: $0, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
+                return PRAssetsAnalyzeResult(id: $0, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
             }
 
             await MainActor.run {
-                self.mergeSingleCategoryAssets(.screenshot, newModels: createAssetModels(screenshots))
-                self.mergeSingleCategoryAssets(.livePhoto, newModels: createAssetModels(livePhotos))
-                self.mergeSingleCategoryAssets(.allvideo, newModels: createAssetModels(videos))
+                self.mergeSingleCategoryAssets(.PhotosScreenshot, newModels: createAssetModels(screenshots))
+                self.mergeSingleCategoryAssets(.PhotosLive, newModels: createAssetModels(livePhotos))
+                self.mergeSingleCategoryAssets(.VideoAll, newModels: createAssetModels(videos))
                 self.mergeSingleCategoryAssets(.selfiephoto, newModels: selfieModels)
                 self.mergeSingleCategoryAssets(.backphoto, newModels: backModels)
                 self.recalculateTotalStorage()
@@ -332,23 +331,23 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         var saveCounter = 0
 
         for segmentIndex in startingIndex..<totalSegments {
-            guard let segmentData = await scheduler.materializeSegmentAtIndex(index: segmentIndex) else { continue }
+            guard let segmentData = await prChunkScheduler.materializeSegmentAtIndex(index: segmentIndex) else { continue }
             let segmentIdentifiers = segmentData.entries.map(\.assetIdentifier)
             let segmentAssets = PHAsset.fetchAssets(withLocalIdentifiers: segmentIdentifiers, options: nil).toArray()
 
             let similarityClusters = await PRSimilarAnalyzer.locateAnalogousAssetClusters(in: segmentAssets)
 
             let assetEntryMap = Dictionary(uniqueKeysWithValues: segmentData.entries.map { ($0.assetIdentifier, $0) })
-            let clusterModels: [[PRPhotoAssetModel]] = similarityClusters.compactMap { clusterIdentifiers in
-                let modelArray = clusterIdentifiers.map { identifier -> PRPhotoAssetModel in
+            let clusterModels: [[PRAssetsAnalyzeResult]] = similarityClusters.compactMap { clusterIdentifiers in
+                let modelArray = clusterIdentifiers.map { identifier -> PRAssetsAnalyzeResult in
                     let entry = assetEntryMap[identifier]
-                    return PRPhotoAssetModel(id: identifier, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
+                    return PRAssetsAnalyzeResult(id: identifier, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
                 }
                 return modelArray.count >= 2 ? modelArray : nil
             }
 
             await MainActor.run {
-                self.mergeGroupedAssets(.similarphoto, newGroupIDs: similarityClusters, newGroupModels: clusterModels)
+                self.mergeGroupedAssets(.PhotosSimilar, newGroupIDs: similarityClusters, newGroupModels: clusterModels)
                 self.recalculateTotalStorage()
             }
 
@@ -371,23 +370,23 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         var saveCounter = 0
 
         for segmentIndex in startingIndex..<totalSegments {
-            guard let segmentData = await scheduler.materializeSegmentAtIndex(index: segmentIndex) else { continue }
+            guard let segmentData = await prChunkScheduler.materializeSegmentAtIndex(index: segmentIndex) else { continue }
             let segmentIdentifiers = segmentData.entries.map(\.assetIdentifier)
             let segmentAssets = PHAsset.fetchAssets(withLocalIdentifiers: segmentIdentifiers, options: nil).toArray()
 
             let duplicateClusters = await PRDuplicateAnalyzer.isolateRedundantClusters(in: segmentAssets)
 
             let assetEntryMap = Dictionary(uniqueKeysWithValues: segmentData.entries.map { ($0.assetIdentifier, $0) })
-            let clusterModels: [[PRPhotoAssetModel]] = duplicateClusters.compactMap { clusterIdentifiers in
-                let modelArray = clusterIdentifiers.map { identifier -> PRPhotoAssetModel in
+            let clusterModels: [[PRAssetsAnalyzeResult]] = duplicateClusters.compactMap { clusterIdentifiers in
+                let modelArray = clusterIdentifiers.map { identifier -> PRAssetsAnalyzeResult in
                     let entry = assetEntryMap[identifier]
-                    return PRPhotoAssetModel(id: identifier, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
+                    return PRAssetsAnalyzeResult(id: identifier, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
                 }
                 return modelArray.count >= 2 ? modelArray : nil
             }
 
             await MainActor.run {
-                self.mergeGroupedAssets(.duplicatephoto, newGroupIDs: duplicateClusters, newGroupModels: clusterModels)
+                self.mergeGroupedAssets(.PhotosDuplicate, newGroupIDs: duplicateClusters, newGroupModels: clusterModels)
                 self.recalculateTotalStorage()
             }
 
@@ -410,19 +409,19 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         var saveCounter = 0
 
         for segmentIndex in startingIndex..<totalSegments {
-            guard let segmentData = await scheduler.materializeSegmentAtIndex(index: segmentIndex) else { continue }
+            guard let segmentData = await prChunkScheduler.materializeSegmentAtIndex(index: segmentIndex) else { continue }
             let segmentIdentifiers = segmentData.entries.map(\.assetIdentifier)
             let assetEntryMap = Dictionary(uniqueKeysWithValues: segmentData.entries.map { ($0.assetIdentifier, $0) })
             let segmentAssets = PHAsset.fetchAssets(withLocalIdentifiers: segmentIdentifiers, options: nil).toArray()
 
-            let largeVideoIDs = await PRLargeVideoAnalyzer.detectVoluminousVideoEntities(in: segmentAssets, thresholdBytes: largeVideoThreshold)
-            let largeVideoModels: [PRPhotoAssetModel] = largeVideoIDs.map {
+            let largeVideoIDs = await PRLargeVideoAnalyzer.detectVoluminousVideoEntities(in: segmentAssets, thresholdBytes: VIDEO_LARGE_SIZE)
+            let largeVideoModels: [PRAssetsAnalyzeResult] = largeVideoIDs.map {
                 let entry = assetEntryMap[$0]
-                return PRPhotoAssetModel(id: $0, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
+                return PRAssetsAnalyzeResult(id: $0, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
             }
 
             await MainActor.run {
-                self.mergeSingleCategoryAssets(.largevideo, newModels: largeVideoModels)
+                self.mergeSingleCategoryAssets(.VideoLarge, newModels: largeVideoModels)
                 self.recalculateTotalStorage()
             }
 
@@ -445,19 +444,19 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         var saveCounter = 0
 
         for segmentIndex in startingIndex..<totalSegments {
-            guard let segmentData = await scheduler.materializeSegmentAtIndex(index: segmentIndex) else { continue }
+            guard let segmentData = await prChunkScheduler.materializeSegmentAtIndex(index: segmentIndex) else { continue }
             let segmentIdentifiers = segmentData.entries.map(\.assetIdentifier)
             let assetEntryMap = Dictionary(uniqueKeysWithValues: segmentData.entries.map { ($0.assetIdentifier, $0) })
             let segmentAssets = PHAsset.fetchAssets(withLocalIdentifiers: segmentIdentifiers, options: nil).toArray()
 
             let blurryImageIDs = await PRBlurryAnalyzer.scanForLowResolutionEntities(in: segmentAssets)
-            let blurryModels: [PRPhotoAssetModel] = blurryImageIDs.map {
+            let blurryModels: [PRAssetsAnalyzeResult] = blurryImageIDs.map {
                 let entry = assetEntryMap[$0]
-                return PRPhotoAssetModel(id: $0, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
+                return PRAssetsAnalyzeResult(id: $0, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
             }
 
             await MainActor.run {
-                self.mergeSingleCategoryAssets(.blurryphoto, newModels: blurryModels)
+                self.mergeSingleCategoryAssets(.PhotosBlurry, newModels: blurryModels)
                 self.recalculateTotalStorage()
             }
 
@@ -480,19 +479,19 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         var saveCounter = 0
 
         for segmentIndex in startingIndex..<totalSegments {
-            guard let segmentData = await scheduler.materializeSegmentAtIndex(index: segmentIndex) else { continue }
+            guard let segmentData = await prChunkScheduler.materializeSegmentAtIndex(index: segmentIndex) else { continue }
             let segmentIdentifiers = segmentData.entries.map(\.assetIdentifier)
             let assetEntryMap = Dictionary(uniqueKeysWithValues: segmentData.entries.map { ($0.assetIdentifier, $0) })
             let segmentAssets = PHAsset.fetchAssets(withLocalIdentifiers: segmentIdentifiers, options: nil).toArray()
 
             let textImageIDs = await PRTextAnalyzer.detectGlyphBearingEntities(in: segmentAssets)
-            let textModels: [PRPhotoAssetModel] = textImageIDs.map {
+            let textModels: [PRAssetsAnalyzeResult] = textImageIDs.map {
                 let entry = assetEntryMap[$0]
-                return PRPhotoAssetModel(id: $0, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
+                return PRAssetsAnalyzeResult(id: $0, bytes: entry?.storageSize ?? 0, date: entry?.creationTimestamp ?? 0)
             }
 
             await MainActor.run {
-                self.mergeSingleCategoryAssets(.textphoto, newModels: textModels)
+                self.mergeSingleCategoryAssets(.PhotosText, newModels: textModels)
                 self.recalculateTotalStorage()
             }
 
@@ -510,10 +509,10 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
 
     // MARK: - 合并 & 统计（主线程）
     @MainActor
-    private func mergeSingleCategoryAssets(_ category: PRPhotoCategory, newModels: [PRPhotoAssetModel]) {
+    private func mergeSingleCategoryAssets(_ category: PRAssetType, newModels: [PRAssetsAnalyzeResult]) {
         guard !newModels.isEmpty else { return }
 
-        func addUniqueModels(_ incomingModels: [PRPhotoAssetModel], to existingArray: inout [PRPhotoAssetModel]) -> Int64 {
+        func addUniqueModels(_ incomingModels: [PRAssetsAnalyzeResult], to existingArray: inout [PRAssetsAnalyzeResult]) -> Int64 {
             var existingIDs = Set(existingArray.map(\.assetIdentifier))
             var sizeIncrease: Int64 = 0
             for model in incomingModels where existingIDs.insert(model.assetIdentifier).inserted {
@@ -524,43 +523,43 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         }
 
         switch category {
-        case .screenshot:
-            screenshotPhotosMap.totalBytes &+= addUniqueModels(newModels, to: &screenshotPhotosMap.assets)
-        case .livePhoto:
-            livePhotosMap.totalBytes &+= addUniqueModels(newModels, to: &livePhotosMap.assets)
-        case .allvideo:
-            allVideosMap.totalBytes &+= addUniqueModels(newModels, to: &allVideosMap.assets)
+        case .PhotosScreenshot:
+            assetsInfoForScreenShot.bytes &+= addUniqueModels(newModels, to: &assetsInfoForScreenShot.assets)
+        case .PhotosLive:
+            assetsInfoForLivePhoto.bytes &+= addUniqueModels(newModels, to: &assetsInfoForLivePhoto.assets)
+        case .VideoAll:
+            assetsInfoForVideo.bytes &+= addUniqueModels(newModels, to: &assetsInfoForVideo.assets)
         case .selfiephoto:
-            selfiePhotosMap.totalBytes &+= addUniqueModels(newModels, to: &selfiePhotosMap.assets)
+            assetsInfoForSelfiePhotos.bytes &+= addUniqueModels(newModels, to: &assetsInfoForSelfiePhotos.assets)
         case .backphoto:
-            backPhotosMap.totalBytes &+= addUniqueModels(newModels, to: &backPhotosMap.assets)
-        case .blurryphoto:
-            blurryPhotosMap.totalBytes &+= addUniqueModels(newModels, to: &blurryPhotosMap.assets)
-        case .textphoto:
-            textPhotosMap.totalBytes &+= addUniqueModels(newModels, to: &textPhotosMap.assets)
-        case .largevideo:
-            largeVideosMap.totalBytes &+= addUniqueModels(newModels, to: &largeVideosMap.assets)
+            assetsInfoForBackPhotos.bytes &+= addUniqueModels(newModels, to: &assetsInfoForBackPhotos.assets)
+        case .PhotosBlurry:
+            assetsInfoForBlurry.bytes &+= addUniqueModels(newModels, to: &assetsInfoForBlurry.assets)
+        case .PhotosText:
+            assetsInfoForTextPhotos.bytes &+= addUniqueModels(newModels, to: &assetsInfoForTextPhotos.assets)
+        case .VideoLarge:
+            assetsInfoForLargeVideo.bytes &+= addUniqueModels(newModels, to: &assetsInfoForLargeVideo.assets)
         default: break
         }
     }
 
     @MainActor
     private func mergeGroupedAssets(
-        _ category: PRPhotoCategory,
+        _ category: PRAssetType,
         newGroupIDs: [[String]],
-        newGroupModels: [[PRPhotoAssetModel]]
+        newGroupModels: [[PRAssetsAnalyzeResult]]
     ) {
-        guard category == .similarphoto || category == .duplicatephoto else { return }
+        guard category == .PhotosSimilar || category == .PhotosDuplicate else { return }
         guard !newGroupIDs.isEmpty else { return }
 
-        if category == .similarphoto {
-            similarPhotosMap.doubleAssetIDs = PRGroupMerge.mergeAssetGroups(existingGroups: similarPhotosMap.doubleAssetIDs, newGroups: newGroupIDs)
+        if category == .PhotosSimilar {
+            assetsInfoForSimilar.groupAssetLocalIdentifiers = PRGroupMerge.mergeAssetGroups(existingGroups: assetsInfoForSimilar.groupAssetLocalIdentifiers, newGroups: newGroupIDs)
         } else {
-            duplicatePhotosMap.doubleAssetIDs = PRGroupMerge.mergeAssetGroups(existingGroups: duplicatePhotosMap.doubleAssetIDs, newGroups: newGroupIDs)
+            assetsInfoForDuplicate.groupAssetLocalIdentifiers = PRGroupMerge.mergeAssetGroups(existingGroups: assetsInfoForDuplicate.groupAssetLocalIdentifiers, newGroups: newGroupIDs)
         }
 
-        func buildModelLookup(existingGroups: [[PRPhotoAssetModel]], newGroups: [[PRPhotoAssetModel]]) -> [String: PRPhotoAssetModel] {
-            var modelLookup: [String: PRPhotoAssetModel] = [:]
+        func buildModelLookup(existingGroups: [[PRAssetsAnalyzeResult]], newGroups: [[PRAssetsAnalyzeResult]]) -> [String: PRAssetsAnalyzeResult] {
+            var modelLookup: [String: PRAssetsAnalyzeResult] = [:]
             modelLookup.reserveCapacity(existingGroups.reduce(0){$0+$1.count} + newGroups.reduce(0){$0+$1.count})
             for model in existingGroups.flatMap({$0}) where modelLookup[model.assetIdentifier] == nil {
                 modelLookup[model.assetIdentifier] = model
@@ -571,15 +570,15 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
             return modelLookup
         }
 
-        func rebuildGroupsAndCalculateSizeChange(map: inout PRPhotoAssetsMap, additionalModels: [[PRPhotoAssetModel]]) -> Int64 {
-            let previousIDs = Set(map.doubleAssets.flatMap { $0.map(\.assetIdentifier) })
-            let modelLookup = buildModelLookup(existingGroups: map.doubleAssets, newGroups: additionalModels)
+        func rebuildGroupsAndCalculateSizeChange(map: inout PRAssetsInfo, additionalModels: [[PRAssetsAnalyzeResult]]) -> Int64 {
+            let previousIDs = Set(map.groupAssets.flatMap { $0.map(\.assetIdentifier) })
+            let modelLookup = buildModelLookup(existingGroups: map.groupAssets, newGroups: additionalModels)
 
-            let updatedGroups: [[PRPhotoAssetModel]] = map.doubleAssetIDs.compactMap { idArray in
+            let updatedGroups: [[PRAssetsAnalyzeResult]] = map.groupAssetLocalIdentifiers.compactMap { idArray in
                 let models = idArray.compactMap { modelLookup[$0] }.sorted(by: {$0.storageSize > $1.storageSize})
                 return models.count >= 2 ? models : nil
             }
-            map.doubleAssets = updatedGroups
+            map.groupAssets = updatedGroups
 
             let currentIDs = Set(updatedGroups.flatMap { $0.map(\.assetIdentifier) })
             let addedIDs = currentIDs.subtracting(previousIDs)
@@ -587,12 +586,12 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
             return addedIDs.reduce(Int64(0)) { $0 &+ (sizeLookup[$1] ?? 0) }
         }
 
-        if category == .similarphoto {
-            let sizeDelta = rebuildGroupsAndCalculateSizeChange(map: &similarPhotosMap, additionalModels: newGroupModels)
-            similarPhotosMap.totalBytes &+= sizeDelta
+        if category == .PhotosSimilar {
+            let sizeDelta = rebuildGroupsAndCalculateSizeChange(map: &assetsInfoForSimilar, additionalModels: newGroupModels)
+            assetsInfoForSimilar.bytes &+= sizeDelta
         } else {
-            let sizeDelta = rebuildGroupsAndCalculateSizeChange(map: &duplicatePhotosMap, additionalModels: newGroupModels)
-            duplicatePhotosMap.totalBytes &+= sizeDelta
+            let sizeDelta = rebuildGroupsAndCalculateSizeChange(map: &assetsInfoForDuplicate, additionalModels: newGroupModels)
+            assetsInfoForDuplicate.bytes &+= sizeDelta
         }
 
         recalculateTotalStorage()
@@ -601,29 +600,29 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
     // MARK: - 持久化
     @MainActor
     private func saveCurrentStateToDisk(forceWrite: Bool = false) {
-        let mapSnapshot = PRMapsSnapshot(
-            screenshot: screenshotPhotosMap.assets,
-            screenshotBytes: screenshotPhotosMap.totalBytes,
-            live: livePhotosMap.assets,
-            liveBytes: livePhotosMap.totalBytes,
-            allvideo: allVideosMap.assets,
-            allvideoBytes: allVideosMap.totalBytes,
-            selfie: selfiePhotosMap.assets,
-            selfieBytes: selfiePhotosMap.totalBytes,
-            back: backPhotosMap.assets,
-            backBytes: backPhotosMap.totalBytes,
-            large: largeVideosMap.assets,
-            largeBytes: largeVideosMap.totalBytes,
-            blurry: blurryPhotosMap.assets,
-            blurryBytes: blurryPhotosMap.totalBytes,
-            text: textPhotosMap.assets,
-            textBytes: textPhotosMap.totalBytes,
-            similarGroupIds: similarPhotosMap.doubleAssetIDs,
-            similarGroupModels: similarPhotosMap.doubleAssets,
-            similarBytes: similarPhotosMap.totalBytes,
-            duplicateGroupIds: duplicatePhotosMap.doubleAssetIDs,
-            duplicateGroupModels: duplicatePhotosMap.doubleAssets,
-            duplicateBytes: duplicatePhotosMap.totalBytes,
+        let mapSnapshot = PRAssetsSnapInfo(
+            screenshot: assetsInfoForScreenShot.assets,
+            screenshotBytes: assetsInfoForScreenShot.bytes,
+            live: assetsInfoForLivePhoto.assets,
+            liveBytes: assetsInfoForLivePhoto.bytes,
+            allvideo: assetsInfoForVideo.assets,
+            allvideoBytes: assetsInfoForVideo.bytes,
+            selfie: assetsInfoForSelfiePhotos.assets,
+            selfieBytes: assetsInfoForSelfiePhotos.bytes,
+            back: assetsInfoForBackPhotos.assets,
+            backBytes: assetsInfoForBackPhotos.bytes,
+            large: assetsInfoForLargeVideo.assets,
+            largeBytes: assetsInfoForLargeVideo.bytes,
+            blurry: assetsInfoForBlurry.assets,
+            blurryBytes: assetsInfoForBlurry.bytes,
+            text: assetsInfoForTextPhotos.assets,
+            textBytes: assetsInfoForTextPhotos.bytes,
+            similarGroupIds: assetsInfoForSimilar.groupAssetLocalIdentifiers,
+            similarGroupModels: assetsInfoForSimilar.groupAssets,
+            similarBytes: assetsInfoForSimilar.bytes,
+            duplicateGroupIds: assetsInfoForDuplicate.groupAssetLocalIdentifiers,
+            duplicateGroupModels: assetsInfoForDuplicate.groupAssets,
+            duplicateBytes: assetsInfoForDuplicate.bytes,
             totalSize: totalSize,
             bytesSchemaVersion: kDataFormatVersion,
             updatedAt: Date()
@@ -645,9 +644,9 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
         }
     }
 
-    private func ensureProgressSnapshot() -> PRProgressSnapshot {
+    private func ensureProgressSnapshot() -> PRSnapInProgress {
         if let existingProgress = progress { return existingProgress }
-        let newProgress = PRProgressSnapshot(
+        let newProgress = PRSnapInProgress(
             analysisIdentifier: "hash-\(UUID().uuidString)",
             lastPrimaryPhase: -1,
             lastSimilarityPhase: -1,
@@ -670,7 +669,7 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
 
         Task { @MainActor in
             withTransaction(Transaction(animation: nil)) {
-                func removeFromArray(_ array: inout [PRPhotoAssetModel]) -> Int64 {
+                func removeFromArray(_ array: inout [PRAssetsAnalyzeResult]) -> Int64 {
                     var removedSize: Int64 = 0
                     array.removeAll { model in
                         if removedIDs.contains(model.assetIdentifier) {
@@ -682,19 +681,19 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
                     return removedSize
                 }
 
-                screenshotPhotosMap.totalBytes &-= removeFromArray(&screenshotPhotosMap.assets)
-                livePhotosMap.totalBytes &-= removeFromArray(&livePhotosMap.assets)
-                allVideosMap.totalBytes &-= removeFromArray(&allVideosMap.assets)
-                selfiePhotosMap.totalBytes &-= removeFromArray(&selfiePhotosMap.assets)
-                backPhotosMap.totalBytes &-= removeFromArray(&backPhotosMap.assets)
-                largeVideosMap.totalBytes &-= removeFromArray(&largeVideosMap.assets)
-                blurryPhotosMap.totalBytes &-= removeFromArray(&blurryPhotosMap.assets)
-                textPhotosMap.totalBytes &-= removeFromArray(&textPhotosMap.assets)
+                assetsInfoForScreenShot.bytes &-= removeFromArray(&assetsInfoForScreenShot.assets)
+                assetsInfoForLivePhoto.bytes &-= removeFromArray(&assetsInfoForLivePhoto.assets)
+                assetsInfoForVideo.bytes &-= removeFromArray(&assetsInfoForVideo.assets)
+                assetsInfoForSelfiePhotos.bytes &-= removeFromArray(&assetsInfoForSelfiePhotos.assets)
+                assetsInfoForBackPhotos.bytes &-= removeFromArray(&assetsInfoForBackPhotos.assets)
+                assetsInfoForLargeVideo.bytes &-= removeFromArray(&assetsInfoForLargeVideo.assets)
+                assetsInfoForBlurry.bytes &-= removeFromArray(&assetsInfoForBlurry.assets)
+                assetsInfoForTextPhotos.bytes &-= removeFromArray(&assetsInfoForTextPhotos.assets)
                 
-                let duplicateRemovedSize = filterAssetsFromGroupedMap(&duplicatePhotosMap, removing: removedIDs)
-                duplicatePhotosMap.totalBytes &-= duplicateRemovedSize
-                let similarRemovedSize = filterAssetsFromGroupedMap(&similarPhotosMap, removing: removedIDs)
-                similarPhotosMap.totalBytes &-= similarRemovedSize
+                let duplicateRemovedSize = filterAssetsFromGroupedMap(&assetsInfoForDuplicate, removing: removedIDs)
+                assetsInfoForDuplicate.bytes &-= duplicateRemovedSize
+                let similarRemovedSize = filterAssetsFromGroupedMap(&assetsInfoForSimilar, removing: removedIDs)
+                assetsInfoForSimilar.bytes &-= similarRemovedSize
 
                 recalculateTotalStorage()
                 self.saveCurrentStateToDisk()
@@ -703,21 +702,21 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
     }
 
     @MainActor
-    private func filterAssetsFromGroupedMap(_ map: inout PRPhotoAssetsMap, removing identifiers: Set<String>) -> Int64 {
+    private func filterAssetsFromGroupedMap(_ map: inout PRAssetsInfo, removing identifiers: Set<String>) -> Int64 {
         var removedSize: Int64 = 0
-        for group in map.doubleAssets {
+        for group in map.groupAssets {
             for model in group where identifiers.contains(model.assetIdentifier) {
                 removedSize &+= model.storageSize
             }
         }
-        for i in map.doubleAssets.indices {
-            map.doubleAssets[i].removeAll { identifiers.contains($0.assetIdentifier) }
+        for i in map.groupAssets.indices {
+            map.groupAssets[i].removeAll { identifiers.contains($0.assetIdentifier) }
         }
-        map.doubleAssets.removeAll { $0.count < 2 }
-        for i in map.doubleAssetIDs.indices {
-            map.doubleAssetIDs[i].removeAll { identifiers.contains($0) }
+        map.groupAssets.removeAll { $0.count < 2 }
+        for i in map.groupAssetLocalIdentifiers.indices {
+            map.groupAssetLocalIdentifiers[i].removeAll { identifiers.contains($0) }
         }
-        map.doubleAssetIDs.removeAll { $0.count < 2 }
+        map.groupAssetLocalIdentifiers.removeAll { $0.count < 2 }
         return removedSize
     }
 
@@ -735,10 +734,10 @@ public final class PRPhotoMapManager: NSObject, ObservableObject {
 }
 
 // MARK: - PHPhotoLibraryChangeObserver（增量处理）
-extension PRPhotoMapManager: PHPhotoLibraryChangeObserver {
+extension PRAssetsCleanManager: PHPhotoLibraryChangeObserver {
 
     public func photoLibraryDidChange(_ changeInstance: PHChange) {
-        guard let baseFetch = fetchAll,
+        guard let baseFetch = allPHAssets,
               let changeDetails = changeInstance.changeDetails(for: baseFetch) else { return }
 
         guard changeDetails.hasIncrementalChanges else {
@@ -747,7 +746,7 @@ extension PRPhotoMapManager: PHPhotoLibraryChangeObserver {
         }
 
         let afterFetch = changeDetails.fetchResultAfterChanges
-        self.fetchAll = afterFetch
+        self.allPHAssets = afterFetch
         let afterArray = afterFetch.toArray()
 
         var insertedAssets: [PHAsset] = []
@@ -777,10 +776,10 @@ extension PRPhotoMapManager: PHPhotoLibraryChangeObserver {
 
     private func rebuildDynamicMappings(_ allAssets: [PHAsset]) async {
         @inline(__always)
-        func createAssetModel(_ asset: PHAsset) -> PRPhotoAssetModel {
+        func createAssetModel(_ asset: PHAsset) -> PRAssetsAnalyzeResult {
             let bytes = computeResourceVolume(asset)
             let date = Int64((asset.creationDate ?? .distantPast).timeIntervalSince1970)
-            return PRPhotoAssetModel(id: asset.localIdentifier, bytes: bytes, date: date, asset: asset)
+            return PRAssetsAnalyzeResult(id: asset.localIdentifier, bytes: bytes, date: date, asset: asset)
         }
 
         let screenshots = allAssets.filter { $0.mediaType == .image && $0.mediaSubtypes.contains(.photoScreenshot) }.map(createAssetModel)
@@ -789,21 +788,21 @@ extension PRPhotoMapManager: PHPhotoLibraryChangeObserver {
 
         await MainActor.run {
             withTransaction(Transaction(animation: nil)) {
-                screenshotPhotosMap.assets = screenshots
-                screenshotPhotosMap.totalBytes = screenshots.reduce(0) { $0 &+ $1.storageSize }
+                assetsInfoForScreenShot.assets = screenshots
+                assetsInfoForScreenShot.bytes = screenshots.reduce(0) { $0 &+ $1.storageSize }
 
-                livePhotosMap.assets = livePhotos
-                livePhotosMap.totalBytes = livePhotos.reduce(0) { $0 &+ $1.storageSize }
+                assetsInfoForLivePhoto.assets = livePhotos
+                assetsInfoForLivePhoto.bytes = livePhotos.reduce(0) { $0 &+ $1.storageSize }
 
-                allVideosMap.assets = videos
-                allVideosMap.totalBytes = videos.reduce(0) { $0 &+ $1.storageSize }
+                assetsInfoForVideo.assets = videos
+                assetsInfoForVideo.bytes = videos.reduce(0) { $0 &+ $1.storageSize }
             }
             recalculateTotalStorage()
         }
     }
 }
 
-extension PRPhotoMapManager {
+extension PRAssetsCleanManager {
     private enum CameraPosition { case front, rear }
     private func determineCameraFacing(for asset: PHAsset) async -> CameraPosition? {
         guard asset.mediaType == .image else { return nil }
@@ -851,7 +850,7 @@ extension PRPhotoMapManager {
 }
 
 // MARK: - 权限弹框
-extension PRPhotoMapManager {
+extension PRAssetsCleanManager {
     /// 权限受限提示弹窗（引导前往设置）
     func presentAuthorizationGuidance(for status: PHAuthorizationStatus) {
         let (title, message): (String, String) = {

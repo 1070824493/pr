@@ -44,11 +44,11 @@ extension View {
         }
     }
     
-    func withEnvironments() -> some View {
+    func provideEnivironmentObject() -> some View {
         self.environmentObject(PRUIState.shared)
             .environmentObject(PRRequestHandlerObserver.shared)
             .environmentObject(PRAppUserPreferences.shared)
-            .environmentObject(PRConfigManager.shared)
+            .environmentObject(PRConfigurationManager.instance)
     }
     
 }

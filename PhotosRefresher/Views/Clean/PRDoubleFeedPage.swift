@@ -9,18 +9,6 @@ import SwiftUI
 import Photos
 import Combine
 
-// MARK: - Byte format
-
-private func checkFormatBytes(_ bytes: Int64) -> String {
-    guard bytes > 0 else { return "0 KB" }
-    let units = ["B", "KB", "MB", "GB", "TB"]
-    var v = Double(bytes)
-    var i = 0
-    while v >= 1024, i < units.count - 1 { v /= 1024; i += 1 }
-    return (v >= 10 || i == 0) ? String(format: "%.0f %@", v, units[i])
-                                : String(format: "%.1f %@", v, units[i])
-}
-
 
 
 // MARK: - Cell View（统一使用 PRAssetThumbnailProvider）
@@ -72,14 +60,14 @@ private struct PRCustomNavBar: View {
                     .frame(width: 24, height: 24)
             }
             Text(title)
-                .font(.semibold20)
+                .font(.system(size: 20.fit, weight: .semibold, design: .default))
                 .foregroundColor(Color(hex: "#141414"))
                 .opacity(titleOpacity)
             Spacer()
             if showToggleAll {
                 Button(action: toggleAll) {
                     Text(allSelected ? "Deselect all" : "Select all")
-                        .font(.regular15)
+                        .font(.system(size: 15.fit, weight: .regular, design: .default))
                         .foregroundColor(Color(hex: "#141414"))
                 }
             }
@@ -98,8 +86,8 @@ private struct PRFeedHeaderView: View {
     let subtitle: String
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(title).font(.heavy24).foregroundColor(Color(hex: "#141414"))
-            Text(subtitle).font(.regular12).foregroundColor(Color(hex: "#666666"))
+            Text(title).font(.system(size: 24.fit, weight: .heavy, design: .default)).foregroundColor(Color(hex: "#141414"))
+            Text(subtitle).font(.system(size: 12.fit, weight: .regular, design: .default)).foregroundColor(Color(hex: "#666666"))
         }
         .padding(.horizontal, 16).padding(.top, 0)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -113,7 +101,7 @@ private struct PRBottomBar: View {
     let bytes: Int64
     let deleteAction: () -> Void
     var body: some View {
-        PRThemeButton(title: enabled ? "Delete (\(checkFormatBytes(bytes)))" : "Delete", enable: enabled, type: .delete, action:  {
+        PRThemeButton(title: enabled ? "Delete (\(formatBytes(bytes)))" : "Delete", enable: enabled, type: .delete, action:  {
             if enabled {
                 deleteAction()
             }
@@ -128,7 +116,7 @@ private struct PRBottomBar: View {
 
 /// 两列的图片展示页面
 struct PRDoubleFeedPage: View {
-    let cardID: PRPhotoCategory
+    let cardID: PRAssetType
     @EnvironmentObject var appRouterPath: PRAppRouterPath
     @EnvironmentObject private var uiState: PRUIState
     var isVideo: Bool = false
@@ -138,7 +126,7 @@ struct PRDoubleFeedPage: View {
     /// 页面级缩略图 Provider（非单例，便于测试与注入）
     private let thumbProvider = PRAssetThumbnailProvider()
 
-    init(_ cardID: PRPhotoCategory, isVideo: Bool = false) {
+    init(_ cardID: PRAssetType, isVideo: Bool = false) {
         self.cardID = cardID
         self.isVideo = isVideo
     }
@@ -152,17 +140,16 @@ struct PRDoubleFeedPage: View {
     private var headerTitle: String { texts(for: cardID).headerTitle }
     private var headerSubtitle: String { texts(for: cardID).headerSubtitle }
 
-    private func texts(for id: PRPhotoCategory) -> (navTitle: String, headerTitle: String, headerSubtitle: String) {
+    private func texts(for id: PRAssetType) -> (navTitle: String, headerTitle: String, headerSubtitle: String) {
         switch id {
-        case .screenshot: return ("Screenshots", "Screenshots", "Disorderly content: \(vm.assets.count)")
-        case .livePhoto:    return ("Live Photos", "Live Photos", "Disorderly content: \(vm.assets.count)")
-        case .allvideo:     return ("All Videos", "All Videos", "Disorderly content: \(vm.assets.count)")
-        case .similarphoto: return ("Similar Photos", "Similar Photos", "Disorderly content: \(vm.assets.count)")
-        case .blurryphoto:  return ("Blurry Photos", "Blurry Photos", "Disorderly content: \(vm.assets.count)")
-        case .duplicatephoto: return ("Duplicate Photos", "Duplicate Photos", "Disorderly content: \(vm.assets.count)")
-        case .textphoto:    return ("Text Photos", "Text Photos", "Disorderly content: \(vm.assets.count)")
-        case .largevideo:   return ("Large Videos", "Large Videos", "Disorderly content: \(vm.assets.count)")
-        case .similarvideo: return ("Similar Videos", "Similar Videos", "Disorderly content: \(vm.assets.count)")
+        case .PhotosScreenshot: return ("Screenshots", "Screenshots", "Disorderly content: \(vm.assets.count)")
+        case .PhotosLive:    return ("Live Photos", "Live Photos", "Disorderly content: \(vm.assets.count)")
+        case .VideoAll:     return ("All Videos", "All Videos", "Disorderly content: \(vm.assets.count)")
+        case .PhotosSimilar: return ("Similar Photos", "Similar Photos", "Disorderly content: \(vm.assets.count)")
+        case .PhotosBlurry:  return ("Blurry Photos", "Blurry Photos", "Disorderly content: \(vm.assets.count)")
+        case .PhotosDuplicate: return ("Duplicate Photos", "Duplicate Photos", "Disorderly content: \(vm.assets.count)")
+        case .PhotosText:    return ("Text Photos", "Text Photos", "Disorderly content: \(vm.assets.count)")
+        case .VideoLarge:   return ("Large Videos", "Large Videos", "Disorderly content: \(vm.assets.count)")
         default:             return ("Library", "Your Library", "Select items to delete. Long press to preview.")
         }
     }
@@ -207,9 +194,9 @@ struct PRDoubleFeedPage: View {
             if vm.assets.isEmpty {
                 VStack(spacing: 10) {
                     Image("PR_empty_icon").resizable().frame(width: 100, height: 100)
-                    Text("No Content").font(.semibold15).foregroundColor(Color(hex: "#141414"))
+                    Text("No Content").font(.system(size: 15.fit, weight: .semibold, design: .default)).foregroundColor(Color(hex: "#141414"))
                     Text("Perfect！You can go and clean other categories.")
-                        .font(.regular14).foregroundColor(Color(hex: "#A3A3A3")).multilineTextAlignment(.center)
+                        .font(.system(size: 14.fit, weight: .regular, design: .default)).foregroundColor(Color(hex: "#A3A3A3")).multilineTextAlignment(.center)
                 }
                 .padding(.horizontal, 24)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -225,7 +212,7 @@ struct PRDoubleFeedPage: View {
                             if isSuccess {
                                 Task {
 //                                    let storageSize = await AlbumFileMananger.shared.storageUsageByte()
-                                    let deletedText = checkFormatBytes(size)
+                                    let deletedText = formatBytes(size)
                                     await MainActor.run {
                                         uiState.fullScreenCoverDestination = .exploreDeleteFinish(
                                             count: count,

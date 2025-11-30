@@ -122,7 +122,10 @@ struct SettingsView: View {
                     ForEach(section.items, id: \.id) { item in
                         SettingItemRow(item: item, onAction: onAction)
                             .frame(height: 60)
-                        PRDividerView(color: Color.black.opacity(0.08))
+                        Rectangle()
+                            .fill(Color.black.opacity(0.08))
+                            .frame(height: 0.5.fit)
+                            .edgesIgnoringSafeArea(.horizontal)
                     }
                 } header: {
                     

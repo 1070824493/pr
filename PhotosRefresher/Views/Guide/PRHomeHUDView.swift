@@ -93,7 +93,7 @@ struct PRHomeHUDView: View {
                         }
 
                         if currentText.count > 0 {
-                            let temoFont = (type == .normal) ? Font.semibold16 : Font.bold24
+                            let temoFont = (type == .normal) ? Font.system(size: 16.fit, weight: .semibold, design: .default) : Font.system(size: 24.fit, weight: .bold, design: .default)
                             Text(currentText)
                                 .id(messageIndex)
                                 .font(temoFont)
@@ -135,7 +135,7 @@ struct PRHomeHUDView: View {
         dismissTask = Task {
             try? await Task.sleep(nanoseconds: 8_000_000_000)
             await MainActor.run {
-                PRGlobalOverlay.shared.dismiss()
+                PRGlobalOverlay.shared.hide()
             }
         }
     }

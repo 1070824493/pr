@@ -54,12 +54,12 @@ struct TrashReviewAlertView: View {
             if model.assets.isEmpty {
                 //垃圾桶为空视图
                 Text("Review Complete")
-                    .font(.semibold24)
+                    .font(.system(size: 24.fit, weight: .semibold, design: .default))
                     .foregroundColor(Color.white)
                     .padding(.top, 20)
                 
                 Text("One more set?")
-                    .font(.regular16)
+                    .font(.system(size: 16.fit, weight: .regular, design: .default))
                     .foregroundColor(Color.white.opacity(0.5))
                 
                 Spacer()
@@ -67,7 +67,7 @@ struct TrashReviewAlertView: View {
                 
                 Button(action: { model.onSkip?() }) {
                     Text("One More Set")
-                        .font(.regular14)
+                        .font(.system(size: 14.fit, weight: .regular, design: .default))
                         .foregroundColor(Color.white)
                         .frame(height: fitScale(44))
                         .frame(maxWidth: .infinity)
@@ -84,14 +84,14 @@ struct TrashReviewAlertView: View {
                 
                 //不为空, 选择删除
                 Text("Dustbin")
-                    .font(.semibold24)
+                    .font(.system(size: 24.fit, weight: .semibold, design: .default))
                     .foregroundColor(Color.white)
                     .padding(.top, 20)
                 
                 HStack {
                     Button(action: model.toggleAll) {
                         Text(model.isSelectedAll ? "Deselect all" : "Select all")
-                            .font(.semibold16)
+                            .font(.system(size: 16.fit, weight: .semibold, design: .default))
                             .foregroundColor(Color.white)
                     }
                     Spacer()
@@ -139,7 +139,7 @@ struct TrashReviewAlertView: View {
                 HStack(spacing: 10) {
                     Button(action: { model.onDismiss?() }) {
                         Text("Cancel")
-                            .font(.regular14)
+                            .font(.system(size: 14.fit, weight: .regular, design: .default))
                             .foregroundColor(Color.white)
                             .frame(height: fitScale(44))
                             .frame(maxWidth: .infinity)

@@ -22,12 +22,12 @@ struct PRHomeAuthorizationView: View {
                 .padding(.top, 31)
 
             Text("Allow Access to Photos")
-                .font(.semibold24)
+                .font(.system(size: 24.fit, weight: .semibold, design: .default))
                 .foregroundColor(Color.white)
                 .padding(.horizontal, 16)
 
             Text("The access is needed to find duplicate photos and videos so you can quickly free up storage.")
-                .font(.regular16)
+                .font(.system(size: 16.fit, weight: .regular, design: .default))
                 .foregroundColor(Color.hexColor(0x666666))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 16)

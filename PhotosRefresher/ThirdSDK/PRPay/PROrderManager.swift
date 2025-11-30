@@ -73,7 +73,7 @@ public enum PaymentResult {
 public class PROrderManager {
     public static let shared = PROrderManager()
     
-    private let payHelper = PRSubscriptionHelper.shared
+    private let payHelper = PRSubscriptionHelper.instance
     private var initialized = false
     private var isPurchasing = false
     private let transactionManager = PRPaymentProcessManager()
@@ -154,7 +154,7 @@ public class PROrderManager {
             return .failure(PRSubscriptionError(code: .alreadyInProgress, underlyingError: nil))
         }
         
-        guard payHelper.canMakePayments() else {
+        guard payHelper.isPaymentAllowed() else {
             return .failure(PRSubscriptionError(code: .cannotMakePayments, underlyingError: nil))
         }
         
@@ -172,7 +172,7 @@ public class PROrderManager {
             let orderResponse = try await PRFetchOrderId(purchaseType: purchaseType, skuId: skuId, paySource: paySource, traceId: traceId, extParams: extParams)
             let orderId = orderResponse.appAccountToken
             let productId = orderResponse.productId
-            let purchaseResult = try await payHelper.PRTransactionProduct(with: productId, appAccountToken: UUID(uuidString: orderId)!) { product in
+            let purchaseResult = try await payHelper.purchaseProduct(productID: productId, accountToken: UUID(uuidString: orderId)!) { product in
                 let currencyCode = product.priceFormatStyle.currencyCode
                 
                 var logInfo = [String: Any]()
@@ -383,8 +383,8 @@ public class PROrderManager {
     
     public func restore() async -> Bool {
         var succeed = false
-        await payHelper.PRSyncTransaction()
-        let unfinishedTransactionList = await payHelper.PRQueryUnfinishedTransaction()
+        await payHelper.syncTransactions()
+        let unfinishedTransactionList = await payHelper.fetchPendingTransactions()
         for item in unfinishedTransactionList {
             let (transaction, jwsRepresentation) = item
             let orderId = transaction.appAccountToken?.uuidString ?? ""

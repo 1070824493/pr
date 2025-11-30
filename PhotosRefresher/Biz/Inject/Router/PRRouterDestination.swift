@@ -10,9 +10,9 @@ import UIKit
 public enum AppRouterDestination {
     
     
-    case exploreDoubleFeed(cardID: PRPhotoCategory, isVideo: Bool)
+    case exploreDoubleFeed(cardID: PRAssetType, isVideo: Bool)
     case exploreSecondRepeat(cardID: String)
-    case slideDetail(category: PRPhotoCategory)
+    case slideDetail(category: PRAssetType)
     case settingPage
 
 }

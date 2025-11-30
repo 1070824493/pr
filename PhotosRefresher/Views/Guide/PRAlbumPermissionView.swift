@@ -25,7 +25,7 @@ struct PRAlbumPermissionView: View {
                         dismissTask = Task {
                             try? await Task.sleep(nanoseconds: 8_000_000_000)
                             await MainActor.run {
-                                PRGlobalOverlay.shared.dismiss()
+                                PRGlobalOverlay.shared.hide()
                             }
                         }
                     }
@@ -50,7 +50,7 @@ struct PRAlbumPermissionView: View {
             Text("""
             Allow to Access
             """)
-                .font(.bold28)
+                .font(.system(size: 28.fit, weight: .bold, design: .default))
                 .foregroundColor(Color.hexColor(0x141414))
                 .multilineTextAlignment(.center)
                 .padding(.top, 22)
@@ -89,7 +89,7 @@ struct PRAlbumPermissionView: View {
             .frame(width: 100, height: 100)
             
             Text("Analyzing your storage…")
-                .font(.bold24)
+                .font(.system(size: 24.fit, weight: .bold, design: .default))
                 .foregroundColor(Color(hex: "#141414"))
                 .multilineTextAlignment(.center)
     
@@ -107,7 +107,7 @@ struct PRAlbumPermissionView: View {
                 .frame(width: 16, height: 16)
 
             Text("Your media stays private and stored only on your iPhone")
-                .font(.regular12)
+                .font(.system(size: 12.fit, weight: .regular, design: .default))
                 .foregroundColor(Color(hex: "#141414", alpha: 0.48))
                 .padding(.leading, 4)
                 .lineLimit(1)
@@ -124,11 +124,11 @@ struct PRAlbumPermissionView: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 Text("Photos")
-                    .font(.bold14)
+                    .font(.system(size: 14.fit, weight: .bold, design: .default))
                     .foregroundColor(Color.hexColor(0x141414))
 
                 Text("Allow access to clean up duplicates and free space.")
-                    .font(.regular14)
+                    .font(.system(size: 14.fit, weight: .regular, design: .default))
                     .foregroundColor(Color(hex: "#141414").opacity(0.72))
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -146,7 +146,7 @@ struct PRAlbumPermissionView: View {
 
     // 触发权限检查
     private func checkPermission() {
-        PRPhotoMapManager.shared.solicitLibraryAuthorization { ok in
+        PRAssetsCleanManager.shared.solicitLibraryAuthorization { ok in
             showingLoading = true
             actionHandler?(ok)
         }

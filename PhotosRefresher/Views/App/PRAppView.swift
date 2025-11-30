@@ -16,7 +16,7 @@ enum LaunchState {
 
 struct PRAppView: View {
     @EnvironmentObject var appUserDefaults: PRAppUserPreferences
-    @EnvironmentObject var ConfigManager: PRConfigManager
+    @EnvironmentObject var ConfigManager: PRConfigurationManager
     @EnvironmentObject var networkObserver: PRRequestHandlerObserver
     
     @StateObject var viewModel = PRAppViewModel()
@@ -34,7 +34,7 @@ struct PRAppView: View {
                         viewModel.launchState = .main
                     }
                 case .main:
-                    PRMainTabView(showSubscriptionView: viewModel.showSubscriptionViewInMainTabView)
+                    PRTabView(showSubscriptionView: viewModel.showSubscriptionViewInMainTabView)
                 }
             }else{
                 PRLaunchView()
@@ -49,12 +49,12 @@ struct PRAppView: View {
     
     var guideView: some View {
         PRGuidePage {
-//            if PRUserManager.shared.isVip() {
+//            if PRUserManager.shared.checkVipEligibility() {
                 viewModel.launchState = .main
 //            } else {
 //                viewModel.launchState = .subscription
 //            }
-            appUserDefaults.hasFinishGuide = true
+            appUserDefaults.guided = true
         }
     }
     
@@ -71,19 +71,19 @@ struct PRAppView: View {
             if canGo {
                 setupView()
             }
-            PRMarketManager.shared.uploadInstallEvent()
+            PRMarketManager.shared.reportInstall()
         }
     }
     
     private func initLanuchType() {
         
-        viewModel.isFirstOpen = appUserDefaults.hasFinishGuide
+        viewModel.isFirstOpen = appUserDefaults.guided
         guard PRAppInfo.lanuchType == .unknown else {
             return
         }
         
         let lastVC = PRAppInfo.lastVC
-        if !appUserDefaults.hasFinishGuide {
+        if !appUserDefaults.guided {
             PRAppInfo.lanuchType = .newInstall
         } else if lastVC != PRAppInfo.vc {
             PRAppInfo.lanuchType = .upgrade
@@ -100,7 +100,7 @@ struct PRAppView: View {
             return
         }
         // 其它先进入订阅页
-        if !PRUserManager.shared.isVip() {
+        if !PRUserManager.shared.checkVipEligibility() {
             if PRAppInfo.lanuchType != .newInstall, PRProductManager.shared.packageList().count > 0 {
                 viewModel.launchState = .subscription
                 return
@@ -127,5 +127,5 @@ struct PRAppView: View {
 
 #Preview {
     PRLaunchView()
-        .withEnvironments()
+        .provideEnivironmentObject()
 }

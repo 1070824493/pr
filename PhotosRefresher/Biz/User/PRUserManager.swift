@@ -1,53 +1,51 @@
 //
 //  PRUserManager.swift
 
-//
-//
+import Foundation
+import Combine
 
-
-
-class PRUserManager: ObservableObject {
+final class PRUserManager: ObservableObject {
     static let shared = PRUserManager()
     
-    @Published var userInfo: PRUserData? = nil
+    @Published var currentUser: PRUserData? = nil
     
-    private let filePath: URL
-    private let encoder = JSONEncoder()
-    private let decoder = JSONDecoder()
-    private var isLoopGetVipStatus = false
+    private let storagePath: URL
+    private let jsonEncoder = JSONEncoder()
+    private let jsonDecoder = JSONDecoder()
+    private var isPollingVipStatus = false
     
-    private let saveQueue = DispatchQueue(label: "PR.userinfo.queue")
+    private let persistQueue = DispatchQueue(label: "com.pr.user.persist")
     
     private init() {
         do {
-            filePath = try FileManager.default.url(for: .documentDirectory,
-                                                   in: .userDomainMask,
-                                                   appropriateFor: nil,
-                                                   create: false).appendingPathComponent("user_info")
-            _ = self.loadCache(file: filePath)
+            storagePath = try FileManager.default.url(for: .documentDirectory,
+                                                      in: .userDomainMask,
+                                                      appropriateFor: nil,
+                                                      create: false).appendingPathComponent("user_info")
+            _ = self.fetchCachedData(from: storagePath)
         } catch let error {
             fatalError(error.localizedDescription)
         }
     }
     
-    func isVip() -> Bool {
-        return userInfo?.vipStatus == 1
+    func checkVipEligibility() -> Bool {
+        return currentUser?.vipStatus == 1
     }
     
-    func isSubscripting() -> Bool {
-        return userInfo?.vipSubStatus == 1
+    func checkSubscriptionActive() -> Bool {
+        return currentUser?.vipSubStatus == 1
     }
     
-    func getUserInfoAsync() async -> PRUserData? {
-        if userInfo != nil {
-            return userInfo
+    func obtainUserInfoAsync() async -> PRUserData? {
+        if currentUser != nil {
+            return currentUser
         }
         
-        let _ = await refreshUserInfo()
-        return userInfo
+        let _ = await synchronizeUserInfo()
+        return currentUser
     }
     
-    func refreshUserInfo() async -> Bool {
+    func synchronizeUserInfo() async -> Bool {
         do {
             let res: PRCommonResponse<PRUserData> = try await PRRequestHandlerManager.shared.PRrequest(url: ApiConstants.photosrefresher_user_info, method: .get)
             if !res.succeed() {
@@ -55,10 +53,10 @@ class PRUserManager: ObservableObject {
             }
             
             await MainActor.run {
-                let userInfo = res.data
-                self.userInfo = userInfo
+                let fetchedUser = res.data
+                self.currentUser = fetchedUser
             }
-            save()
+            persistUserData()
             return true
         } catch {
             return false
@@ -66,41 +64,41 @@ class PRUserManager: ObservableObject {
     }
     
     @MainActor
-    func loopGetVipStatus() {
-        if isLoopGetVipStatus {
+    func startPollingVipStatus() {
+        if isPollingVipStatus {
             return
         }
-        isLoopGetVipStatus = true
+        isPollingVipStatus = true
         
         Task {
-            var attempt = 0
-            let maxAttempts = 6
-            while attempt < maxAttempts {
-                let delay = pow(2.0, Double(attempt))
-                try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            var iteration = 0
+            let maxIterations = 6
+            while iteration < maxIterations {
+                let waitTime = pow(2.0, Double(iteration))
+                try? await Task.sleep(nanoseconds: UInt64(waitTime * 1_000_000_000))
                 
-                let succeed = await refreshUserInfo()
-                if (succeed) {
-                    if isVip() && isSubscripting() {
+                let success = await synchronizeUserInfo()
+                if success {
+                    if checkVipEligibility() && checkSubscriptionActive() {
                         break
                     }
                 }
                 
-                attempt += 1
+                iteration += 1
             }
             
             await MainActor.run {
-                isLoopGetVipStatus = false
+                isPollingVipStatus = false
             }
         }
     }
     
-    private func loadCache(file: URL) -> Bool {
-        if let data = try? Data(contentsOf: file) {
-            decoder.dataDecodingStrategy = .base64
+    private func fetchCachedData(from: URL) -> Bool {
+        if let cachedData = try? Data(contentsOf: from) {
+            jsonDecoder.dataDecodingStrategy = .base64
             do {
-                let savedData = try decoder.decode(PRUserData.self, from: data)
-                self.userInfo = savedData
+                let decodedUser = try jsonDecoder.decode(PRUserData.self, from: cachedData)
+                self.currentUser = decodedUser
                 return true
             } catch {
                 return false
@@ -109,20 +107,20 @@ class PRUserManager: ObservableObject {
         return false
     }
     
-    private func save() {
-        saveQueue.async { [weak self] in
+    private func persistUserData() {
+        persistQueue.async { [weak self] in
             guard let self = self else {
                 return
             }
             
             do {
-                let savedData = self.userInfo
-                let data = try self.encoder.encode(savedData)
-                try data.write(to: self.filePath, options: .atomicWrite)
+                let userToPersist = self.currentUser
+                let encodedData = try self.jsonEncoder.encode(userToPersist)
+                try encodedData.write(to: self.storagePath, options: .atomicWrite)
             } catch {
-                print("Error while saving userinfo: \(error.localizedDescription)")
+                print("Error while persisting user data: \(error.localizedDescription)")
             }
-            self.encoder.dataEncodingStrategy = .base64
+            self.jsonEncoder.dataEncodingStrategy = .base64
         }
     }
     

@@ -9,69 +9,74 @@ import StoreKit
 
 class PRSubscriptionHelper {
     
-    static let shared = PRSubscriptionHelper()
+    static let instance = PRSubscriptionHelper()
     
-    private var productCache: [String: Product] = [:]
+    private var cachedProducts: [String: Product] = [:]
     
     private init() {}
     
-    func PRFetchProduct(with productID: String) async throws -> Product? {
-        if let cachedProduct = productCache[productID] {
-            return cachedProduct
+    /// 获取指定的订阅产品
+    func fetchProduct(by productID: String) async throws -> Product? {
+        if let product = cachedProducts[productID] {
+            return product
         }
         
         let products = try await Product.products(for: [productID])
-        if let product = products.first {
-            productCache[productID] = product
-            return product
+        if let firstProduct = products.first {
+            cachedProducts[productID] = firstProduct
+            return firstProduct
         }
         return nil
     }
     
-    func PRTransactionProduct(
-        with productID: String,
-        appAccountToken: UUID,
-        onBeforePurchase: ((Product) -> Void)? = nil
+    /// 购买指定的订阅产品
+    func purchaseProduct(
+        productID: String,
+        accountToken: UUID,
+        beforePurchase: ((Product) -> Void)? = nil
     ) async throws -> Product.PurchaseResult {
-        guard let product = try await PRFetchProduct(with: productID) else {
-            throw NSError(domain: "PayManager", code: -2000, userInfo: [NSLocalizedDescriptionKey: "Product not found"])
+        guard let product = try await fetchProduct(by: productID) else {
+            throw NSError(domain: "SubscriptionManager", code: -2000, userInfo: [NSLocalizedDescriptionKey: "Product not found"])
         }
         
-        if let onBeforePurchase = onBeforePurchase {
+        if let beforePurchase = beforePurchase {
             DispatchQueue.main.async {
-                onBeforePurchase(product)
+                beforePurchase(product)
             }
         }
         
-        let purchaseOptions: Set<Product.PurchaseOption> = [.appAccountToken(appAccountToken)]
-        let purchaseResult = try await product.purchase(options: purchaseOptions)
-        return purchaseResult
+        let purchaseOptions: Set<Product.PurchaseOption> = [.appAccountToken(accountToken)]
+        let result = try await product.purchase(options: purchaseOptions)
+        return result
     }
     
-    func PRSyncTransaction() async {
+    /// 同步交易记录
+    func syncTransactions() async {
         do {
             try await AppStore.sync()
         } catch {
-            print("syncPurchases error = \(error)")
+            print("Error syncing transactions: \(error)")
         }
     }
     
-    func PRQueryUnfinishedTransaction() async -> [(transaction: Transaction, jwsRepresentation: String)] {
-        var list = [(transaction: Transaction, jwsRepresentation: String)]()
+    /// 查询未完成的交易
+    func fetchPendingTransactions() async -> [(transaction: Transaction, jws: String)] {
+        var pendingTransactions = [(transaction: Transaction, jws: String)]()
         do {
-            for await result in Transaction.unfinished {
-                switch result {
+            for await transactionResult in Transaction.unfinished {
+                switch transactionResult {
                 case .verified(let transaction):
-                    list.append((transaction: transaction, jwsRepresentation: result.jwsRepresentation))
+                    pendingTransactions.append((transaction: transaction, jws: transactionResult.jwsRepresentation))
                 case .unverified(_, let error):
-                    print("queryUnfinishedPurchase error = \(error)")
+                    print("Error fetching pending transaction: \(error)")
                 }
             }
         }
-        return list
+        return pendingTransactions
     }
     
-    func canMakePayments() -> Bool {
+    /// 检查是否允许支付
+    func isPaymentAllowed() -> Bool {
         return AppStore.canMakePayments
     }
     

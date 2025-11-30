@@ -8,22 +8,6 @@
 import SwiftUI
 
 
-// MARK: - Storage Bar View
-
-func formatBytes(_ bytes: Int64) -> String {
-    guard bytes > 0 else { return "" }
-    let units = ["B", "KB", "MB", "GB", "TB"]
-    var v = Double(bytes)
-    var i = 0
-    while v >= 1024, i < units.count - 1 {
-        v /= 1024; i += 1
-    }
-    return (v >= 10 || i == 0) ? String(format: "%.0f %@", v, units[i])
-        : String(format: "%.1f %@", v, units[i])
-}
-
-
-
 // MARK: - Main View
 
 public struct PRDeleteFinishPage: View {
@@ -45,7 +29,7 @@ public struct PRDeleteFinishPage: View {
         let disk = assessStorageMetrics()
         totalGB = disk?.totalCapacity ?? 0
         usedGB = disk?.utilizedCapacity ?? 0
-        clutterGB = PRPhotoMapManager.shared.totalSize
+        clutterGB = PRAssetsCleanManager.shared.totalSize
     }
 
     public init(
@@ -100,7 +84,7 @@ public struct PRDeleteFinishPage: View {
                             .frame(width: 139, height: 93)
 
                         Text("Cleanup Complete!")
-                            .font(.bold28)
+                            .font(.system(size: 28.fit, weight: .bold, design: .default))
                             .foregroundColor(Color.white)
                             .padding(.top, 12)
 
@@ -112,17 +96,17 @@ public struct PRDeleteFinishPage: View {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack(spacing: 16) {
                                 Text("🎉")
-                                    .font(.bold24)
+                                    .font(.system(size: 24.fit, weight: .bold, design: .default))
                                     .padding(.leading, 16)
                                 
                                 VStack(alignment: .leading) {
                                     Text("\(removedFilesCount) Photo(\(spaceSavedText))")
-                                        .font(.bold18)
+                                        .font(.system(size: 18.fit, weight: .bold, design: .default))
                                         .foregroundColor(Color.white)
                                         .padding(.bottom, 6.5)
 
                                     Text("You have deleted")
-                                        .font(.regular12)
+                                        .font(.system(size: 12.fit, weight: .regular, design: .default))
                                         .foregroundColor(Color.white.opacity(0.65))
                                 }
                                 
@@ -143,17 +127,17 @@ public struct PRDeleteFinishPage: View {
                             
                             HStack(spacing: 16) {
                                 Text("⏳")
-                                    .font(.bold24)
+                                    .font(.system(size: 24.fit, weight: .bold, design: .default))
                                     .padding(.leading, 16)
                                 
                                 VStack(alignment: .leading) {
                                     Text("10 minutes")
-                                        .font(.bold18)
+                                        .font(.system(size: 18.fit, weight: .bold, design: .default))
                                         .foregroundColor(Color.white)
                                         .padding(.bottom, 6.5)
 
                                     Text("Save time with photos refresher")
-                                        .font(.regular12)
+                                        .font(.system(size: 12.fit, weight: .regular, design: .default))
                                         .foregroundColor(Color.white.opacity(0.65))
                                 }
                                 
@@ -193,7 +177,7 @@ public struct PRDeleteFinishPage: View {
                                 options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
                             ) {
                                 Text(attr)
-                                    .font(.regular12)
+                                    .font(.system(size: 12.fit, weight: .regular, design: .default))
                                     .foregroundColor(Color.white.opacity(0.35))
                                     .tint(Color.white.opacity(0.35))
                                     .multilineTextAlignment(.center)

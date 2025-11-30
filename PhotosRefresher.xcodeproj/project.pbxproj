@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A1E292F2EDC121D00BA601D /* PRConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1E292D2EDC121D00BA601D /* PRConfigManager.swift */; };
 		1EB3197F2ED1978300884DD1 /* CustomPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EB3197E2ED1978300884DD1 /* CustomPageView.swift */; };
 		1EE8CC1D2EDA9AD50064F683 /* OnReceiveChangeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF02EDA9AD40064F683 /* OnReceiveChangeModifier.swift */; };
 		1EE8CC212EDA9AD50064F683 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF72EDA9AD40064F683 /* Date+Extension.swift */; };
@@ -19,7 +20,6 @@
 		1EE8CC302EDA9AD50064F683 /* Bundle+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBE92EDA9AD40064F683 /* Bundle+Extension.swift */; };
 		1EE8CC312EDA9AD50064F683 /* RotationPublihsers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBED2EDA9AD40064F683 /* RotationPublihsers.swift */; };
 		1EE8CC322EDA9AD50064F683 /* StrokeModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF12EDA9AD40064F683 /* StrokeModifier.swift */; };
-		1EE8CC342EDA9AD50064F683 /* Font+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBEA2EDA9AD40064F683 /* Font+Extension.swift */; };
 		1EE8CC352EDA9AD50064F683 /* CommonAICuid.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBE32EDA9AD40064F683 /* CommonAICuid.mm */; };
 		1EE8CC362EDA9AD50064F683 /* Color+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF52EDA9AD40064F683 /* Color+Extension.swift */; };
 		1EE8CC382EDA9AD50064F683 /* SSKeychainQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBE02EDA9AD40064F683 /* SSKeychainQuery.m */; };
@@ -33,8 +33,8 @@
 		1EE8CC442EDA9AD50064F683 /* ViewDurationTrackerModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CBF22EDA9AD40064F683 /* ViewDurationTrackerModifier.swift */; };
 		1EE8CC542EDAC7AE0064F683 /* PRAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC532EDAC7AE0064F683 /* PRAppViewModel.swift */; };
 		1EE8CC552EDAC7AE0064F683 /* PRAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC522EDAC7AE0064F683 /* PRAppView.swift */; };
-		1EE8CC582EDAC7C50064F683 /* PRMainTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC572EDAC7C50064F683 /* PRMainTabViewModel.swift */; };
-		1EE8CC592EDAC7C50064F683 /* PRMainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC562EDAC7C50064F683 /* PRMainTabView.swift */; };
+		1EE8CC582EDAC7C50064F683 /* PRTabViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC572EDAC7C50064F683 /* PRTabViewModel.swift */; };
+		1EE8CC592EDAC7C50064F683 /* PRTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC562EDAC7C50064F683 /* PRTabView.swift */; };
 		1EE8CC672EDAC8580064F683 /* PRBreathingModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC622EDAC8580064F683 /* PRBreathingModifier.swift */; };
 		1EE8CC692EDAC8730064F683 /* PRAlertModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC682EDAC8730064F683 /* PRAlertModal.swift */; };
 		1EE8CC6C2EDAC8810064F683 /* PRDialogRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC6B2EDAC8810064F683 /* PRDialogRegistry.swift */; };
@@ -43,14 +43,13 @@
 		1EE8CC722EDAC8960064F683 /* PRRouterDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC6E2EDAC8960064F683 /* PRRouterDestination.swift */; };
 		1EE8CC732EDAC8960064F683 /* PRRouterRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC702EDAC8960064F683 /* PRRouterRegistry.swift */; };
 		1EE8CC762EDAC8A80064F683 /* PRAppUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC742EDAC8A80064F683 /* PRAppUserDefaults.swift */; };
-		1EE8CC792EDAC8BA0064F683 /* PRConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC782EDAC8BA0064F683 /* PRConfigManager.swift */; };
 		1EE8CC802EDAC8CC0064F683 /* PRMailHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC7D2EDAC8CC0064F683 /* PRMailHelper.swift */; };
 		1EE8CC812EDAC8CC0064F683 /* PRConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC7B2EDAC8CC0064F683 /* PRConstants.swift */; };
 		1EE8CC822EDAC8CC0064F683 /* PRAppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC7A2EDAC8CC0064F683 /* PRAppInfo.swift */; };
 		1EE8CC832EDAC8CC0064F683 /* PRDeviceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC7C2EDAC8CC0064F683 /* PRDeviceHelper.swift */; };
 		1EE8CC842EDAC8CC0064F683 /* PRReviewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC7E2EDAC8CC0064F683 /* PRReviewManager.swift */; };
 		1EE8CC852EDAC8CC0064F683 /* PRUIState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC7F2EDAC8CC0064F683 /* PRUIState.swift */; };
-		1EE8CC872EDAC8E20064F683 /* PRLocalizableManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC862EDAC8E20064F683 /* PRLocalizableManager.swift */; };
+		1EE8CC872EDAC8E20064F683 /* PRAppLocaleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC862EDAC8E20064F683 /* PRAppLocaleManager.swift */; };
 		1EE8CC8A2EDAC8F30064F683 /* PRUserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC892EDAC8F30064F683 /* PRUserInfo.swift */; };
 		1EE8CC8B2EDAC8F30064F683 /* PRConfigModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC882EDAC8F30064F683 /* PRConfigModel.swift */; };
 		1EE8CC8D2EDAC9020064F683 /* PRPermissonsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC8C2EDAC9020064F683 /* PRPermissonsManager.swift */; };
@@ -62,7 +61,6 @@
 		1EE8CC9A2EDAC9600064F683 /* PRFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC952EDAC9600064F683 /* PRFunctions.swift */; };
 		1EE8CC9B2EDAC9600064F683 /* PRDeviceUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC942EDAC9600064F683 /* PRDeviceUtils.swift */; };
 		1EE8CCA62EDAC97F0064F683 /* PRMultiProgressBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CCA22EDAC97F0064F683 /* PRMultiProgressBarView.swift */; };
-		1EE8CCA72EDAC97F0064F683 /* PRDividerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC9D2EDAC97F0064F683 /* PRDividerView.swift */; };
 		1EE8CCA92EDAC97F0064F683 /* PRShareImageActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CCA42EDAC97F0064F683 /* PRShareImageActivityView.swift */; };
 		1EE8CCAC2EDAC97F0064F683 /* PRBlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC9C2EDAC97F0064F683 /* PRBlurView.swift */; };
 		1EE8CCAD2EDAC97F0064F683 /* PRHomeBottomGestureModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EE8CC9F2EDAC97F0064F683 /* PRHomeBottomGestureModifier.swift */; };
@@ -72,13 +70,13 @@
 		E202D6C02EDACC8100B1F55F /* PRSubscribeNormalPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6B82EDACC8100B1F55F /* PRSubscribeNormalPage.swift */; };
 		E202D6C12EDACC8100B1F55F /* PRSimilarAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6A22EDACC8100B1F55F /* PRSimilarAnalyzer.swift */; };
 		E202D6C32EDACC8100B1F55F /* PRTextAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6A42EDACC8100B1F55F /* PRTextAnalyzer.swift */; };
-		E202D6C42EDACC8100B1F55F /* PRChunkScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6A82EDACC8100B1F55F /* PRChunkScheduler.swift */; };
+		E202D6C42EDACC8100B1F55F /* PRSegmentScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6A82EDACC8100B1F55F /* PRSegmentScheduler.swift */; };
 		E202D6C52EDACC8100B1F55F /* PRSnapshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6AE2EDACC8100B1F55F /* PRSnapshots.swift */; };
 		E202D6C62EDACC8100B1F55F /* PRSubscribeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6BD2EDACC8100B1F55F /* PRSubscribeViewModel.swift */; };
-		E202D6C72EDACC8100B1F55F /* PRPhotoMapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6A92EDACC8100B1F55F /* PRPhotoMapManager.swift */; };
+		E202D6C72EDACC8100B1F55F /* PRAssetsCleanManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6A92EDACC8100B1F55F /* PRAssetsCleanManager.swift */; };
 		E202D6C82EDACC8100B1F55F /* PRSubscribeNormalCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6B72EDACC8100B1F55F /* PRSubscribeNormalCellView.swift */; };
 		E202D6C92EDACC8100B1F55F /* PRSubscribeListRequestModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6B32EDACC8100B1F55F /* PRSubscribeListRequestModel.swift */; };
-		E202D6CA2EDACC8100B1F55F /* PRPhotoTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6AA2EDACC8100B1F55F /* PRPhotoTypes.swift */; };
+		E202D6CA2EDACC8100B1F55F /* PRAssetsTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6AA2EDACC8100B1F55F /* PRAssetsTypes.swift */; };
 		E202D6CC2EDACC8100B1F55F /* PRLargeVideoAnalyzer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6A02EDACC8100B1F55F /* PRLargeVideoAnalyzer.swift */; };
 		E202D6CD2EDACC8100B1F55F /* PRSubscribeSwitchPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6BA2EDACC8100B1F55F /* PRSubscribeSwitchPage.swift */; };
 		E202D6CE2EDACC8100B1F55F /* PRAssetThumbnailProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6B02EDACC8100B1F55F /* PRAssetThumbnailProvider.swift */; };
@@ -95,28 +93,21 @@
 		E202D6E22EDAD13700B1F55F /* PRPaymentProcessManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6E12EDAD13700B1F55F /* PRPaymentProcessManager.swift */; };
 		E202D6E42EDAD14600B1F55F /* PRSubscriptionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6E32EDAD14600B1F55F /* PRSubscriptionHelper.swift */; };
 		E202D6E72EDAD17500B1F55F /* PROrderModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6E62EDAD17500B1F55F /* PROrderModel.swift */; };
-		E202D6EB2EDAD1C500B1F55F /* Alamofire+EventSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6EA2EDAD1C500B1F55F /* Alamofire+EventSource.swift */; };
-		E202D6ED2EDAD1E800B1F55F /* PRDecodableEventSourceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6EC2EDAD1E800B1F55F /* PRDecodableEventSourceMessage.swift */; };
-		E202D6EF2EDAD1FF00B1F55F /* PRDecodableEventSourceSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6EE2EDAD1FF00B1F55F /* PRDecodableEventSourceSerializer.swift */; };
-		E202D6F12EDAD21400B1F55F /* PREventSourceMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6F02EDAD21400B1F55F /* PREventSourceMessage.swift */; };
-		E202D6F32EDAD22600B1F55F /* PREventSourceSerializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6F22EDAD22600B1F55F /* PREventSourceSerializer.swift */; };
 		E202D6F52EDAD23A00B1F55F /* PREnvironmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6F42EDAD23A00B1F55F /* PREnvironmentManager.swift */; };
 		E202D6F72EDAD24C00B1F55F /* PRRequestHandlerInterceptor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6F62EDAD24C00B1F55F /* PRRequestHandlerInterceptor.swift */; };
 		E202D6F92EDAD25C00B1F55F /* PRRequestHandlerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6F82EDAD25C00B1F55F /* PRRequestHandlerManager.swift */; };
 		E202D6FB2EDAD27200B1F55F /* PRRequestHandlerNetworkManager+File.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6FA2EDAD27200B1F55F /* PRRequestHandlerNetworkManager+File.swift */; };
-		E202D6FD2EDAD28B00B1F55F /* PRRequestHandlerNetworkManager+Stream.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6FC2EDAD28B00B1F55F /* PRRequestHandlerNetworkManager+Stream.swift */; };
 		E202D6FF2EDAD2A200B1F55F /* PRRequestHandlerObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D6FE2EDAD2A200B1F55F /* PRRequestHandlerObserver.swift */; };
 		E202D7012EDAD2C800B1F55F /* PRRequestHandlerResponseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D7002EDAD2C800B1F55F /* PRRequestHandlerResponseModel.swift */; };
 		E202D7032EDAD2DA00B1F55F /* PRRequestHandlerSignUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = E202D7022EDAD2DA00B1F55F /* PRRequestHandlerSignUtils.swift */; };
 		E2242A882ECEEE8400C867D4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E2242A832ECEEE8400C867D4 /* Assets.xcassets */; };
 		E2242A982ECEEE8400C867D4 /* PhotosRefresherApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242A862ECEEE8400C867D4 /* PhotosRefresherApp.swift */; };
-		E2242BCA2ECF106300C867D4 /* ATTrackingManager+Limit.m in Sources */ = {isa = PBXBuildFile; fileRef = E2242B012ECF106300C867D4 /* ATTrackingManager+Limit.m */; };
+		E2242BCA2ECF106300C867D4 /* TrackingAuthorizationInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = E2242B012ECF106300C867D4 /* TrackingAuthorizationInterceptor.m */; };
 		E2242C0E2ECF10B800C867D4 /* PRBottomSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BEA2ECF10B800C867D4 /* PRBottomSheet.swift */; };
 		E2242C112ECF10B800C867D4 /* PRSettingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242C092ECF10B800C867D4 /* PRSettingPage.swift */; };
 		E2242C122ECF10B800C867D4 /* PRAlbumPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BFC2ECF10B800C867D4 /* PRAlbumPermissionView.swift */; };
 		E2242C132ECF10B800C867D4 /* PRSettingSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242C0A2ECF10B800C867D4 /* PRSettingSection.swift */; };
 		E2242C172ECF10B800C867D4 /* PRModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BF32ECF10B800C867D4 /* PRModalView.swift */; };
-		E2242C182ECF10B800C867D4 /* PRAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BFA2ECF10B800C867D4 /* PRAlertView.swift */; };
 		E2242C192ECF10B800C867D4 /* PRGuideWelcomePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BFF2ECF10B800C867D4 /* PRGuideWelcomePage.swift */; };
 		E2242C1B2ECF10B800C867D4 /* PRHomeHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242C002ECF10B800C867D4 /* PRHomeHUDView.swift */; };
 		E2242C1E2ECF10B800C867D4 /* PRLottieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2242BF22ECF10B800C867D4 /* PRLottieView.swift */; };
@@ -142,6 +133,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0A1E292D2EDC121D00BA601D /* PRConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRConfigManager.swift; sourceTree = "<group>"; };
 		1EB3197E2ED1978300884DD1 /* CustomPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomPageView.swift; sourceTree = "<group>"; };
 		1EE8CBDD2EDA9AD40064F683 /* SSKeychain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSKeychain.h; sourceTree = "<group>"; };
 		1EE8CBDE2EDA9AD40064F683 /* SSKeychain.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSKeychain.m; sourceTree = "<group>"; };
@@ -154,7 +146,6 @@
 		1EE8CBE72EDA9AD40064F683 /* Animation+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Animation+Extension.swift"; sourceTree = "<group>"; };
 		1EE8CBE82EDA9AD40064F683 /* Array+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extension.swift"; sourceTree = "<group>"; };
 		1EE8CBE92EDA9AD40064F683 /* Bundle+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Extension.swift"; sourceTree = "<group>"; };
-		1EE8CBEA2EDA9AD40064F683 /* Font+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Extension.swift"; sourceTree = "<group>"; };
 		1EE8CBEC2EDA9AD40064F683 /* KeyboardPublishers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardPublishers.swift; sourceTree = "<group>"; };
 		1EE8CBED2EDA9AD40064F683 /* RotationPublihsers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RotationPublihsers.swift; sourceTree = "<group>"; };
 		1EE8CBF02EDA9AD40064F683 /* OnReceiveChangeModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnReceiveChangeModifier.swift; sourceTree = "<group>"; };
@@ -172,8 +163,8 @@
 		1EE8CBFD2EDA9AD40064F683 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		1EE8CC522EDAC7AE0064F683 /* PRAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAppView.swift; sourceTree = "<group>"; };
 		1EE8CC532EDAC7AE0064F683 /* PRAppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAppViewModel.swift; sourceTree = "<group>"; };
-		1EE8CC562EDAC7C50064F683 /* PRMainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRMainTabView.swift; sourceTree = "<group>"; };
-		1EE8CC572EDAC7C50064F683 /* PRMainTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRMainTabViewModel.swift; sourceTree = "<group>"; };
+		1EE8CC562EDAC7C50064F683 /* PRTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRTabView.swift; sourceTree = "<group>"; };
+		1EE8CC572EDAC7C50064F683 /* PRTabViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRTabViewModel.swift; sourceTree = "<group>"; };
 		1EE8CC622EDAC8580064F683 /* PRBreathingModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRBreathingModifier.swift; sourceTree = "<group>"; };
 		1EE8CC682EDAC8730064F683 /* PRAlertModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAlertModal.swift; sourceTree = "<group>"; };
 		1EE8CC6A2EDAC8810064F683 /* PRDialogDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDialogDestination.swift; sourceTree = "<group>"; };
@@ -182,14 +173,13 @@
 		1EE8CC6F2EDAC8960064F683 /* PRRouterPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRouterPath.swift; sourceTree = "<group>"; };
 		1EE8CC702EDAC8960064F683 /* PRRouterRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRouterRegistry.swift; sourceTree = "<group>"; };
 		1EE8CC742EDAC8A80064F683 /* PRAppUserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAppUserDefaults.swift; sourceTree = "<group>"; };
-		1EE8CC782EDAC8BA0064F683 /* PRConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRConfigManager.swift; sourceTree = "<group>"; };
 		1EE8CC7A2EDAC8CC0064F683 /* PRAppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAppInfo.swift; sourceTree = "<group>"; };
 		1EE8CC7B2EDAC8CC0064F683 /* PRConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRConstants.swift; sourceTree = "<group>"; };
 		1EE8CC7C2EDAC8CC0064F683 /* PRDeviceHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDeviceHelper.swift; sourceTree = "<group>"; };
 		1EE8CC7D2EDAC8CC0064F683 /* PRMailHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRMailHelper.swift; sourceTree = "<group>"; };
 		1EE8CC7E2EDAC8CC0064F683 /* PRReviewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRReviewManager.swift; sourceTree = "<group>"; };
 		1EE8CC7F2EDAC8CC0064F683 /* PRUIState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRUIState.swift; sourceTree = "<group>"; };
-		1EE8CC862EDAC8E20064F683 /* PRLocalizableManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRLocalizableManager.swift; sourceTree = "<group>"; };
+		1EE8CC862EDAC8E20064F683 /* PRAppLocaleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAppLocaleManager.swift; sourceTree = "<group>"; };
 		1EE8CC882EDAC8F30064F683 /* PRConfigModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRConfigModel.swift; sourceTree = "<group>"; };
 		1EE8CC892EDAC8F30064F683 /* PRUserInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRUserInfo.swift; sourceTree = "<group>"; };
 		1EE8CC8C2EDAC9020064F683 /* PRPermissonsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRPermissonsManager.swift; sourceTree = "<group>"; };
@@ -201,7 +191,6 @@
 		1EE8CC962EDAC9600064F683 /* PRIdfaUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRIdfaUtils.swift; sourceTree = "<group>"; };
 		1EE8CC972EDAC9600064F683 /* PRToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRToast.swift; sourceTree = "<group>"; };
 		1EE8CC9C2EDAC97F0064F683 /* PRBlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRBlurView.swift; sourceTree = "<group>"; };
-		1EE8CC9D2EDAC97F0064F683 /* PRDividerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDividerView.swift; sourceTree = "<group>"; };
 		1EE8CC9F2EDAC97F0064F683 /* PRHomeBottomGestureModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRHomeBottomGestureModifier.swift; sourceTree = "<group>"; };
 		1EE8CCA02EDAC97F0064F683 /* PRLaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRLaunchView.swift; sourceTree = "<group>"; };
 		1EE8CCA22EDAC97F0064F683 /* PRMultiProgressBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRMultiProgressBarView.swift; sourceTree = "<group>"; };
@@ -216,9 +205,9 @@
 		E202D6A22EDACC8100B1F55F /* PRSimilarAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSimilarAnalyzer.swift; sourceTree = "<group>"; };
 		E202D6A42EDACC8100B1F55F /* PRTextAnalyzer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRTextAnalyzer.swift; sourceTree = "<group>"; };
 		E202D6A72EDACC8100B1F55F /* PRAssetsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAssetsHelper.swift; sourceTree = "<group>"; };
-		E202D6A82EDACC8100B1F55F /* PRChunkScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRChunkScheduler.swift; sourceTree = "<group>"; };
-		E202D6A92EDACC8100B1F55F /* PRPhotoMapManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRPhotoMapManager.swift; sourceTree = "<group>"; };
-		E202D6AA2EDACC8100B1F55F /* PRPhotoTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRPhotoTypes.swift; sourceTree = "<group>"; };
+		E202D6A82EDACC8100B1F55F /* PRSegmentScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSegmentScheduler.swift; sourceTree = "<group>"; };
+		E202D6A92EDACC8100B1F55F /* PRAssetsCleanManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAssetsCleanManager.swift; sourceTree = "<group>"; };
+		E202D6AA2EDACC8100B1F55F /* PRAssetsTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAssetsTypes.swift; sourceTree = "<group>"; };
 		E202D6AC2EDACC8100B1F55F /* PRDiskSpaceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDiskSpaceManager.swift; sourceTree = "<group>"; };
 		E202D6AE2EDACC8100B1F55F /* PRSnapshots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSnapshots.swift; sourceTree = "<group>"; };
 		E202D6B02EDACC8100B1F55F /* PRAssetThumbnailProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAssetThumbnailProvider.swift; sourceTree = "<group>"; };
@@ -236,29 +225,22 @@
 		E202D6E12EDAD13700B1F55F /* PRPaymentProcessManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRPaymentProcessManager.swift; sourceTree = "<group>"; };
 		E202D6E32EDAD14600B1F55F /* PRSubscriptionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRSubscriptionHelper.swift; sourceTree = "<group>"; };
 		E202D6E62EDAD17500B1F55F /* PROrderModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PROrderModel.swift; sourceTree = "<group>"; };
-		E202D6EA2EDAD1C500B1F55F /* Alamofire+EventSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Alamofire+EventSource.swift"; sourceTree = "<group>"; };
-		E202D6EC2EDAD1E800B1F55F /* PRDecodableEventSourceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDecodableEventSourceMessage.swift; sourceTree = "<group>"; };
-		E202D6EE2EDAD1FF00B1F55F /* PRDecodableEventSourceSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRDecodableEventSourceSerializer.swift; sourceTree = "<group>"; };
-		E202D6F02EDAD21400B1F55F /* PREventSourceMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PREventSourceMessage.swift; sourceTree = "<group>"; };
-		E202D6F22EDAD22600B1F55F /* PREventSourceSerializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PREventSourceSerializer.swift; sourceTree = "<group>"; };
 		E202D6F42EDAD23A00B1F55F /* PREnvironmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PREnvironmentManager.swift; sourceTree = "<group>"; };
 		E202D6F62EDAD24C00B1F55F /* PRRequestHandlerInterceptor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerInterceptor.swift; sourceTree = "<group>"; };
 		E202D6F82EDAD25C00B1F55F /* PRRequestHandlerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerManager.swift; sourceTree = "<group>"; };
 		E202D6FA2EDAD27200B1F55F /* PRRequestHandlerNetworkManager+File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PRRequestHandlerNetworkManager+File.swift"; sourceTree = "<group>"; };
-		E202D6FC2EDAD28B00B1F55F /* PRRequestHandlerNetworkManager+Stream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PRRequestHandlerNetworkManager+Stream.swift"; sourceTree = "<group>"; };
 		E202D6FE2EDAD2A200B1F55F /* PRRequestHandlerObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerObserver.swift; sourceTree = "<group>"; };
 		E202D7002EDAD2C800B1F55F /* PRRequestHandlerResponseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerResponseModel.swift; sourceTree = "<group>"; };
 		E202D7022EDAD2DA00B1F55F /* PRRequestHandlerSignUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRRequestHandlerSignUtils.swift; sourceTree = "<group>"; };
 		E22428542ECEEB7E00C867D4 /* PhotosRefresher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotosRefresher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2242A832ECEEE8400C867D4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E2242A862ECEEE8400C867D4 /* PhotosRefresherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosRefresherApp.swift; sourceTree = "<group>"; };
-		E2242B002ECF106300C867D4 /* ATTrackingManager+Limit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ATTrackingManager+Limit.h"; sourceTree = "<group>"; };
-		E2242B012ECF106300C867D4 /* ATTrackingManager+Limit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ATTrackingManager+Limit.m"; sourceTree = "<group>"; };
+		E2242B002ECF106300C867D4 /* TrackingAuthorizationInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TrackingAuthorizationInterceptor.h; sourceTree = "<group>"; };
+		E2242B012ECF106300C867D4 /* TrackingAuthorizationInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TrackingAuthorizationInterceptor.m; sourceTree = "<group>"; };
 		E2242BEA2ECF10B800C867D4 /* PRBottomSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRBottomSheet.swift; sourceTree = "<group>"; };
 		E2242BEB2ECF10B800C867D4 /* PRCustomNavigationBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRCustomNavigationBarView.swift; sourceTree = "<group>"; };
 		E2242BF22ECF10B800C867D4 /* PRLottieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRLottieView.swift; sourceTree = "<group>"; };
 		E2242BF32ECF10B800C867D4 /* PRModalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRModalView.swift; sourceTree = "<group>"; };
-		E2242BFA2ECF10B800C867D4 /* PRAlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAlertView.swift; sourceTree = "<group>"; };
 		E2242BFC2ECF10B800C867D4 /* PRAlbumPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRAlbumPermissionView.swift; sourceTree = "<group>"; };
 		E2242BFD2ECF10B800C867D4 /* PRGuidePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRGuidePage.swift; sourceTree = "<group>"; };
 		E2242BFE2ECF10B800C867D4 /* PRGuideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRGuideViewModel.swift; sourceTree = "<group>"; };
@@ -307,6 +289,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A1E292E2EDC121D00BA601D /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				0A1E292D2EDC121D00BA601D /* PRConfigManager.swift */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
 		1EE8CBE12EDA9AD40064F683 /* Keychain */ = {
 			isa = PBXGroup;
 			children = (
@@ -336,7 +326,6 @@
 				1EE8CBE72EDA9AD40064F683 /* Animation+Extension.swift */,
 				1EE8CBE82EDA9AD40064F683 /* Array+Extension.swift */,
 				1EE8CBE92EDA9AD40064F683 /* Bundle+Extension.swift */,
-				1EE8CBEA2EDA9AD40064F683 /* Font+Extension.swift */,
 			);
 			path = business;
 			sourceTree = "<group>";
@@ -444,9 +433,10 @@
 			isa = PBXGroup;
 			children = (
 				E202D6A72EDACC8100B1F55F /* PRAssetsHelper.swift */,
-				E202D6A82EDACC8100B1F55F /* PRChunkScheduler.swift */,
-				E202D6A92EDACC8100B1F55F /* PRPhotoMapManager.swift */,
-				E202D6AA2EDACC8100B1F55F /* PRPhotoTypes.swift */,
+				E202D6A82EDACC8100B1F55F /* PRSegmentScheduler.swift */,
+				E202D6AA2EDACC8100B1F55F /* PRAssetsTypes.swift */,
+				E202D6A92EDACC8100B1F55F /* PRAssetsCleanManager.swift */,
+				E202D6AE2EDACC8100B1F55F /* PRSnapshots.swift */,
 			);
 			path = core;
 			sourceTree = "<group>";
@@ -457,14 +447,6 @@
 				E202D6AC2EDACC8100B1F55F /* PRDiskSpaceManager.swift */,
 			);
 			path = helper;
-			sourceTree = "<group>";
-		};
-		E202D6AF2EDACC8100B1F55F /* model */ = {
-			isa = PBXGroup;
-			children = (
-				E202D6AE2EDACC8100B1F55F /* PRSnapshots.swift */,
-			);
-			path = model;
 			sourceTree = "<group>";
 		};
 		E202D6B12EDACC8100B1F55F /* view */ = {
@@ -481,7 +463,6 @@
 				E202D6A62EDACC8100B1F55F /* analyze */,
 				E202D6AB2EDACC8100B1F55F /* core */,
 				E202D6AD2EDACC8100B1F55F /* helper */,
-				E202D6AF2EDACC8100B1F55F /* model */,
 				E202D6B12EDACC8100B1F55F /* view */,
 			);
 			path = PRAssetManage;
@@ -560,29 +541,15 @@
 		E202D6E82EDAD1AF00B1F55F /* Net */ = {
 			isa = PBXGroup;
 			children = (
-				E202D6E92EDAD1BA00B1F55F /* ES */,
 				E202D6F42EDAD23A00B1F55F /* PREnvironmentManager.swift */,
 				E202D6F62EDAD24C00B1F55F /* PRRequestHandlerInterceptor.swift */,
 				E202D6F82EDAD25C00B1F55F /* PRRequestHandlerManager.swift */,
 				E202D6FA2EDAD27200B1F55F /* PRRequestHandlerNetworkManager+File.swift */,
-				E202D6FC2EDAD28B00B1F55F /* PRRequestHandlerNetworkManager+Stream.swift */,
 				E202D6FE2EDAD2A200B1F55F /* PRRequestHandlerObserver.swift */,
 				E202D7002EDAD2C800B1F55F /* PRRequestHandlerResponseModel.swift */,
 				E202D7022EDAD2DA00B1F55F /* PRRequestHandlerSignUtils.swift */,
 			);
 			path = Net;
-			sourceTree = "<group>";
-		};
-		E202D6E92EDAD1BA00B1F55F /* ES */ = {
-			isa = PBXGroup;
-			children = (
-				E202D6EA2EDAD1C500B1F55F /* Alamofire+EventSource.swift */,
-				E202D6EC2EDAD1E800B1F55F /* PRDecodableEventSourceMessage.swift */,
-				E202D6EE2EDAD1FF00B1F55F /* PRDecodableEventSourceSerializer.swift */,
-				E202D6F02EDAD21400B1F55F /* PREventSourceMessage.swift */,
-				E202D6F22EDAD22600B1F55F /* PREventSourceSerializer.swift */,
-			);
-			path = ES;
 			sourceTree = "<group>";
 		};
 		E224284B2ECEEB7E00C867D4 = {
@@ -609,7 +576,6 @@
 				E202D6DD2EDAD0EB00B1F55F /* ThirdSDK */,
 				E202D6B22EDACC8100B1F55F /* PRAssetManage */,
 				E202D6BF2EDACC8100B1F55F /* Subs */,
-				E2242C602ED5E1B300C867D4 /* PhotosRefresher.entitlements */,
 				E2242B0B2ECF106300C867D4 /* Biz */,
 				E2242B482ECF106300C867D4 /* Modify */,
 				E2242B7E2ECF106300C867D4 /* Utils */,
@@ -620,6 +586,7 @@
 				E2242C4F2ECF191B00C867D4 /* LaunchScreen.storyboard */,
 				E2242A862ECEEE8400C867D4 /* PhotosRefresherApp.swift */,
 				E2242C4D2ECF166600C867D4 /* Info.plist */,
+				E2242C602ED5E1B300C867D4 /* PhotosRefresher.entitlements */,
 			);
 			path = PhotosRefresher;
 			sourceTree = "<group>";
@@ -652,13 +619,13 @@
 			path = Router;
 			sourceTree = "<group>";
 		};
-		E2242AEC2ECF106300C867D4 /* AppRegistry */ = {
+		E2242AEC2ECF106300C867D4 /* Inject */ = {
 			isa = PBXGroup;
 			children = (
 				E2242AE72ECF106300C867D4 /* Dialog */,
 				E2242AEB2ECF106300C867D4 /* Router */,
 			);
-			path = AppRegistry;
+			path = Inject;
 			sourceTree = "<group>";
 		};
 		E2242AEF2ECF106300C867D4 /* Cache */ = {
@@ -667,14 +634,6 @@
 				1EE8CC742EDAC8A80064F683 /* PRAppUserDefaults.swift */,
 			);
 			path = Cache;
-			sourceTree = "<group>";
-		};
-		E2242AF12ECF106300C867D4 /* Config */ = {
-			isa = PBXGroup;
-			children = (
-				1EE8CC782EDAC8BA0064F683 /* PRConfigManager.swift */,
-			);
-			path = Config;
 			sourceTree = "<group>";
 		};
 		E2242AF82ECF106300C867D4 /* Global */ = {
@@ -693,7 +652,7 @@
 		E2242AFA2ECF106300C867D4 /* Localizable */ = {
 			isa = PBXGroup;
 			children = (
-				1EE8CC862EDAC8E20064F683 /* PRLocalizableManager.swift */,
+				1EE8CC862EDAC8E20064F683 /* PRAppLocaleManager.swift */,
 			);
 			path = Localizable;
 			sourceTree = "<group>";
@@ -710,8 +669,8 @@
 		E2242B032ECF106300C867D4 /* Permissons */ = {
 			isa = PBXGroup;
 			children = (
-				E2242B002ECF106300C867D4 /* ATTrackingManager+Limit.h */,
-				E2242B012ECF106300C867D4 /* ATTrackingManager+Limit.m */,
+				E2242B002ECF106300C867D4 /* TrackingAuthorizationInterceptor.h */,
+				E2242B012ECF106300C867D4 /* TrackingAuthorizationInterceptor.m */,
 				1EE8CC8C2EDAC9020064F683 /* PRPermissonsManager.swift */,
 			);
 			path = Permissons;
@@ -744,9 +703,9 @@
 		E2242B0B2ECF106300C867D4 /* Biz */ = {
 			isa = PBXGroup;
 			children = (
-				E2242AEC2ECF106300C867D4 /* AppRegistry */,
+				0A1E292E2EDC121D00BA601D /* Configuration */,
+				E2242AEC2ECF106300C867D4 /* Inject */,
 				E2242AEF2ECF106300C867D4 /* Cache */,
-				E2242AF12ECF106300C867D4 /* Config */,
 				E2242AF82ECF106300C867D4 /* Global */,
 				E2242AFA2ECF106300C867D4 /* Localizable */,
 				E2242AFF2ECF106300C867D4 /* Network */,
@@ -781,7 +740,6 @@
 			isa = PBXGroup;
 			children = (
 				1EE8CC9C2EDAC97F0064F683 /* PRBlurView.swift */,
-				1EE8CC9D2EDAC97F0064F683 /* PRDividerView.swift */,
 				1EE8CC9F2EDAC97F0064F683 /* PRHomeBottomGestureModifier.swift */,
 				1EE8CCA02EDAC97F0064F683 /* PRLaunchView.swift */,
 				1EE8CCA22EDAC97F0064F683 /* PRMultiProgressBarView.swift */,
@@ -794,14 +752,6 @@
 				E202D6D52EDACD1100B1F55F /* PRThemeButton.swift */,
 			);
 			path = Common;
-			sourceTree = "<group>";
-		};
-		E2242BFB2ECF10B800C867D4 /* Alert */ = {
-			isa = PBXGroup;
-			children = (
-				E2242BFA2ECF10B800C867D4 /* PRAlertView.swift */,
-			);
-			path = Alert;
 			sourceTree = "<group>";
 		};
 		E2242C022ECF10B800C867D4 /* Guide */ = {
@@ -817,20 +767,20 @@
 			path = Guide;
 			sourceTree = "<group>";
 		};
-		E2242C052ECF10B800C867D4 /* Launch */ = {
+		E2242C052ECF10B800C867D4 /* App */ = {
 			isa = PBXGroup;
 			children = (
 				1EE8CC522EDAC7AE0064F683 /* PRAppView.swift */,
 				1EE8CC532EDAC7AE0064F683 /* PRAppViewModel.swift */,
 			);
-			path = Launch;
+			path = App;
 			sourceTree = "<group>";
 		};
 		E2242C082ECF10B800C867D4 /* Tab */ = {
 			isa = PBXGroup;
 			children = (
-				1EE8CC562EDAC7C50064F683 /* PRMainTabView.swift */,
-				1EE8CC572EDAC7C50064F683 /* PRMainTabViewModel.swift */,
+				1EE8CC562EDAC7C50064F683 /* PRTabView.swift */,
+				1EE8CC572EDAC7C50064F683 /* PRTabViewModel.swift */,
 			);
 			path = Tab;
 			sourceTree = "<group>";
@@ -850,9 +800,8 @@
 				E2242C3E2ECF12BD00C867D4 /* Slide */,
 				E2242C2A2ECF10E200C867D4 /* Clean */,
 				E2242BF92ECF10B800C867D4 /* Common */,
-				E2242BFB2ECF10B800C867D4 /* Alert */,
 				E2242C022ECF10B800C867D4 /* Guide */,
-				E2242C052ECF10B800C867D4 /* Launch */,
+				E2242C052ECF10B800C867D4 /* App */,
 				E2242C082ECF10B800C867D4 /* Tab */,
 				E2242C0B2ECF10B800C867D4 /* Setting */,
 			);
@@ -1047,12 +996,12 @@
 				1EE8CC8F2EDAC9100064F683 /* PRMarketManager.swift in Sources */,
 				1EE8CC732EDAC8960064F683 /* PRRouterRegistry.swift in Sources */,
 				E2242C132ECF10B800C867D4 /* PRSettingSection.swift in Sources */,
+				0A1E292F2EDC121D00BA601D /* PRConfigManager.swift in Sources */,
 				E2242C2C2ECF111600C867D4 /* PRCategoryHomePage.swift in Sources */,
-				1EE8CC872EDAC8E20064F683 /* PRLocalizableManager.swift in Sources */,
+				1EE8CC872EDAC8E20064F683 /* PRAppLocaleManager.swift in Sources */,
 				E2242C172ECF10B800C867D4 /* PRModalView.swift in Sources */,
-				1EE8CC582EDAC7C50064F683 /* PRMainTabViewModel.swift in Sources */,
-				1EE8CC592EDAC7C50064F683 /* PRMainTabView.swift in Sources */,
-				E2242C182ECF10B800C867D4 /* PRAlertView.swift in Sources */,
+				1EE8CC582EDAC7C50064F683 /* PRTabViewModel.swift in Sources */,
+				1EE8CC592EDAC7C50064F683 /* PRTabView.swift in Sources */,
 				E2242C192ECF10B800C867D4 /* PRGuideWelcomePage.swift in Sources */,
 				E202D6FF2EDAD2A200B1F55F /* PRRequestHandlerObserver.swift in Sources */,
 				E2242C422ECF130900C867D4 /* PRSlidePage.swift in Sources */,
@@ -1063,7 +1012,6 @@
 				1EE8CC6D2EDAC8810064F683 /* PRDialogDestination.swift in Sources */,
 				E2242C1F2ECF10B800C867D4 /* PRGuideViewModel.swift in Sources */,
 				E2242C212ECF10B800C867D4 /* PRIDFAPageView.swift in Sources */,
-				E202D6FD2EDAD28B00B1F55F /* PRRequestHandlerNetworkManager+Stream.swift in Sources */,
 				E2242C232ECF10B800C867D4 /* PRGuidePage.swift in Sources */,
 				E2242C322ECF116B00C867D4 /* PRDoubleFeedPage.swift in Sources */,
 				E2242C462ECF134B00C867D4 /* PRSlideCacheManager.swift in Sources */,
@@ -1073,10 +1021,8 @@
 				1EE8CC802EDAC8CC0064F683 /* PRMailHelper.swift in Sources */,
 				1EE8CC812EDAC8CC0064F683 /* PRConstants.swift in Sources */,
 				E202D6F52EDAD23A00B1F55F /* PREnvironmentManager.swift in Sources */,
-				E202D6EB2EDAD1C500B1F55F /* Alamofire+EventSource.swift in Sources */,
 				1EE8CC822EDAC8CC0064F683 /* PRAppInfo.swift in Sources */,
 				1EE8CC832EDAC8CC0064F683 /* PRDeviceHelper.swift in Sources */,
-				E202D6F32EDAD22600B1F55F /* PREventSourceSerializer.swift in Sources */,
 				E202D6E72EDAD17500B1F55F /* PROrderModel.swift in Sources */,
 				1EE8CC842EDAC8CC0064F683 /* PRReviewManager.swift in Sources */,
 				1EE8CC852EDAC8CC0064F683 /* PRUIState.swift in Sources */,
@@ -1096,7 +1042,6 @@
 				1EE8CC242EDA9AD50064F683 /* Data+Extension.swift in Sources */,
 				1EE8CC252EDA9AD50064F683 /* View+Extension.swift in Sources */,
 				E202D7012EDAD2C800B1F55F /* PRRequestHandlerResponseModel.swift in Sources */,
-				E202D6ED2EDAD1E800B1F55F /* PRDecodableEventSourceMessage.swift in Sources */,
 				E202D6D82EDACED900B1F55F /* PRSubscribeEntryView.swift in Sources */,
 				1EE8CC2C2EDA9AD50064F683 /* SSKeychain.m in Sources */,
 				1EE8CC2D2EDA9AD50064F683 /* CommonAICuidUtils.m in Sources */,
@@ -1108,18 +1053,17 @@
 				E202D6C02EDACC8100B1F55F /* PRSubscribeNormalPage.swift in Sources */,
 				E202D6C12EDACC8100B1F55F /* PRSimilarAnalyzer.swift in Sources */,
 				E202D6C32EDACC8100B1F55F /* PRTextAnalyzer.swift in Sources */,
-				E202D6C42EDACC8100B1F55F /* PRChunkScheduler.swift in Sources */,
+				E202D6C42EDACC8100B1F55F /* PRSegmentScheduler.swift in Sources */,
 				E202D6C52EDACC8100B1F55F /* PRSnapshots.swift in Sources */,
 				E202D6C62EDACC8100B1F55F /* PRSubscribeViewModel.swift in Sources */,
-				E202D6C72EDACC8100B1F55F /* PRPhotoMapManager.swift in Sources */,
+				E202D6C72EDACC8100B1F55F /* PRAssetsCleanManager.swift in Sources */,
 				E202D6C82EDACC8100B1F55F /* PRSubscribeNormalCellView.swift in Sources */,
 				E202D6C92EDACC8100B1F55F /* PRSubscribeListRequestModel.swift in Sources */,
-				E202D6CA2EDACC8100B1F55F /* PRPhotoTypes.swift in Sources */,
+				E202D6CA2EDACC8100B1F55F /* PRAssetsTypes.swift in Sources */,
 				E202D7032EDAD2DA00B1F55F /* PRRequestHandlerSignUtils.swift in Sources */,
 				E202D6CC2EDACC8100B1F55F /* PRLargeVideoAnalyzer.swift in Sources */,
 				E202D6CD2EDACC8100B1F55F /* PRSubscribeSwitchPage.swift in Sources */,
 				E202D6CE2EDACC8100B1F55F /* PRAssetThumbnailProvider.swift in Sources */,
-				E202D6EF2EDAD1FF00B1F55F /* PRDecodableEventSourceSerializer.swift in Sources */,
 				E202D6CF2EDACC8100B1F55F /* PRDuplicateAnalyzer.swift in Sources */,
 				E202D6D02EDACC8100B1F55F /* PRBlurryAnalyzer.swift in Sources */,
 				E202D6D12EDACC8100B1F55F /* PRSubscribeRandomBubble.swift in Sources */,
@@ -1128,13 +1072,11 @@
 				E202D6D42EDACC8100B1F55F /* PRAssetsHelper.swift in Sources */,
 				E202D6DA2EDACF1500B1F55F /* PRSubscribeResponseModel.swift in Sources */,
 				1EE8CCA62EDAC97F0064F683 /* PRMultiProgressBarView.swift in Sources */,
-				1EE8CCA72EDAC97F0064F683 /* PRDividerView.swift in Sources */,
 				1EE8CCA92EDAC97F0064F683 /* PRShareImageActivityView.swift in Sources */,
 				1EE8CCAC2EDAC97F0064F683 /* PRBlurView.swift in Sources */,
 				1EE8CCAD2EDAC97F0064F683 /* PRHomeBottomGestureModifier.swift in Sources */,
 				1EE8CCAE2EDAC97F0064F683 /* PRLaunchView.swift in Sources */,
 				1EE8CCAF2EDAC97F0064F683 /* PRProgressBarView.swift in Sources */,
-				1EE8CC342EDA9AD50064F683 /* Font+Extension.swift in Sources */,
 				1EE8CC352EDA9AD50064F683 /* CommonAICuid.mm in Sources */,
 				1EE8CC362EDA9AD50064F683 /* Color+Extension.swift in Sources */,
 				1EE8CC382EDA9AD50064F683 /* SSKeychainQuery.m in Sources */,
@@ -1147,14 +1089,12 @@
 				E202D6F92EDAD25C00B1F55F /* PRRequestHandlerManager.swift in Sources */,
 				1EE8CC3F2EDA9AD50064F683 /* KeyboardPublishers.swift in Sources */,
 				1EE8CC412EDA9AD50064F683 /* Number+Extension.swift in Sources */,
-				1EE8CC792EDAC8BA0064F683 /* PRConfigManager.swift in Sources */,
 				1EE8CC912EDAC91C0064F683 /* PRGlobalOverlay.swift in Sources */,
-				E202D6F12EDAD21400B1F55F /* PREventSourceMessage.swift in Sources */,
 				1EE8CC442EDA9AD50064F683 /* ViewDurationTrackerModifier.swift in Sources */,
 				1EE8CC932EDAC9280064F683 /* PRUserManager.swift in Sources */,
 				E2242C302ECF115300C867D4 /* PRDeleteFinishPage.swift in Sources */,
 				E2242C362ECF11AA00C867D4 /* PRDuplicatePage.swift in Sources */,
-				E2242BCA2ECF106300C867D4 /* ATTrackingManager+Limit.m in Sources */,
+				E2242BCA2ECF106300C867D4 /* TrackingAuthorizationInterceptor.m in Sources */,
 				E2242C2E2ECF113200C867D4 /* PRCategoryHomeViewModel.swift in Sources */,
 				E2242C482ECF138100C867D4 /* TrashReviewAlertView.swift in Sources */,
 			);

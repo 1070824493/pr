@@ -78,21 +78,21 @@ class PRAppInfo: PRDynamicCommonParamsProvider {
         return idfv
     }
     
-    public static func getDynamicCommonParams() -> [String: Any] {
+    public static func getDynamicParams() -> [String: Any] {
         return [
-            "systemLanguageCode": PRAppLocalizationManager.shared.getSystemLanguage(),
-            "idfa": PRIdfaUtils.shared.getIdfaSync(),
-            "idfv": getIDFV(),
-            "appInstanceId": PRMarketManager.shared.getFirebaseClientId(),
-            "firebaseId": PRMarketManager.shared.getFirebaseClientId(),
-            "anonId": PRMarketManager.shared.getFacebookClientId(),
-            "appsFlyerId": PRMarketManager.shared.getAppsFlyerClientId(),
+            "appInstanceId": PRMarketManager.shared.getGooglefbId(),
+            "firebaseId": PRMarketManager.shared.getGooglefbId(),
+            "anonId": PRMarketManager.shared.getMetafbId(),
+            "appsFlyerId": PRMarketManager.shared.getAFId(),
+            "systemLanguageCode": PRAppLocaleManager.shared.getSysLang(),
+            "idfa": PRIdfaUtils.instance.fetchIdfaSync(),
+            "idfv": getIDFV()
         ]
     }
     
     public static func getWebDynamicCommonParams() -> [String: Any] {
         return [
-            "systemLanguageCode": PRAppLocalizationManager.shared.getSystemLanguage()
+            "systemLanguageCode": PRAppLocaleManager.shared.getSysLang()
         ]
     }
     

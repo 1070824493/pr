@@ -8,34 +8,28 @@ import SwiftUI
 import SwiftUIIntrospect
 
 
-struct PRMainTabView: View {
+struct PRTabView: View {
     @EnvironmentObject private var uiState: PRUIState
     @EnvironmentObject private var networkObserver: PRRequestHandlerObserver
     @EnvironmentObject private var appUserDefaults: PRAppUserPreferences
 
     var showSubscriptionView: Bool = true
     
-    @StateObject private var viewModel = PRMainTabViewModel()
+    @StateObject private var viewModel = PRTabViewModel()
     @StateObject private var appRouterPath = PRAppRouterPath()
-    @State private var showLaunchPlaceHoder = true
     
     var body: some View {
         ZStack {
-//            if showLaunchPlaceHoder && showSubscriptionView {
-//                LaunchView()
-//                    .zIndex(.infinity)
-//            }
-            
-            realMainTabView
+            ShowTabView
         }
     }
     
-    var realMainTabView: some View {
+    var ShowTabView: some View {
         NavigationStack(path: $appRouterPath.path) {
             ZStack {
                 tabView
                                 
-                customTabBar
+                BottomBarView
                     .frame(maxHeight: .infinity, alignment: .bottom)
                     .zIndex(1)
             }
@@ -59,7 +53,7 @@ struct PRMainTabView: View {
                     updateTab(with: newTab)
                 })
         ) {
-            ForEach(viewModel.availableTabs) { tab in
+            ForEach(viewModel.tabs) { tab in
                 tab.makeContentView(selectedTab: $uiState.selectedTab)
                     .tabItem {
                         EmptyView()
@@ -67,17 +61,17 @@ struct PRMainTabView: View {
                     .tag(tab)
             }
         }
-        .introspect(.tabView, on: .iOS(.v13, .v14, .v15, .v16, .v17, .v18, .v26)) { (tabBarController: UITabBarController) in
+        .introspect(.tabView, on: .iOS(.v16, .v17, .v18, .v26)) { (tabBarController: UITabBarController) in
             initTabBarStyle(tabBarController)
         }
         .padding(0)
     }
     
-    var customTabBar: some View {
+    var BottomBarView: some View {
         ZStack {
             Color.clear
             HStack(spacing: 0) {
-                ForEach(viewModel.availableTabs) { tab in
+                ForEach(viewModel.tabs) { tab in
                     Button{
                         uiState.selectedTab = tab
                     } label:{
@@ -117,7 +111,7 @@ struct PRMainTabView: View {
     
     private func updateTab(with newTab: PRUIState.Tab) {
         #if DEBUG
-        print("updateTab newTab = \(newTab)")
+        print("tab \(newTab)")
         #endif
     }
     
@@ -126,23 +120,12 @@ struct PRMainTabView: View {
     }
     
     private func handleAppear() {
-        showRealMainTabView()
-        
-    }
-    
-    private func showRealMainTabView() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            showLaunchPlaceHoder = false
-        }
-    }
-    
-    private func handleLanguageChanged(newLanguageCode: String) {
         
     }
     
 }
 
 #Preview {
-    PRMainTabView()
-        .withEnvironments()
+    PRTabView()
+        .provideEnivironmentObject()
 }

@@ -36,7 +36,7 @@ public class PRCommonParameterInterceptor: RequestInterceptor, @unchecked Sendab
         
         do {
             let randomKey = PRRequestHandlerSignUtils.getRandomKey()
-            let dynamicCommonParams = dynamicCommonParamsProvider?.getDynamicCommonParams()
+            let dynamicCommonParams = dynamicCommonParamsProvider?.getDynamicParams()
             switch urlRequest.method {
             case .get, .head, .connect, .options, .trace:
                 var addParameters = [String: Any]()
@@ -110,8 +110,8 @@ public class PRCommonParameterInterceptor: RequestInterceptor, @unchecked Sendab
         return self.commonParameters
     }
     
-    public func getDynamicCommonParams() -> [String: Any]? {
-        return self.dynamicCommonParamsProvider?.getDynamicCommonParams()
+    public func getDynamicParams() -> [String: Any]? {
+        return self.dynamicCommonParamsProvider?.getDynamicParams()
     }
     
     public func getCommonCookies() -> [HTTPCookie] {

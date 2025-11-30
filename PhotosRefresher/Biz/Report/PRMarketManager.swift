@@ -22,9 +22,9 @@ class PRMarketManager {
         set { UserDefaults.standard.set(newValue, forKey: #function) }
     }
     
-    private var firebaseClientId = ""       // firebase的客户端ID
-    private var facebookClientId = ""       // facebook的客户端ID
-    private var appsFlyerClientId = ""      // appsflyer的客户端ID
+    private var googlefbId = ""       // firebase的客户端ID
+    private var metafbId = ""       // facebook的客户端ID
+    private var afId = ""      // appsflyer的客户端ID
     
     private init() {
         
@@ -77,36 +77,36 @@ class PRMarketManager {
 //        }
 //    }
     
-    func getFirebaseClientId() -> String {
-        if !firebaseClientId.isEmpty {
-            return firebaseClientId
+    func getGooglefbId() -> String {
+        if !googlefbId.isEmpty {
+            return googlefbId
         }
         
-//        firebaseClientId = Analytics.appInstanceID() ?? ""
-        return firebaseClientId
+//        googlefbId = Analytics.appInstanceID() ?? ""
+        return googlefbId
     }
     
-    func getFacebookClientId() -> String {
-        if !facebookClientId.isEmpty {
-            return facebookClientId
+    func getMetafbId() -> String {
+        if !metafbId.isEmpty {
+            return metafbId
         }
-//        facebookClientId = AppEvents.shared.anonymousID
-        return facebookClientId
+//        metafbId = AppEvents.shared.anonymousID
+        return metafbId
     }
     
-    func getAppsFlyerClientId() -> String {
-        if !appsFlyerClientId.isEmpty {
-            return appsFlyerClientId
+    func getAFId() -> String {
+        if !afId.isEmpty {
+            return afId
         }
         
 //        if let appsFlyerIdA = AppsFlyerLib.shared().getAppsFlyerUID() as? String,
 //           appsFlyerIdA.count > 0 {
-//            appsFlyerClientId = appsFlyerIdA
+//            afId = appsFlyerIdA
 //        }
-        return appsFlyerClientId
+        return afId
     }
     
-    func reportAppflyer(name: String, params: [String: Any]? = nil) {
+    func reportAF(name: String, params: [String: Any]? = nil) {
 //        let reportParams = withCommonParams(params: params)
 //        StatisticsManager.log(name: name, params: reportParams)
 //        AppsFlyerLib.shared().logEvent(name, withValues: reportParams)
@@ -127,7 +127,7 @@ class PRMarketManager {
 //            )
 //        }
     }
-    func uploadFaceBook(name: String, params: [String: Any]? = nil) {
+    func reportMeta(name: String, params: [String: Any]? = nil) {
 //        var convertedParameters: [AppEvents.ParameterName: Any] = [:]
 //        params?.forEach { key, value in
 //            convertedParameters[AppEvents.ParameterName(rawValue:key)] = value
@@ -137,7 +137,7 @@ class PRMarketManager {
 //        AppEvents.shared.logEvent(AppEvents.Name(rawValue:name), parameters: convertedParameters)
     }
     
-    func uploadInstallEvent() {
+    func reportInstall() {
 //        Task {
 //            let lastVC = lastReportInstallVC ?? 0
 //            if lastVC == AppInfo.vc {
@@ -145,14 +145,14 @@ class PRMarketManager {
 //            }
 //            
 //            let idfa = await IdfaUtils.shared.requestIdfa()
-//            let firebaseClientId = getFirebaseClientId()
-//            let facebookClientId = getFacebookClientId()
-//            let appsFlyerId = getAppsFlyerClientId()
+//            let googlefbId = getgooglefbId()
+//            let metafbId = getmetafbId()
+//            let appsFlyerId = getafId()
 //            let reportParams = withCommonParams(params: [
 //                "idfa": idfa,
-//                "appInstanceId": firebaseClientId,
-//                "anonId": facebookClientId,
-//                "firebaseId": firebaseClientId,
+//                "appInstanceId": googlefbId,
+//                "anonId": metafbId,
+//                "firebaseId": googlefbId,
 //                "appsFlyerId": appsFlyerId,
 //            ])
 //            StatisticsManager.log(name: "MARKET_REPORT_INSTALL", params: reportParams)

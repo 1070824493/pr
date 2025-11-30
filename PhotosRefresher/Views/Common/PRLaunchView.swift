@@ -31,4 +31,5 @@ struct PRLaunchView: View {
 
 #Preview {
     PRLaunchView()
+        .environmentObject(PRAppViewModel())
 }

@@ -8,22 +8,38 @@
 import Foundation
 import Photos
 
-public enum PRPhotoCategory: String, Hashable, Codable, Identifiable {
+public struct PRAssetsInfo: Codable {
+    public var type: PRAssetType
+    public var assets: [PRAssetsAnalyzeResult] = []
+    public var bytes: Int64 = 0
+
+    public var groupAssetLocalIdentifiers: [[String]] = []
+    public var groupAssets: [[PRAssetsAnalyzeResult]] = []
+
+    public var localIdentifiers: [String] { assets.map(\.assetIdentifier) }
+
+    public init(_ c: PRAssetType) { self.type = c }
+
+    private enum CodingKeys: String, CodingKey {
+        case type, assets, bytes, groupAssetLocalIdentifiers, groupAssets
+    }
+}
+
+public enum PRAssetType: String, Hashable, Codable, Identifiable {
     public var id: String {
         rawValue
     }
-    case blurryphoto, duplicatephoto, similarphoto, screenshot
-    case largevideo, allvideo
-    case livePhoto, textphoto
-    case similarvideo
     case selfiephoto, backphoto
+    case PhotosBlurry, PhotosDuplicate, PhotosSimilar, PhotosScreenshot
+    case PhotosLive, PhotosText
+    case VideoLarge, VideoAll
 }
 
-public enum PRPhotoPipelineState: Equatable {
-    case noPermission, requesting, loading, idle, error(String)
+public enum PRAssetsPiplineStatus: Equatable {
+    case permissionDefined, requesting, loading, idle, error(String)
 }
 
-public struct PRPhotoAssetModel: Codable, Hashable {
+public struct PRAssetsAnalyzeResult: Codable, Hashable {
     public var assetIdentifier: String
     public var storageSize: Int64
     public var creationTimestamp: Int64
@@ -51,21 +67,3 @@ public struct PRPhotoAssetModel: Codable, Hashable {
         try container.encode(creationTimestamp,       forKey: .photoDate)
     }
 }
-
-public struct PRPhotoAssetsMap: Codable {
-    public var category: PRPhotoCategory
-    public var assets: [PRPhotoAssetModel] = []
-    public var totalBytes: Int64 = 0
-
-    public var doubleAssetIDs: [[String]] = []
-    public var doubleAssets: [[PRPhotoAssetModel]] = []
-
-    public var assetIDs: [String] { assets.map(\.assetIdentifier) }
-
-    public init(_ c: PRPhotoCategory) { self.category = c }
-
-    private enum CodingKeys: String, CodingKey {
-        case category, assets, totalBytes, doubleAssetIDs, doubleAssets
-    }
-}
-

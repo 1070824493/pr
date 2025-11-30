@@ -36,7 +36,7 @@ public class PREnvironmentManager {
     
     public var currentEnv: Environment2 = .online
     
-    public let SHIP_PLACE_HOLDER = "&placeholder&"
+    public let SHIP_PLACE_HOLDER = "&xxxxxxxxxxxxx&"
     
     private var domainConfigs: [String: (onlineDomain: String, testDomain: String)] = [:]
     

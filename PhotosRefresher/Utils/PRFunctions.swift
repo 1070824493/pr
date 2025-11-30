@@ -102,3 +102,18 @@ public func delay(_ duration: TimeInterval, _ block: @escaping (() -> Void)) -> 
     DispatchQueue.main.asyncAfter(deadline: .now() + duration, execute: task)
     return task
 }
+
+func formatBytes(_ bytes: Int64) -> String {
+    if bytes <= 0 { return "0 KB" }
+    
+    let units = ["B", "KB", "MB", "GB", "TB"]
+    let base = 1024.0
+    let size = Double(bytes)
+    
+    let exponent = min(Int(log(size) / log(base)), units.count - 1)
+    let formattedSize = size / pow(base, Double(exponent))
+    
+    return exponent == 0 || formattedSize >= 10
+        ? String(format: "%.0f %@", formattedSize, units[exponent])
+        : String(format: "%.1f %@", formattedSize, units[exponent])
+}

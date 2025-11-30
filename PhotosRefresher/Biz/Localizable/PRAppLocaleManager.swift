@@ -1,6 +1,5 @@
 //
-//  LocalizableManager.swift
-//  LangLearn
+//  PRAppLocaleManager.swift
 //
 //
 //  Locale.current.languageCode / Locale.current.language.languageCode?.identifier ：获取系统设置的语言码，如 en
@@ -14,9 +13,9 @@ import SwiftUI
 
 
 
-class PRAppLocalizationManager: ObservableObject {
+class PRAppLocaleManager: ObservableObject {
     
-    public static let shared = PRAppLocalizationManager()
+    public static let shared = PRAppLocaleManager()
     
     private init() {
         #if DEBUG
@@ -29,13 +28,13 @@ class PRAppLocalizationManager: ObservableObject {
         #endif
     }
     
-    func getSystemLanguage() -> String {
+    func getSysLang() -> String {
         var preferredLanguage = Locale.preferredLanguages.first ?? "en"
-        preferredLanguage = getFormateLanguageCode(preferredLanguage)
+        preferredLanguage = formateLang(preferredLanguage)
         return preferredLanguage
     }
     
-    private func getFormateLanguageCode(_ localeIdentifier: String) -> String {
+    private func formateLang(_ localeIdentifier: String) -> String {
         let components = localeIdentifier.split(separator: "-")
         let count = components.count
         if count > 2 {

@@ -56,7 +56,7 @@ public struct PRBusinessEmptyResponse: CodableWithDefault {
 }
 
 public protocol PRDynamicCommonParamsProvider {
-    static func getDynamicCommonParams() -> [String: Any]
+    static func getDynamicParams() -> [String: Any]
 }
 
 public class PRRequestHandlerManager {

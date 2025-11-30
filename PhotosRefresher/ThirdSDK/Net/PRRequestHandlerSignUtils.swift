@@ -9,9 +9,9 @@ import Foundation
 public class PRRequestHandlerSignUtils {
     
     private static var privateKey = ""
-    private static var randomKey1 = ""
-    private static var randomKey2 = ""
-    private static var randomKey3 = ""
+    private static var rk1 = ""
+    private static var rk2 = ""
+    private static var rk3 = ""
     private static var prefixKey = ""
     
     private static var cachePrivateKey = ""
@@ -19,15 +19,15 @@ public class PRRequestHandlerSignUtils {
     
     public static func registerKeys(
         privateKey: String,
-        randomKey1: String,
-        randomKey2: String,
-        randomKey3: String,
+        rk1: String,
+        rk2: String,
+        rk3: String,
         prefixKey: String
     ) {
         self.privateKey = privateKey
-        self.randomKey1 = randomKey1
-        self.randomKey2 = randomKey2
-        self.randomKey3 = randomKey3
+        self.rk1 = rk1
+        self.rk2 = rk2
+        self.rk3 = rk3
         self.prefixKey = prefixKey
     }
     
@@ -36,11 +36,11 @@ public class PRRequestHandlerSignUtils {
             return cacheRandomKey
         }
         
-        let md51 = String((privateKey + randomKey1).md5Value.prefix(5))
-        var md52 = (privateKey + randomKey2).md5Value
+        let md51 = String((privateKey + rk1).md5Value.prefix(5))
+        var md52 = (privateKey + rk2).md5Value
         md52 = String(md52.suffix(5))
         
-        let randomKey = md51 + randomKey3 + md52
+        let randomKey = md51 + rk3 + md52
         cacheRandomKey = randomKey
         cachePrivateKey = privateKey
         return randomKey

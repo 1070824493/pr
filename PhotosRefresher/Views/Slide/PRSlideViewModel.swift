@@ -11,7 +11,7 @@ import Photos
 
 class PRSlideViewModel: ObservableObject {
     
-    @Published var currentCategory: PRPhotoCategory = PRAppUserPreferences.shared.currentSlideCategory {
+    @Published var currentCategory: PRAssetType = PRAppUserPreferences.shared.currentSlideCategory {
         didSet {
             previewFive = []
             prepareSet()
@@ -21,7 +21,7 @@ class PRSlideViewModel: ObservableObject {
     @Published var previewFive: [PHAsset] = []
     
 
-    private var manager: PRPhotoMapManager { .shared }
+    private var manager: PRAssetsCleanManager { .shared }
     private let cache = PRSlideCacheManager.shared
     private var cancellables = Set<AnyCancellable>()
 
@@ -42,7 +42,7 @@ class PRSlideViewModel: ObservableObject {
             .sink { [weak self] note in
                 guard let self = self else { return }
                 if let raw = note.userInfo?["category"] as? String,
-                   let cat = PRPhotoCategory(rawValue: raw),
+                   let cat = PRAssetType(rawValue: raw),
                    cat == self.currentCategory,
                    let nextIDs = note.userInfo?["nextIDs"] as? [String] {
                     let first5IDs = Array(nextIDs.prefix(5))
@@ -55,20 +55,20 @@ class PRSlideViewModel: ObservableObject {
     }
 
     var hasPermission: Bool {
-        switch PRAppUserPreferences.shared.albumPermissionStatus {
+        switch PRAppUserPreferences.shared.galleryPermissionState {
         case .authorized, .limited: return true
         case .notDetermined: return true
         default: return false
         }
     }
 
-    func loadCategory(_ cat: PRPhotoCategory) {
+    func loadCategory(_ cat: PRAssetType) {
         currentCategory = cat
         PRAppUserPreferences.shared.currentSlideCategory = cat
     }
 
     func prepareSet() {
-        let ids = mapFor(currentCategory).assetIDs
+        let ids = mapFor(currentCategory).localIdentifiers
         guard !ids.isEmpty else {
             
             previewFive = []
@@ -93,18 +93,18 @@ class PRSlideViewModel: ObservableObject {
     }
 
     
-    func mapFor(_ cat: PRPhotoCategory) -> PRPhotoAssetsMap {
+    func mapFor(_ cat: PRAssetType) -> PRAssetsInfo {
         switch cat {
-        case .screenshot: return manager.screenshotPhotosMap
-        case .livePhoto: return manager.livePhotosMap
-        case .selfiephoto: return manager.selfiePhotosMap
-        case .backphoto: return manager.backPhotosMap
-        default: return manager.backPhotosMap
+        case .PhotosScreenshot: return manager.assetsInfoForScreenShot
+        case .PhotosLive: return manager.assetsInfoForLivePhoto
+        case .selfiephoto: return manager.assetsInfoForSelfiePhotos
+        case .backphoto: return manager.assetsInfoForBackPhotos
+        default: return manager.assetsInfoForBackPhotos
         }
     }
 
-    var alternativeCategories: [PRPhotoCategory] {
-        let all: [PRPhotoCategory] = [.screenshot, .selfiephoto, .livePhoto, .backphoto]
+    var alternativeCategories: [PRAssetType] {
+        let all: [PRAssetType] = [.PhotosScreenshot, .selfiephoto, .PhotosLive, .backphoto]
         return all.filter { $0 != currentCategory }
     }
 }

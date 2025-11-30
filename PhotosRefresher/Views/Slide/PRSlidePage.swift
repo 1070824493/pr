@@ -22,7 +22,7 @@ struct PRSlidePage: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(spacing: 12) {
                     Text(Date().formatted(.dateTime.month(.wide).day()))
-                        .font(.bold24)
+                        .font(.system(size: 24.fit, weight: .bold, design: .default))
                         .foregroundColor(.white)
                     
                     Spacer()
@@ -163,14 +163,14 @@ struct FiveCardsPreview: View {
     }
 }
 
-private func menuTitle(_ c: PRPhotoCategory) -> String {
-    switch c { case .backphoto: return "Photos"; case .screenshot: return "Screenshots"; case .selfiephoto: return "Selfies"; case .livePhoto: return "Live"; default: return c.rawValue }
+private func menuTitle(_ c: PRAssetType) -> String {
+    switch c { case .backphoto: return "Photos"; case .PhotosScreenshot: return "Screenshots"; case .selfiephoto: return "Selfies"; case .PhotosLive: return "Live"; default: return c.rawValue }
 }
 
 struct NoPhotosView: View {
-    let current: PRPhotoCategory
-    let alternatives: [PRPhotoCategory]
-    var onSelect: (PRPhotoCategory) -> Void
+    let current: PRAssetType
+    let alternatives: [PRAssetType]
+    var onSelect: (PRAssetType) -> Void
     var body: some View {
         VStack(spacing: 0) {
             Image("cleaning_home_noPermission")
@@ -179,18 +179,18 @@ struct NoPhotosView: View {
                 .foregroundColor(.white)
                 .padding(.top, 28)
             Text("No photos available")
-                .font(.semibold24)
+                .font(.system(size: 24.fit, weight: .semibold, design: .default))
                 .foregroundColor(.white)
                 .padding(.top, 4)
             Text("Please reselect category or reset viewing history and try again")
                 .lineLimit(2)
-                .font(.regular16)
+                .font(.system(size: 16.fit, weight: .regular, design: .default))
                 .foregroundColor(Color.white.opacity(0.5))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
             Text("Try Other Categories")
-                .font(.bold18)
+                .font(.system(size: 18.fit, weight: .bold, design: .default))
                 .foregroundColor(.white)
                 .padding(.top, 24)
             VStack(spacing: 12) {
@@ -203,7 +203,7 @@ struct NoPhotosView: View {
                                 .resizable()
                                 .frame(width: 16, height: 16)
                             Text(c.slideTitle)
-                                .font(.regular14)
+                                .font(.system(size: 14.fit, weight: .regular, design: .default))
                                 .foregroundColor(.white)
                         }
                         .frame(maxWidth: .infinity)
